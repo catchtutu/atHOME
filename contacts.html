@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>HITH &amp; District Contacts</title>
+<style>
+  :root {
+    --navy: #0D2D5E;
+    --navy-mid: #164080;
+    --blue: #1A6FAF;
+    --blue-lt: #E5F0FA;
+    --bg: #EEF2F7;
+    --surface: #FFFFFF;
+    --amber: #C97A00;
+    --amber-bg: #FFFBEB;
+    --amber-bd: #FDE68A;
+    --red: #C91B1B;
+    --red-bg: #FEF2F2;
+    --red-bd: #FEB4B4;
+    --green: #14803D;
+    --green-bg: #F0FDF4;
+    --green-bd: #A7F3C3;
+    --muted: #6B7280;
+    --border: #DDE3EC;
+    --text: #1B2333;
+    --r: 13px;
+    --r-sm: 8px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding-bottom: 90px;
+  }
+
+  /* ── HEADER ── */
+  .hdr {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--navy);
+    padding: 14px 16px 12px;
+    padding-top: calc(14px + env(safe-area-inset-top));
+  }
+  .hdr-eye  { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:rgba(255,255,255,.55); margin-bottom:2px; }
+  .hdr-name { font-size:19px; font-weight:800; color:#fff; }
+  .hdr-sub  { font-size:12px; color:rgba(255,255,255,.5); margin-top:2px; }
+
+  /* ── SEARCH ── */
+  .search-wrap { padding: 12px 16px 0; }
+  .search-input {
+    width:100%; padding:10px 14px 10px 38px;
+    border-radius:10px; border:1.5px solid var(--border);
+    background: var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 12px center;
+    font-size:15px; color:var(--text); outline:none;
+    -webkit-appearance:none;
+  }
+  .search-input:focus { border-color:var(--blue); }
+
+  /* ── CONTENT ── */
+  .content { padding:12px 16px 0; }
+
+  /* ── GROUP ── */
+  .group { margin-bottom:20px; }
+  .group-label {
+    font-size:10px; font-weight:700; text-transform:uppercase;
+    letter-spacing:.08em; color:var(--muted);
+    margin-bottom:8px; padding-left:2px;
+  }
+  .group-card {
+    background:var(--surface); border-radius:var(--r);
+    box-shadow:0 1px 3px rgba(0,0,0,.06); overflow:hidden;
+  }
+
+  /* ── CONTACT ROW ── */
+  .cr {
+    display:flex; align-items:center;
+    padding:12px 14px; border-bottom:1px solid var(--border);
+    text-decoration:none; color:inherit; gap:12px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .cr:last-child { border-bottom:none; }
+  .cr:active { background:var(--blue-lt); }
+
+  .av {
+    width:38px; height:38px; border-radius:10px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    font-size:13px; font-weight:700;
+    background:var(--blue-lt); color:var(--navy);
+  }
+  .av.g { background:#DCFCE7; color:var(--green); }
+  .av.a { background:#FEF3C7; color:var(--amber); }
+  .av.p { background:#EDE9FE; color:#6D28D9; }
+  .av.r { background:#FEE2E2; color:var(--red); }
+
+  .ci { flex:1; min-width:0; }
+  .cn { font-size:14px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .cs { font-size:12px; color:var(--muted); margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+  .ph-badge {
+    font-size:12px; color:var(--blue); font-weight:500;
+    background:var(--blue-lt); padding:3px 8px;
+    border-radius:20px; white-space:nowrap; flex-shrink:0;
+  }
+
+  /* ── NO RESULTS ── */
+  .no-results { text-align:center; color:var(--muted); font-size:14px; padding:40px 16px; display:none; }
+
+  /* ── ESCALATE BAR ── */
+  .esc-bar {
+    position:fixed; bottom:0; left:0; right:0; z-index:200;
+    background:var(--red);
+    padding:15px 20px;
+    padding-bottom:calc(15px + env(safe-area-inset-bottom));
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    cursor:pointer; user-select:none;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .esc-bar-label { color:#fff; font-size:15px; font-weight:700; letter-spacing:.02em; }
+
+  /* ── OVERLAY ── */
+  .overlay {
+    position:fixed; inset:0; background:rgba(0,0,0,.5);
+    z-index:300; opacity:0; pointer-events:none;
+    transition:opacity .25s;
+  }
+  .overlay.open { opacity:1; pointer-events:all; }
+
+  /* ── PULL-UP SHEET ── */
+  .sheet {
+    position:fixed; bottom:0; left:0; right:0; z-index:400;
+    background:var(--surface); border-radius:20px 20px 0 0;
+    box-shadow:0 -4px 24px rgba(0,0,0,.18);
+    transform:translateY(100%);
+    transition:transform .3s cubic-bezier(.32,.72,0,1);
+    max-height:88vh; overflow-y:auto;
+    padding-bottom:calc(16px + env(safe-area-inset-bottom));
+  }
+  .sheet.open { transform:translateY(0); }
+
+  .sheet-handle { width:40px; height:4px; background:#DDE3EC; border-radius:2px; margin:12px auto 0; }
+
+  .sheet-hdr {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 20px 12px; border-bottom:1px solid var(--border);
+    position:sticky; top:0; background:var(--surface); z-index:1;
+  }
+  .sheet-title-wrap { display:flex; align-items:center; gap:10px; }
+  .sheet-icon {
+    width:34px; height:34px; background:var(--red-bg);
+    border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:17px;
+  }
+  .sheet-title { font-size:16px; font-weight:700; color:var(--red); }
+  .sheet-close {
+    width:30px; height:30px; border-radius:50%; background:var(--bg);
+    border:none; font-size:16px; color:var(--muted); cursor:pointer;
+    display:flex; align-items:center; justify-content:center; line-height:1;
+    -webkit-tap-highlight-color:transparent;
+  }
+
+  .sheet-body { padding:16px 20px 8px; }
+
+  .sg-label {
+    font-size:10px; font-weight:700; text-transform:uppercase;
+    letter-spacing:.08em; color:var(--muted);
+    margin:14px 0 8px; padding:0;
+  }
+  .sg-label:first-child { margin-top:0; }
+
+  .erow {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:11px 0; border-bottom:1px solid var(--border); gap:12px;
+  }
+  .erow:last-child { border-bottom:none; }
+  .erow-info { flex:1; min-width:0; }
+  .erow-name { font-size:14px; font-weight:600; }
+  .erow-sub { font-size:11px; color:var(--muted); margin-top:1px; }
+
+  .call-btn {
+    display:inline-flex; align-items:center; gap:5px;
+    padding:8px 14px; border-radius:20px;
+    font-size:13px; font-weight:600; text-decoration:none;
+    white-space:nowrap; flex-shrink:0; color:#fff;
+    background:var(--green);
+    -webkit-tap-highlight-color:transparent;
+  }
+  .call-btn.danger { background:var(--red); }
+  .call-btn:active { opacity:.85; }
+</style>
+</head>
+<body>
+
+<!-- ═══ HEADER ═══ -->
+<div class="hdr">
+  <div class="hdr-eye">St Vincent's Hospital Melbourne · @ Home Acute</div>
+  <div class="hdr-name">HITH &amp; District Contacts</div>
+  <div class="hdr-sub">Clinical Contact Directory</div>
+</div>
+
+<!-- ═══ SEARCH ═══ -->
+<div class="search-wrap">
+  <input class="search-input" type="search" placeholder="Search contacts…" id="searchInput" oninput="filter(this.value)" autocomplete="off" />
+</div>
+
+<!-- ═══ MAIN CONTENT ═══ -->
+<div class="content" id="content">
+
+  <!-- HITH NURSING PHONES -->
+  <div class="group">
+    <div class="group-label">HITH Nursing Phones</div>
+    <div class="group-card">
+      <a class="cr" href="tel:0421737351"><div class="av">H1</div><div class="ci"><div class="cn">HITH 1</div><div class="cs">Nursing phone</div></div><span class="ph-badge">0421 737 351</span></a>
+      <a class="cr" href="tel:0478970113"><div class="av">H2</div><div class="ci"><div class="cn">HITH 2</div><div class="cs">Nursing phone</div></div><span class="ph-badge">0478 970 113</span></a>
+      <a class="cr" href="tel:0421727294"><div class="av">H3</div><div class="ci"><div class="cn">HITH 3</div><div class="cs">Nursing phone</div></div><span class="ph-badge">0421 727 294</span></a>
+      <a class="cr" href="tel:0422421313"><div class="av">H4</div><div class="ci"><div class="cn">HITH 4</div><div class="cs">Nursing phone</div></div><span class="ph-badge">0422 421 313</span></a>
+      <a class="cr" href="tel:0402040428"><div class="av">H5</div><div class="ci"><div class="cn">HITH 5</div><div class="cs">Nursing phone</div></div><span class="ph-badge">0402 040 428</span></a>
+      <a class="cr" href="tel:0481067829"><div class="av">H6</div><div class="ci"><div class="cn">HITH 6</div><div class="cs">Nursing phone</div></div><span class="ph-badge">0481 067 829</span></a>
+      <a class="cr" href="tel:0468666138"><div class="av">H7</div><div class="ci"><div class="cn">HITH 7</div><div class="cs">Nursing phone</div></div><span class="ph-badge">0468 666 138</span></a>
+      <a class="cr" href="tel:0481067818"><div class="av">H8</div><div class="ci"><div class="cn">HITH 8</div><div class="cs">Nursing phone</div></div><span class="ph-badge">0481 067 818</span></a>
+      <a class="cr" href="tel:0422424141"><div class="av">H9</div><div class="ci"><div class="cn">HITH 9</div><div class="cs">Nursing phone</div></div><span class="ph-badge">0422 424 141</span></a>
+      <a class="cr" href="tel:0468666137"><div class="av">H10</div><div class="ci"><div class="cn">HITH 10</div><div class="cs">Nursing phone</div></div><span class="ph-badge">0468 666 137</span></a>
+      <a class="cr" href="tel:0478970059"><div class="av">CR</div><div class="ci"><div class="cn">HITH Clinic RN</div><div class="cs">5W Room 9</div></div><span class="ph-badge">0478 970 059</span></a>
+      <a class="cr" href="tel:0478970098"><div class="av">CG</div><div class="ci"><div class="cn">HITH Cottage RN</div><div class="cs">Cottage nursing</div></div><span class="ph-badge">0478 970 098</span></a>
+    </div>
+  </div>
+
+  <!-- HITH LEADERSHIP -->
+  <div class="group">
+    <div class="group-label">HITH Leadership &amp; Coordination</div>
+    <div class="group-card">
+      <a class="cr" href="tel:0459021952"><div class="av g">AA</div><div class="ci"><div class="cn">HITH ANUM AM</div><div class="cs">Associate Nurse Unit Manager – AM</div></div><span class="ph-badge">0459 021 952</span></a>
+      <a class="cr" href="tel:0408366359"><div class="av g">AP</div><div class="ci"><div class="cn">HITH ANUM PM</div><div class="cs">Generic HITH phone · RN1</div></div><span class="ph-badge">0408 366 359</span></a>
+      <a class="cr" href="tel:0458857446"><div class="av g">TN</div><div class="ci"><div class="cn">HITH NUM – Tony</div><div class="cs">Tony O'Sullivan · Nurse Unit Manager</div></div><span class="ph-badge">0458 857 446</span></a>
+      <a class="cr" href="tel:0468666138"><div class="av g">CC</div><div class="ci"><div class="cn">HITH Care Co-ordinator</div><div class="cs">Care coordination</div></div><span class="ph-badge">0468 666 138</span></a>
+      <a class="cr" href="tel:0438946593"><div class="av g">RG</div><div class="ci"><div class="cn">HITH Registrar</div><div class="cs">Medical registrar</div></div><span class="ph-badge">0438 946 593</span></a>
+      <a class="cr" href="tel:0419356369"><div class="av a">AH</div><div class="ci"><div class="cn">HITH After Hours / On Call</div><div class="cs">Official on-call phone</div></div><span class="ph-badge">0419 356 369</span></a>
+    </div>
+  </div>
+
+  <!-- INTAKE -->
+  <div class="group">
+    <div class="group-label">Intake</div>
+    <div class="group-card">
+      <a class="cr" href="tel:0478969994"><div class="av p">I1</div><div class="ci"><div class="cn">Intake 1</div><div class="cs">RN1 – Intake HITH 1</div></div><span class="ph-badge">0478 969 994</span></a>
+      <a class="cr" href="tel:0428169108"><div class="av p">I2</div><div class="ci"><div class="cn">Intake 2</div><div class="cs">RN1 – Intake HITH 2</div></div><span class="ph-badge">0428 169 108</span></a>
+      <a class="cr" href="tel:0427993473"><div class="av p">ID</div><div class="ci"><div class="cn">Intake – District</div><div class="cs">RN1 – Intake District Nursing</div></div><span class="ph-badge">0427 993 473</span></a>
+    </div>
+  </div>
+
+  <!-- HITH MEDICAL -->
+  <div class="group">
+    <div class="group-label">HITH Medical</div>
+    <div class="group-card">
+      <a class="cr" href="tel:0478958097"><div class="av r">M1</div><div class="ci"><div class="cn">HITH Medical – HMO 1</div><div class="cs">Drs Greer / Pointon / Petryshyn</div></div><span class="ph-badge">0478 958 097</span></a>
+      <a class="cr" href="tel:0478958099"><div class="av r">M2</div><div class="ci"><div class="cn">HITH Medical – HMO 2</div><div class="cs">Drs Greer / Pointon / Petryshyn</div></div><span class="ph-badge">0478 958 099</span></a>
+      <a class="cr" href="tel:0422420101"><div class="av r">M3</div><div class="ci"><div class="cn">HITH Medical – HMO 3</div><div class="cs">Drs Greer / Pointon / Petryshyn</div></div><span class="ph-badge">0422 420 101</span></a>
+      <a class="cr" href="tel:0421899295"><div class="av r">CM</div><div class="ci"><div class="cn">HITH Medical – Cristina</div><div class="cs">Dr Cristina Mateevici · ID Physician</div></div><span class="ph-badge">0421 899 295</span></a>
+      <a class="cr" href="tel:0402080134"><div class="av r">DS</div><div class="ci"><div class="cn">HITH Medical – David</div><div class="cs">Dr David Stanton · Gen Physician/Geriatrician · Tue AM, Wed, Fri</div></div><span class="ph-badge">0402 080 134</span></a>
+      <a class="cr" href="tel:0425704387"><div class="av r">NH</div><div class="ci"><div class="cn">HITH Medical – Nick</div><div class="cs">Dr Nick Hewitt · ID Physician</div></div><span class="ph-badge">0425 704 387</span></a>
+      <a class="cr" href="tel:0406606446"><div class="av r">JP</div><div class="ci"><div class="cn">HITH Medical (PACE) – Jamie</div><div class="cs">Dr Jamie Parker-Smith</div></div><span class="ph-badge">0406 606 446</span></a>
+    </div>
+  </div>
+
+  <!-- ALLIED HEALTH & PHARMACY -->
+  <div class="group">
+    <div class="group-label">HITH Allied Health &amp; Pharmacy</div>
+    <div class="group-card">
+      <a class="cr" href="tel:0427568250"><div class="av p">SB</div><div class="ci"><div class="cn">HITH Pharmacist – Sam</div><div class="cs">Sam Barhoun</div></div><span class="ph-badge">0427 568 250</span></a>
+      <a class="cr" href="tel:0422904541"><div class="av p">NR</div><div class="ci"><div class="cn">HITH Pharmacist – Nicole / Romana</div><div class="cs">Nicole Morse: Mon–Wed · Romana Kirstelly: Fri</div></div><span class="ph-badge">0422 904 541</span></a>
+      <a class="cr" href="tel:0419310880"><div class="av p">CG</div><div class="ci"><div class="cn">HITH Physiotherapist – Chris</div><div class="cs">Chris Graven</div></div><span class="ph-badge">0419 310 880</span></a>
+      <a class="cr" href="tel:0481067823"><div class="av p">FL</div><div class="ci"><div class="cn">HITH Physiotherapist – Flick</div><div class="cs">Physiotherapist</div></div><span class="ph-badge">0481 067 823</span></a>
+    </div>
+  </div>
+
+  <!-- DISTRICT NURSING -->
+  <div class="group">
+    <div class="group-label">District Nursing Phones</div>
+    <div class="group-card">
+      <a class="cr" href="tel:0419318332"><div class="av">D1</div><div class="ci"><div class="cn">District 01</div><div class="cs">77 Yarra St, Heidelberg</div></div><span class="ph-badge">0419 318 332</span></a>
+      <a class="cr" href="tel:0419342985"><div class="av">D2</div><div class="ci"><div class="cn">District 02</div><div class="cs">Nursing phone</div></div><span class="ph-badge">0419 342 985</span></a>
+      <a class="cr" href="tel:0419599162"><div class="av">D3</div><div class="ci"><div class="cn">District 03</div><div class="cs">Nursing phone</div></div><span class="ph-badge">0419 599 162</span></a>
+      <a class="cr" href="tel:0419884344"><div class="av">D4</div><div class="ci"><div class="cn">District 04</div><div class="cs">Nursing phone</div></div><span class="ph-badge">0419 884 344</span></a>
+      <a class="cr" href="tel:0419318336"><div class="av">D5</div><div class="ci"><div class="cn">District 05</div><div class="cs">Nursing phone</div></div><span class="ph-badge">0419 318 336</span></a>
+      <a class="cr" href="tel:0419342987"><div class="av">D6</div><div class="ci"><div class="cn">District 06</div><div class="cs">Nursing phone</div></div><span class="ph-badge">0419 342 987</span></a>
+      <a class="cr" href="tel:0419339410"><div class="av">D7</div><div class="ci"><div class="cn">District 07</div><div class="cs">Nursing phone</div></div><span class="ph-badge">0419 339 410</span></a>
+      <a class="cr" href="tel:0402076765"><div class="av">D8</div><div class="ci"><div class="cn">District 08</div><div class="cs">Nursing phone</div></div><span class="ph-badge">0402 076 765</span></a>
+      <a class="cr" href="tel:+61478969981"><div class="av">D9</div><div class="ci"><div class="cn">District 09</div><div class="cs">Nursing phone</div></div><span class="ph-badge">0478 969 981</span></a>
+      <a class="cr" href="tel:+61478970035"><div class="av g">DA</div><div class="ci"><div class="cn">District ANUM</div><div class="cs">Peta / Trina / Judy</div></div><span class="ph-badge">0478 970 035</span></a>
+      <a class="cr" href="tel:0458861299"><div class="av g">DB</div><div class="ci"><div class="cn">District NUM – Bel</div><div class="cs">Bel McKay · Nurse Unit Manager</div></div><span class="ph-badge">0458 861 299</span></a>
+      <a class="cr" href="tel:0422894040"><div class="av g">CA</div><div class="ci"><div class="cn">District CCAH Co-ord – Anne</div><div class="cs">Cancer Care at Home Co-ordinator</div></div><span class="ph-badge">0422 894 040</span></a>
+    </div>
+  </div>
+
+  <!-- ADMIN & SUPPORT -->
+  <div class="group">
+    <div class="group-label">Admin &amp; Support</div>
+    <div class="group-card">
+      <a class="cr" href="tel:0437111631"><div class="av a">BS</div><div class="ci"><div class="cn">SVAH Educator – Ben Stone</div><div class="cs">Practice Development · BLS / CVAD</div></div><span class="ph-badge">0437 111 631</span></a>
+      <a class="cr" href="tel:0404769248"><div class="av a">CH</div><div class="ci"><div class="cn">Corinne Howell</div><div class="cs">SVVH Acute Program Manager</div></div><span class="ph-badge">0404 769 248</span></a>
+      <a class="cr" href="tel:0392312888"><div class="av a">VP</div><div class="ci"><div class="cn">Vincents Pathology</div><div class="cs">Pathology services</div></div><span class="ph-badge">03 9231 2888</span></a>
+    </div>
+  </div>
+
+</div>
+
+<div class="no-results" id="noResults">No contacts found</div>
+
+<!-- ═══ ESCALATE BAR ═══ -->
+<div class="esc-bar" id="escBar" onclick="openSheet()">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+  <span class="esc-bar-label">Escalate &amp; Contacts</span>
+</div>
+
+<!-- ═══ OVERLAY ═══ -->
+<div class="overlay" id="overlay" onclick="closeSheet()"></div>
+
+<!-- ═══ PULL-UP SHEET ═══ -->
+<div class="sheet" id="sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-hdr">
+    <div class="sheet-title-wrap">
+      <div class="sheet-icon">🚨</div>
+      <div class="sheet-title">Escalate &amp; Contacts</div>
+    </div>
+    <button class="sheet-close" onclick="closeSheet()">✕</button>
+  </div>
+  <div class="sheet-body">
+
+    <div class="sg-label">Emergency</div>
+    <div class="erow">
+      <div class="erow-info">
+        <div class="erow-name">Emergency Services</div>
+        <div class="erow-sub">Police · Fire · Ambulance</div>
+      </div>
+      <a class="call-btn danger" href="tel:000">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.42 2 2 0 0 1 3.59 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.56A16 16 0 0 0 16 16.61l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        000
+      </a>
+    </div>
+    <div class="erow">
+      <div class="erow-info">
+        <div class="erow-name">Police – Non-Urgent</div>
+        <div class="erow-sub">Non-urgent police assistance</div>
+      </div>
+      <a class="call-btn" href="tel:131444">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.42 2 2 0 0 1 3.59 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.56A16 16 0 0 0 16 16.61l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        131 444
+      </a>
+    </div>
+    <div class="erow">
+      <div class="erow-info">
+        <div class="erow-name">Ambulance – Non-Urgent</div>
+        <div class="erow-sub">Non-emergency patient transport</div>
+      </div>
+      <a class="call-btn" href="tel:1300360929">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.42 2 2 0 0 1 3.59 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.56A16 16 0 0 0 16 16.61l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        1300 360 929
+      </a>
+    </div>
+
+    <div class="sg-label">Hospital</div>
+    <div class="erow">
+      <div class="erow-info">
+        <div class="erow-name">St Vincent's Hospital</div>
+        <div class="erow-sub">Main switchboard</div>
+      </div>
+      <a class="call-btn" href="tel:0392312211">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.42 2 2 0 0 1 3.59 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.56A16 16 0 0 0 16 16.61l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        03 9231 2211
+      </a>
+    </div>
+    <div class="erow">
+      <div class="erow-info">
+        <div class="erow-name">HITH / District Admin</div>
+        <div class="erow-sub">Administration desk</div>
+      </div>
+      <a class="call-btn" href="tel:0392313817">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.42 2 2 0 0 1 3.59 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.56A16 16 0 0 0 16 16.61l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        03 9231 3817
+      </a>
+    </div>
+    <div class="erow">
+      <div class="erow-info">
+        <div class="erow-name">Practice Development Nurse</div>
+        <div class="erow-sub">Ben Stone · BLS / CVAD enquiries</div>
+      </div>
+      <a class="call-btn" href="tel:0437111631">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.42 2 2 0 0 1 3.59 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.56A16 16 0 0 0 16 16.61l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        0437 111 631
+      </a>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function openSheet() {
+    document.getElementById('overlay').classList.add('open');
+    document.getElementById('sheet').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeSheet() {
+    document.getElementById('overlay').classList.remove('open');
+    document.getElementById('sheet').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  // Touch-to-dismiss sheet by dragging
+  let startY = 0;
+  const sheet = document.getElementById('sheet');
+  sheet.addEventListener('touchstart', e => { startY = e.touches[0].clientY; }, { passive: true });
+  sheet.addEventListener('touchend', e => {
+    if (e.changedTouches[0].clientY - startY > 80) closeSheet();
+  }, { passive: true });
+
+  function filter(q) {
+    const query = q.toLowerCase().trim();
+    const groups = document.querySelectorAll('#content .group');
+    let total = 0;
+    groups.forEach(grp => {
+      const rows = grp.querySelectorAll('.cr');
+      let vis = 0;
+      rows.forEach(r => {
+        const match = !query || r.textContent.toLowerCase().includes(query);
+        r.style.display = match ? '' : 'none';
+        if (match) vis++;
+      });
+      grp.style.display = vis > 0 ? '' : 'none';
+      total += vis;
+    });
+    document.getElementById('noResults').style.display = total === 0 ? 'block' : 'none';
+  }
+</script>
+</body>
+</html>
