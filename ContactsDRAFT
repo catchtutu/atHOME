@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Clinical Contact Directory & Escalation</title>
+  <style>
+    :root {
+      --primary: #005A9C;
+      --primary-dark: #003D6B;
+      --danger: #D9381E;
+      --danger-dark: #B0230C;
+      --bg-color: #F4F6F9;
+      --card-bg: #FFFFFF;
+      --text-main: #1C252C;
+      --text-muted: #5A6E7F;
+      --border-color: #E2E8F0;
+      --radius: 12px;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      padding-bottom: 90px;
+      min-height: 100vh;
+    }
+
+    /* Header & Search */
+    header {
+      background-color: var(--primary);
+      color: white;
+      padding: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    header h1 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .search-box {
+      position: relative;
+      width: 100%;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 10px 14px 10px 38px;
+      border-radius: 20px;
+      border: none;
+      font-size: 0.95rem;
+      background-color: rgba(255, 255, 255, 0.95);
+      color: var(--text-main);
+      outline: none;
+    }
+
+    .search-box svg {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 18px;
+      height: 18px;
+      fill: var(--text-muted);
+    }
+
+    /* Directory Main Content */
+    main {
+      padding: 16px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .meta-bar {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+    }
+
+    .contact-card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border-color);
+    }
+
+    .contact-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .contact-name {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .contact-phone {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      font-family: monospace;
+    }
+
+    .call-btn {
+      background-color: #EBF3FA;
+      color: var(--primary);
+      border: 1px solid #C2DCF2;
+      padding: 8px 14px;
+      border-radius: 20px;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background-color 0.2s;
+    }
+
+    .call-btn:active {
+      background-color: #D3E5F8;
+    }
+
+    .call-btn svg {
+      width: 14px;
+      height: 14px;
+      fill: currentColor;
+    }
+
+    /* Pull-Up Drawer Backdrop */
+    .drawer-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.4);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease;
+      z-index: 200;
+    }
+
+    .drawer-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* Red Pull-Up Drawer */
+    .pullup-drawer {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--card-bg);
+      border-top-left-radius: 20px;
+      border-top-right-radius: 20px;
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.25);
+      z-index: 201;
+      transform: translateY(calc(100% - 64px));
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .pullup-drawer.expanded {
+      transform: translateY(0);
+    }
+
+    .drawer-header {
+      background: var(--danger);
+      color: white;
+      padding: 16px;
+      border-top-left-radius: 20px;
+      border-top-right-radius: 20px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      user-select: none;
+    }
+
+    .drawer-handle {
+      width: 40px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 2px;
+      margin-bottom: 8px;
+    }
+
+    .drawer-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-transform: uppercase;
+    }
+
+    .drawer-content {
+      padding: 16px;
+      max-height: 70vh;
+      overflow-y: auto;
+    }
+
+    .emergency-card {
+      background: #FFF5F5;
+      border: 1px solid #FEB2B2;
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .emergency-card.critical {
+      background: #FFE5E5;
+      border-color: var(--danger);
+    }
+
+    .emergency-card .info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .emergency-card .label {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .emergency-card .phone-num {
+      font-size: 0.85rem;
+      color: var(--danger-dark);
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    .escalate-call-btn {
+      background-color: var(--danger);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 20px;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 2px 6px rgba(217, 56, 30, 0.3);
+    }
+
+    .escalate-call-btn:active {
+      background-color: var(--danger-dark);
+    }
+
+    .no-results {
+      text-align: center;
+      padding: 24px;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Search Bar & Header -->
+  <header>
+    <h1>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>
+      </svg>
+      Clinical Directory
+    </h1>
+    <div class="search-box">
+      <svg viewBox="0 0 24 24">
+        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+      </svg>
+      <input type="text" id="searchInput" placeholder="Search team or district..." oninput="filterContacts()" />
+    </div>
+  </header>
+
+  <!-- Primary Contacts List (Columns A & U) -->
+  <main>
+    <div class="meta-bar">
+      <span>DISTRICT &amp; HITH DIRECTORY</span>
+      <span id="contactCount">49 Contacts</span>
+    </div>
+    <div id="contactList"></div>
+  </main>
+
+  <!-- Drawer Overlay -->
+  <div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer(false)"></div>
+
+  <!-- Red Pull-Up Drawer: Escalate & Contacts -->
+  <div class="pullup-drawer" id="pullupDrawer">
+    <div class="drawer-header" onclick="toggleDrawer()">
+      <div class="drawer-handle"></div>
+      <div class="drawer-title">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+        </svg>
+        Escalate &amp; Contacts
+      </div>
+    </div>
+
+    <div class="drawer-content">
+      <div class="emergency-card critical">
+        <div class="info">
+          <span class="label">Emergency</span>
+          <span class="phone-num">000</span>
+        </div>
+        <a href="tel:000" class="escalate-call-btn">Call 000</a>
+      </div>
+
+      <div class="emergency-card">
+        <div class="info">
+          <span class="label">Police Non-Urgent</span>
+          <span class="phone-num">131 444</span>
+        </div>
+        <a href="tel:131444" class="escalate-call-btn">Call 131 444</a>
+      </div>
+
+      <div class="emergency-card">
+        <div class="info">
+          <span class="label">Non-Urgent Ambulance</span>
+          <span class="phone-num">1300 360 929</span>
+        </div>
+        <a href="tel:1300360929" class="escalate-call-btn">Call</a>
+      </div>
+
+      <div class="emergency-card">
+        <div class="info">
+          <span class="label">Hospital Main Number</span>
+          <span class="phone-num">03 9231 2211</span>
+        </div>
+        <a href="tel:0392312211" class="escalate-call-btn">Call</a>
+      </div>
+
+      <div class="emergency-card">
+        <div class="info">
+          <span class="label">HITH / District Admin</span>
+          <span class="phone-num">03 9231 3817</span>
+        </div>
+        <a href="tel:0392313817" class="escalate-call-btn">Call</a>
+      </div>
+
+      <div class="emergency-card">
+        <div class="info">
+          <span class="label">Practice Development Nurse</span>
+          <span class="phone-num">0437 111 631</span>
+        </div>
+        <a href="tel:0437111631" class="escalate-call-btn">Call</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Complete data extracted from CSV Column A (First Name) and Column U (Phone 1 - Value)
+    const contactsData = [
+      { name: "District 01", phone: "0419 318 332" },
+      { name: "District 02", phone: "0419 342 985" },
+      { name: "District 03", phone: "0419 599 162" },
+      { name: "District 04", phone: "0419 884 344" },
+      { name: "District 05", phone: "0419 318 336" },
+      { name: "District", phone: "0419 342 987" },
+      { name: "District 07", phone: "0419 339 410" },
+      { name: "District 08", phone: "0402 076 765" },
+      { name: "District", phone: "+61 478 969 981" },
+      { name: "District", phone: "+61 478 970 035" },
+      { name: "District CCAH co-ord - Anne", phone: "0422 894 040" },
+      { name: "District NUM", phone: "0458 861 299" },
+      { name: "HITH 1", phone: "0421 737 351" },
+      { name: "HITH 10", phone: "0468 666 137" },
+      { name: "HITH 2", phone: "0478 970 113" },
+      { name: "HITH 3", phone: "0421 727 294" },
+      { name: "HITH 4", phone: "0422 421 313" },
+      { name: "HITH 5", phone: "0402 040 428" },
+      { name: "HITH 6", phone: "0481 067 829" },
+      { name: "HITH 7", phone: "0468 666 138" },
+      { name: "HITH 8", phone: "0481 067 818" },
+      { name: "HITH 9", phone: "0422 424 141" },
+      { name: "HITH Clinic RN", phone: "0478 970 059" },
+      { name: "HITH Cottage RN", phone: "0478 970 098" },
+      { name: "HITH medical - Cristina", phone: "0421 899 295" },
+      { name: "HITH medical - David", phone: "0402 080 134" },
+      { name: "HITH medical - HMO 1", phone: "0478 958 097" },
+      { name: "HITH medical - HMO 2", phone: "0478 958 099" },
+      { name: "HITH medical - HMO 3", phone: "0422 420 101" },
+      { name: "HITH Medical - Nick", phone: "0425 704 387" },
+      { name: "HITH medical (PACE) - Jamie", phone: "0406 606 446" },
+      { name: "HITH NUM - Tony", phone: "0458 857 446" },
+      { name: "HITH", phone: "0427 568 250" },
+      { name: "HITH Physiotherapist - Chris Graven", phone: "0419 310 880" },
+      { name: "HITH Pharmacist - Nicole / Romana", phone: "0422 904 541" },
+      { name: "HITH Physiotherapist", phone: "0481 067 823" },
+      { name: "HITH Reg", phone: "0438 946 593" },
+      { name: "Intake", phone: "0478 969 994" },
+      { name: "Intake", phone: "0428 169 108" },
+      { name: "Intake - District", phone: "0427 993 473" },
+      { name: "SVAH", phone: "0437 111 631" },
+      { name: "Vincents", phone: "92312888" },
+      { name: "HITH -", phone: "0459 021 952" },
+      { name: "HITH - ANUM PM", phone: "0408 366 359" },
+      { name: "HITH - After Hours / On Call", phone: "0419 356 369" },
+      { name: "HITH - Care", phone: "0468 666 138" },
+      { name: "Corinne", phone: "0404 769 248" },
+      { name: "Call", phone: "#43#" },
+      { name: "Call", phone: "*43#" }
+    ];
+
+    function renderList(list) {
+      const container = document.getElementById('contactList');
+      document.getElementById('contactCount').innerText = list.length + " Contacts";
+
+      if (list.length === 0) {
+        container.innerHTML = '<div class="no-results">No matching contacts found.</div>';
+        return;
+      }
+
+      container.innerHTML = list.map(item => {
+        const cleanTel = item.phone.replace(/[^0-9+*#]/g, '');
+        return `
+          <div class="contact-card">
+            <div class="contact-info">
+              <div class="contact-name">${escapeHtml(item.name)}</div>
+              <div class="contact-phone">${escapeHtml(item.phone)}</div>
+            </div>
+            <a href="tel:${cleanTel}" class="call-btn">
+              <svg viewBox="0 0 24 24">
+                <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+              </svg>
+              Call
+            </a>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function filterContacts() {
+      const query = document.getElementById('searchInput').value.toLowerCase().trim();
+      const filtered = contactsData.filter(c => 
+        c.name.toLowerCase().includes(query) || c.phone.toLowerCase().includes(query)
+      );
+      renderList(filtered);
+    }
+
+    function toggleDrawer(forceState) {
+      const drawer = document.getElementById('pullupDrawer');
+      const overlay = document.getElementById('drawerOverlay');
+      
+      const shouldExpand = forceState !== undefined 
+        ? forceState 
+        : !drawer.classList.contains('expanded');
+
+      if (shouldExpand) {
+        drawer.classList.add('expanded');
+        overlay.classList.add('active');
+      } else {
+        drawer.classList.remove('expanded');
+        overlay.classList.remove('active');
+      }
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/[&<>"']/g, match => {
+        const chars = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+        return chars[match];
+      });
+    }
+
+    // Initial render
+    renderList(contactsData);
+  </script>
+</body>
+</html>
