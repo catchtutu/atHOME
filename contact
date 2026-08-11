@@ -385,7 +385,7 @@
   </div>
 
   <script>
-    // Complete data extracted from CSV Column A (First Name) and Column U (Phone 1 - Value)
+    // Data extracted from CSV Column A (First Name) and Column U (Phone 1 - Value)
     const contactsData = [
       { name: "District 01", phone: "0419 318 332" },
       { name: "District 02", phone: "0419 342 985" },
