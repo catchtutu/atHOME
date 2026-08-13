@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Clinical Wound Photography — SVHM HITH & District Nursing</title>
+<style>
+  :root {
+    --navy:#0D2D5E; --navy-mid:#164080; --blue:#1A6FAF; --blue-lt:#E5F0FA;
+    --bg:#EEF2F7; --surface:#FFFFFF;
+    --amber:#C97A00; --amber-bg:#FFFBEB; --amber-bd:#FDE68A;
+    --red:#C91B1B; --red-bg:#FEF2F2; --red-bd:#FEB4B4;
+    --green:#14803D; --green-bg:#F0FDF4; --green-bd:#A7F3C3;
+    --muted:#6B7280; --border:#DDE3EC; --text:#1B2333;
+    --r:13px; --r-sm:8px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--text);font-size:15px;padding-bottom:80px}
+
+  /* HEADER */
+  .hdr{position:sticky;top:0;z-index:100;background:var(--navy);
+    padding:10px 16px 0;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+  .hdr-eyebrow{font-size:10px;font-weight:700;text-transform:uppercase;
+    letter-spacing:.08em;color:rgba(255,255,255,.55);margin-bottom:2px}
+  .hdr-title{font-size:19px;font-weight:800;color:#fff;line-height:1.2}
+  .hdr-sub{font-size:12px;color:rgba(255,255,255,.6);margin-top:2px;margin-bottom:8px}
+  .hdr-pill{display:inline-block;background:rgba(255,255,255,.12);
+    color:rgba(255,255,255,.85);font-size:10px;font-weight:700;
+    padding:2px 8px;border-radius:20px;border:1px solid rgba(255,255,255,.2)}
+
+  /* TAB GRID */
+  .tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin:8px -16px 0;
+    border-top:1px solid rgba(255,255,255,.1)}
+  .tab{padding:8px 4px;font-size:11px;font-weight:600;color:rgba(255,255,255,.6);
+    text-align:center;cursor:pointer;border:none;background:transparent;
+    border-bottom:2px solid transparent;transition:all .2s}
+  .tab.active{color:#fff;background:rgba(255,255,255,.08);border-bottom-color:#fff}
+
+  /* PANES */
+  .pane{display:none;padding:14px 14px 0}
+  .pane.active{display:block}
+
+  /* CARDS / SECTIONS */
+  .card{background:var(--surface);border-radius:var(--r);
+    box-shadow:0 1px 3px rgba(0,0,0,.06);margin-bottom:10px;overflow:hidden}
+  .sec-hdr{display:flex;align-items:center;gap:12px;padding:13px 14px;cursor:pointer}
+  .icon-circle{width:36px;height:36px;border-radius:10px;
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px}
+  .si-b{background:#DBEAFE} .si-a{background:#FEF3C7} .si-g{background:#DCFCE7}
+  .si-r{background:#FEE2E2} .si-p{background:#EDE9FE} .si-n{background:#E0ECF8}
+  .sec-title-group{flex:1}
+  .sec-title{font-size:15px;font-weight:700;line-height:1.2}
+  .sec-sub{font-size:12px;color:var(--muted);margin-top:1px}
+  .chevron{font-size:12px;color:var(--muted);transition:transform .25s;flex-shrink:0}
+  .card.open .chevron{transform:rotate(180deg)}
+  .sec-body{display:none;padding:0 14px 14px;border-top:1px solid var(--border)}
+  .card.open .sec-body{display:block}
+
+  /* INFO BOXES */
+  .ib{border-left:3px solid;border-radius:11px;padding:10px 12px;margin:10px 0;font-size:13px;line-height:1.55}
+  .ib.b{border-color:var(--blue);background:var(--blue-lt)}
+  .ib.a{border-color:var(--amber);background:var(--amber-bg)}
+  .ib.r{border-color:var(--red);background:var(--red-bg)}
+  .ib.g{border-color:var(--green);background:var(--green-bg)}
+  .ib strong{display:block;font-weight:700;margin-bottom:3px}
+
+  /* STEPS */
+  .step{display:flex;gap:12px;margin:10px 0;align-items:flex-start}
+  .step-num{width:26px;height:26px;border-radius:50%;background:var(--navy);
+    color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;
+    justify-content:center;flex-shrink:0;margin-top:1px}
+  .step-title{font-size:14px;font-weight:700;margin-bottom:2px}
+  .step-detail{font-size:13px;color:var(--muted);line-height:1.5}
+
+  /* CHECKLIST */
+  .chk-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;
+    border-bottom:1px solid var(--border)}
+  .chk-item:last-child{border-bottom:none}
+  .chk-box{width:23px;height:23px;border-radius:6px;border:2px solid var(--border);
+    flex-shrink:0;cursor:pointer;display:flex;align-items:center;
+    justify-content:center;margin-top:1px;transition:all .2s}
+  .chk-box.checked{background:var(--green);border-color:var(--green);color:#fff;font-size:13px}
+  .chk-label{font-size:14px;line-height:1.4;padding-top:3px;cursor:pointer}
+  .chk-label.checked{text-decoration:line-through;color:var(--muted)}
+  .chk-note{font-size:11px;font-style:italic;color:var(--blue);margin-top:2px}
+
+  /* TABLE */
+  table{width:100%;border-collapse:collapse;font-size:13px;margin:10px 0}
+  th{background:var(--navy);color:#fff;padding:8px 10px;text-align:left;font-size:12px}
+  td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+  tr:nth-child(even) td{background:#FAFCFF}
+  .tick{color:var(--green);font-weight:700;font-size:15px}
+
+  /* PILL BADGE */
+  .pill{display:inline-block;padding:2px 8px;border-radius:20px;
+    font-size:11px;font-weight:700}
+  .pill-g{background:var(--green-bg);color:var(--green);border:1px solid var(--green-bd)}
+  .pill-r{background:var(--red-bg);color:var(--red);border:1px solid var(--red-bd)}
+  .pill-a{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-bd)}
+  .pill-b{background:var(--blue-lt);color:var(--blue);border:1px solid #BFD9F5}
+
+  /* PICTORIAL FRAMES */
+  .pic-frame{background:var(--bg);border-radius:var(--r-sm);
+    padding:12px;margin:12px 0;text-align:center}
+  .pic-caption{font-size:11px;color:var(--muted);font-style:italic;margin-top:6px}
+  svg{max-width:100%;height:auto}
+
+  /* DO/DON'T GRID */
+  .do-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+  .do-box{border-radius:var(--r-sm);padding:10px;font-size:12px;line-height:1.45}
+  .do-box.do{background:var(--green-bg);border:1px solid var(--green-bd)}
+  .do-box.dont{background:var(--red-bg);border:1px solid var(--red-bd)}
+  .do-label{font-size:11px;font-weight:800;text-transform:uppercase;
+    letter-spacing:.05em;margin-bottom:5px}
+  .do-label.do{color:var(--green)} .do-label.dont{color:var(--red)}
+
+  /* AUTHORITY ROW */
+  .auth-row{display:flex;gap:8px;margin:8px 0;flex-wrap:wrap}
+  .auth-badge{background:var(--blue-lt);border:1px solid #BFD9F5;border-radius:6px;
+    padding:4px 10px;font-size:11px;font-weight:600;color:var(--blue)}
+
+  /* SECTION SEPARATOR */
+  .sec-sep{font-size:11px;font-weight:700;color:var(--muted);
+    text-transform:uppercase;letter-spacing:.06em;
+    margin:14px 0 6px;padding-left:2px}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-eyebrow">SVHM · HITH &amp; District Nursing</div>
+  <div class="hdr-title">Clinical Wound Photography</div>
+  <div class="hdr-sub">Evidence-based practice guide · Wounds Australia &amp; EWMA</div>
+  <span class="hdr-pill">Standard 8 — Digital Technologies</span>
+  <div class="tabs">
+    <button class="tab active" onclick="showTab(0)">Overview</button>
+    <button class="tab" onclick="showTab(1)">Technique</button>
+    <button class="tab" onclick="showTab(2)">After &amp; Storage</button>
+  </div>
+</div>
+
+<!-- ═══════════════ TAB 0: OVERVIEW ═══════════════ -->
+<div class="pane active" id="pane0">
+
+  <!-- Purpose -->
+  <div class="card open">
+    <div class="sec-hdr" onclick="toggle(this)">
+      <div class="icon-circle si-b">📷</div>
+      <div class="sec-title-group">
+        <div class="sec-title">Purpose of Wound Photography</div>
+        <div class="sec-sub">Why we take clinical photographs</div>
+      </div>
+      <div class="chevron">▼</div>
+    </div>
+    <div class="sec-body">
+      <div class="auth-row">
+        <span class="auth-badge">Wounds Australia 2023</span>
+        <span class="auth-badge">EWMA eHealth</span>
+      </div>
+      <div class="ib b">
+        <strong>Clinical photographs support:</strong>
+        Objective wound assessment, healing trajectory monitoring, interdisciplinary communication, and telehealth review — they supplement but never replace a written assessment.
+      </div>
+
+      <!-- SVG: Purpose diagram -->
+      <div class="pic-frame">
+        <svg viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg">
+          <!-- Central camera icon -->
+          <rect x="130" y="70" width="60" height="44" rx="7" fill="#1A6FAF" opacity=".15" stroke="#1A6FAF" stroke-width="1.5"/>
+          <rect x="148" y="64" width="24" height="10" rx="4" fill="#1A6FAF" opacity=".25"/>
+          <circle cx="160" cy="92" r="11" fill="none" stroke="#1A6FAF" stroke-width="2"/>
+          <circle cx="160" cy="92" r="6" fill="#1A6FAF" opacity=".4"/>
+          <text x="160" y="135" text-anchor="middle" font-size="10" fill="#6B7280" font-family="sans-serif">Photograph</text>
+
+          <!-- Spokes -->
+          <line x1="130" y1="80" x2="72" y2="55" stroke="#DDE3EC" stroke-width="1.5"/>
+          <line x1="130" y1="92" x2="68" y2="92" stroke="#DDE3EC" stroke-width="1.5"/>
+          <line x1="130" y1="104" x2="72" y2="130" stroke="#DDE3EC" stroke-width="1.5"/>
+          <line x1="190" y1="80" x2="248" y2="55" stroke="#DDE3EC" stroke-width="1.5"/>
+          <line x1="190" y1="92" x2="252" y2="92" stroke="#DDE3EC" stroke-width="1.5"/>
+          <line x1="190" y1="104" x2="248" y2="130" stroke="#DDE3EC" stroke-width="1.5"/>
+
+          <!-- Nodes left -->
+          <rect x="14" y="38" width="58" height="32" rx="7" fill="#DBEAFE" stroke="#BFD9F5" stroke-width="1"/>
+          <text x="43" y="52" text-anchor="middle" font-size="9" font-weight="700" fill="#1A6FAF" font-family="sans-serif">Objective</text>
+          <text x="43" y="63" text-anchor="middle" font-size="9" fill="#1A6FAF" font-family="sans-serif">Assessment</text>
+
+          <rect x="6" y="76" width="62" height="32" rx="7" fill="#DCFCE7" stroke="#A7F3C3" stroke-width="1"/>
+          <text x="37" y="90" text-anchor="middle" font-size="9" font-weight="700" fill="#14803D" font-family="sans-serif">Healing</text>
+          <text x="37" y="101" text-anchor="middle" font-size="9" fill="#14803D" font-family="sans-serif">Monitoring</text>
+
+          <rect x="14" y="114" width="58" height="32" rx="7" fill="#EDE9FE" stroke="#C4B5FD" stroke-width="1"/>
+          <text x="43" y="128" text-anchor="middle" font-size="9" font-weight="700" fill="#7C3AED" font-family="sans-serif">Team</text>
+          <text x="43" y="139" text-anchor="middle" font-size="9" fill="#7C3AED" font-family="sans-serif">Communication</text>
+
+          <!-- Nodes right -->
+          <rect x="248" y="38" width="62" height="32" rx="7" fill="#FEF3C7" stroke="#FDE68A" stroke-width="1"/>
+          <text x="279" y="52" text-anchor="middle" font-size="9" font-weight="700" fill="#C97A00" font-family="sans-serif">Telehealth</text>
+          <text x="279" y="63" text-anchor="middle" font-size="9" fill="#C97A00" font-family="sans-serif">Review</text>
+
+          <rect x="252" y="76" width="62" height="32" rx="7" fill="#FEE2E2" stroke="#FEB4B4" stroke-width="1"/>
+          <text x="283" y="90" text-anchor="middle" font-size="9" font-weight="700" fill="#C91B1B" font-family="sans-serif">EMR</text>
+          <text x="283" y="101" text-anchor="middle" font-size="9" fill="#C91B1B" font-family="sans-serif">Integration</text>
+
+          <rect x="248" y="114" width="62" height="32" rx="7" fill="#E0ECF8" stroke="#BFD9F5" stroke-width="1"/>
+          <text x="279" y="128" text-anchor="middle" font-size="9" font-weight="700" fill="#0D2D5E" font-family="sans-serif">Legal</text>
+          <text x="279" y="139" text-anchor="middle" font-size="9" fill="#0D2D5E" font-family="sans-serif">Documentation</text>
+        </svg>
+        <div class="pic-caption">Six core purposes of clinical wound photography</div>
+      </div>
+
+      <div class="ib a">
+        <strong>Key principle:</strong>
+        A photograph supplements — it never replaces — written wound assessment. Every image must be interpreted alongside wound measurements, tissue description, exudate, infection assessment, and documented intervention.
+      </div>
+    </div>
+  </div>
+
+  <!-- Consent -->
+  <div class="card">
+    <div class="sec-hdr" onclick="toggle(this)">
+      <div class="icon-circle si-a">✋</div>
+      <div class="sec-title-group">
+        <div class="sec-title">Consent &amp; Patient Rights</div>
+        <div class="sec-sub">Required before every photography episode</div>
+      </div>
+      <div class="chevron">▼</div>
+    </div>
+    <div class="sec-body">
+      <div class="ib a">
+        <strong>Informed consent is mandatory</strong>
+        Obtain and document patient consent before taking any wound photograph. Consent should include the purpose of the image, where it will be stored, and who may view it.
+      </div>
+
+      <!-- SVG consent flow -->
+      <div class="pic-frame">
+        <svg viewBox="0 0 300 90" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <marker id="arr" markerWidth="8" markerHeight="6" refX="6" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#DDE3EC"/>
+            </marker>
+          </defs>
+          <!-- Steps -->
+          <rect x="4" y="20" width="60" height="50" rx="8" fill="#FEF3C7" stroke="#FDE68A" stroke-width="1.2"/>
+          <text x="34" y="40" text-anchor="middle" font-size="18" font-family="sans-serif">🪪</text>
+          <text x="34" y="58" text-anchor="middle" font-size="8.5" font-weight="700" fill="#C97A00" font-family="sans-serif">Identify</text>
+          <text x="34" y="68" text-anchor="middle" font-size="8" fill="#C97A00" font-family="sans-serif">Patient</text>
+
+          <line x1="64" y1="45" x2="78" y2="45" stroke="#DDE3EC" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <rect x="80" y="20" width="60" height="50" rx="8" fill="#DBEAFE" stroke="#BFD9F5" stroke-width="1.2"/>
+          <text x="110" y="40" text-anchor="middle" font-size="18" font-family="sans-serif">💬</text>
+          <text x="110" y="58" text-anchor="middle" font-size="8.5" font-weight="700" fill="#1A6FAF" font-family="sans-serif">Explain</text>
+          <text x="110" y="68" text-anchor="middle" font-size="8" fill="#1A6FAF" font-family="sans-serif">Purpose</text>
+
+          <line x1="140" y1="45" x2="154" y2="45" stroke="#DDE3EC" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <rect x="156" y="20" width="60" height="50" rx="8" fill="#DCFCE7" stroke="#A7F3C3" stroke-width="1.2"/>
+          <text x="186" y="40" text-anchor="middle" font-size="18" font-family="sans-serif">✅</text>
+          <text x="186" y="58" text-anchor="middle" font-size="8.5" font-weight="700" fill="#14803D" font-family="sans-serif">Obtain</text>
+          <text x="186" y="68" text-anchor="middle" font-size="8" fill="#14803D" font-family="sans-serif">Consent</text>
+
+          <line x1="216" y1="45" x2="230" y2="45" stroke="#DDE3EC" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <rect x="232" y="20" width="64" height="50" rx="8" fill="#E0ECF8" stroke="#BFD9F5" stroke-width="1.2"/>
+          <text x="264" y="40" text-anchor="middle" font-size="18" font-family="sans-serif">📋</text>
+          <text x="264" y="58" text-anchor="middle" font-size="8.5" font-weight="700" fill="#0D2D5E" font-family="sans-serif">Document</text>
+          <text x="264" y="68" text-anchor="middle" font-size="8" fill="#0D2D5E" font-family="sans-serif">Consent</text>
+        </svg>
+        <div class="pic-caption">Consent sequence — complete before any photograph is taken</div>
+      </div>
+
+      <div class="sec-sep">Patient rights to uphold</div>
+      <div class="chk-item"><div class="chk-box" onclick="chk(this)"></div><div><div class="chk-label">Informed consent obtained and documented</div><div class="chk-note">Verbal or written per organisational policy</div></div></div>
+      <div class="chk-item"><div class="chk-box" onclick="chk(this)"></div><div><div class="chk-label">Patient dignity maintained throughout</div><div class="chk-note">Drape or screen surrounding areas not being photographed</div></div></div>
+      <div class="chk-item"><div class="chk-box" onclick="chk(this)"></div><div><div class="chk-label">Confidentiality explained — image storage location discussed</div></div></div>
+      <div class="chk-item"><div class="chk-box" onclick="chk(this)"></div><div><div class="chk-label">Organisational privacy policy followed</div></div></div>
+    </div>
+  </div>
+
+  <!-- Consensus table -->
+  <div class="card">
+    <div class="sec-hdr" onclick="toggle(this)">
+      <div class="icon-circle si-g">✔</div>
+      <div class="sec-title-group">
+        <div class="sec-title">Evidence Consensus</div>
+        <div class="sec-sub">Wounds Australia &amp; EWMA areas of agreement</div>
+      </div>
+      <div class="chevron">▼</div>
+    </div>
+    <div class="sec-body">
+      <div class="ib b"><strong>Sources</strong>Wounds Australia Standards 4th Ed. 2023, Standard 8 · EWMA eHealth &amp; Telemedicine Position Documents · EWMA/Wounds Australia VLU Guideline 2016</div>
+      <table>
+        <thead><tr><th>Recommendation</th><th>Consensus</th></tr></thead>
+        <tbody>
+          <tr><td>Obtain informed consent</td><td><span class="tick">✔</span></td></tr>
+          <tr><td>Respect patient dignity</td><td><span class="tick">✔</span></td></tr>
+          <tr><td>Use standardised photography technique</td><td><span class="tick">✔</span></td></tr>
+          <tr><td>Maintain consistent angle and distance</td><td><span class="tick">✔</span></td></tr>
+          <tr><td>Include wound measurements</td><td><span class="tick">✔</span></td></tr>
+          <tr><td>Secure digital storage</td><td><span class="tick">✔</span></td></tr>
+          <tr><td>Images supplement written documentation</td><td><span class="tick">✔</span></td></tr>
+          <tr><td>Support telehealth and remote review</td><td><span class="tick">✔</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div><!-- /pane0 -->
+
+<!-- ═══════════════ TAB 1: TECHNIQUE ═══════════════ -->
+<div class="pane" id="pane1">
+
+  <!-- Two-shot approach -->
+  <div class="card open">
+    <div class="sec-hdr" onclick="toggle(this)">
+      <div class="icon-circle si-n">🔢</div>
+      <div class="sec-title-group">
+        <div class="sec-title">The Two-Shot Standard</div>
+        <div class="sec-sub">Every wound episode requires both photographs</div>
+      </div>
+      <div class="chevron">▼</div>
+    </div>
+    <div class="sec-body">
+
+      <!-- SVG: Two shot diagram -->
+      <div class="pic-frame">
+        <svg viewBox="0 0 300 160" xmlns="http://www.w3.org/2000/svg">
+          <!-- Shot 1: Anatomical overview -->
+          <rect x="8" y="8" width="132" height="144" rx="10" fill="#EEF2F7" stroke="#DDE3EC" stroke-width="1.5"/>
+          <text x="74" y="24" text-anchor="middle" font-size="10" font-weight="800" fill="#0D2D5E" font-family="sans-serif">SHOT 1</text>
+          <text x="74" y="36" text-anchor="middle" font-size="9" fill="#6B7280" font-family="sans-serif">Anatomical Overview</text>
+          <!-- Leg outline -->
+          <ellipse cx="74" cy="95" rx="38" ry="52" fill="#FDDCB5" stroke="#E8B48A" stroke-width="1.2"/>
+          <!-- Wound on leg -->
+          <ellipse cx="74" cy="90" rx="12" ry="9" fill="#FEB4B4" stroke="#C91B1B" stroke-width="1.2"/>
+          <!-- Ruler -->
+          <rect x="88" y="118" width="32" height="7" rx="2" fill="#1A6FAF" opacity=".7"/>
+          <text x="104" y="124" text-anchor="middle" font-size="5" fill="#fff" font-family="sans-serif">RULER</text>
+          <!-- Anatomical labels -->
+          <text x="74" y="152" text-anchor="middle" font-size="8" fill="#6B7280" font-family="sans-serif">Surrounding skin visible</text>
+
+          <!-- Divider -->
+          <line x1="152" y1="20" x2="152" y2="150" stroke="#DDE3EC" stroke-width="1" stroke-dasharray="3,3"/>
+
+          <!-- Shot 2: Close-up -->
+          <rect x="160" y="8" width="132" height="144" rx="10" fill="#EEF2F7" stroke="#DDE3EC" stroke-width="1.5"/>
+          <text x="226" y="24" text-anchor="middle" font-size="10" font-weight="800" fill="#0D2D5E" font-family="sans-serif">SHOT 2</text>
+          <text x="226" y="36" text-anchor="middle" font-size="9" fill="#6B7280" font-family="sans-serif">Close-up Perpendicular</text>
+          <!-- Wound close up -->
+          <ellipse cx="226" cy="88" rx="40" ry="30" fill="#FEF2F2" stroke="#C91B1B" stroke-width="1.5"/>
+          <!-- Wound tissue zones -->
+          <ellipse cx="226" cy="88" rx="28" ry="20" fill="#FEB4B4" stroke="#C91B1B" stroke-width="1" opacity=".8"/>
+          <ellipse cx="220" cy="84" rx="9" ry="7" fill="#FDDCB5" opacity=".9"/>
+          <!-- Ruler close -->
+          <rect x="200" y="115" width="52" height="7" rx="2" fill="#1A6FAF" opacity=".7"/>
+          <line x1="204" y1="115" x2="204" y2="122" stroke="#fff" stroke-width="0.8"/>
+          <line x1="210" y1="115" x2="210" y2="122" stroke="#fff" stroke-width="0.8"/>
+          <line x1="216" y1="115" x2="216" y2="122" stroke="#fff" stroke-width="0.8"/>
+          <line x1="222" y1="115" x2="222" y2="122" stroke="#fff" stroke-width="0.8"/>
+          <line x1="228" y1="115" x2="228" y2="122" stroke="#fff" stroke-width="0.8"/>
+          <line x1="234" y1="115" x2="234" y2="122" stroke="#fff" stroke-width="0.8"/>
+          <line x1="240" y1="115" x2="240" y2="122" stroke="#fff" stroke-width="0.8"/>
+          <line x1="246" y1="115" x2="246" y2="122" stroke="#fff" stroke-width="0.8"/>
+          <text x="226" y="130" text-anchor="middle" font-size="8" fill="#6B7280" font-family="sans-serif">Perpendicular angle · ruler in frame</text>
+
+          <!-- Camera angle indicator -->
+          <line x1="226" y1="50" x2="226" y2="60" stroke="#0D2D5E" stroke-width="1.5" stroke-dasharray="2,2"/>
+          <text x="226" y="48" text-anchor="middle" font-size="9" font-weight="700" fill="#0D2D5E" font-family="sans-serif">⬇ 90°</text>
+        </svg>
+        <div class="pic-caption">Shot 1: anatomical context with surrounding skin · Shot 2: perpendicular close-up with measurement ruler</div>
+      </div>
+
+      <div class="ib g">
+        <strong>Shot 1 — Anatomical Overview</strong>
+        Captures the wound in context. Shows surrounding skin, anatomical landmarks, and location on the body. Essential for telehealth clinicians who were not present.
+      </div>
+      <div class="ib b">
+        <strong>Shot 2 — Perpendicular Close-up</strong>
+        Camera held directly above and parallel to the wound surface (90° angle). Disposable measurement ruler in frame. Fills the field with wound and immediate periwound skin.
+      </div>
+    </div>
+  </div>
+
+  <!-- Camera positioning -->
+  <div class="card">
+    <div class="sec-hdr" onclick="toggle(this)">
+      <div class="icon-circle si-b">📐</div>
+      <div class="sec-title-group">
+        <div class="sec-title">Camera Positioning</div>
+        <div class="sec-sub">Angle, distance &amp; orientation</div>
+      </div>
+      <div class="chevron">▼</div>
+    </div>
+    <div class="sec-body">
+
+      <!-- SVG: Angle comparison -->
+      <div class="pic-frame">
+        <svg viewBox="0 0 300 140" xmlns="http://www.w3.org/2000/svg">
+          <!-- CORRECT side -->
+          <text x="70" y="14" text-anchor="middle" font-size="9" font-weight="700" fill="#14803D" font-family="sans-serif">✔ CORRECT — Perpendicular</text>
+          <!-- Wound surface -->
+          <rect x="30" y="90" width="80" height="14" rx="4" fill="#FDDCB5" stroke="#E8B48A" stroke-width="1"/>
+          <ellipse cx="70" cy="90" rx="16" ry="5" fill="#FEB4B4" stroke="#C91B1B" stroke-width="1"/>
+          <!-- Camera above -->
+          <rect x="56" y="28" width="28" height="20" rx="5" fill="#164080"/>
+          <rect x="66" y="24" width="8" height="6" rx="3" fill="#164080"/>
+          <circle cx="70" cy="38" r="6" fill="#0D2D5E" stroke="#fff" stroke-width="1.5"/>
+          <!-- Vertical line -->
+          <line x1="70" y1="48" x2="70" y2="88" stroke="#14803D" stroke-width="2" stroke-dasharray="3,3"/>
+          <!-- Angle arc -->
+          <text x="70" y="75" text-anchor="middle" font-size="11" font-family="sans-serif">↕</text>
+          <text x="78" y="69" font-size="8" font-weight="700" fill="#14803D" font-family="sans-serif">90°</text>
+          <!-- Ruler on surface -->
+          <rect x="76" y="96" width="24" height="5" rx="2" fill="#1A6FAF" opacity=".8"/>
+
+          <!-- WRONG side -->
+          <text x="228" y="14" text-anchor="middle" font-size="9" font-weight="700" fill="#C91B1B" font-family="sans-serif">✗ INCORRECT — Oblique</text>
+          <!-- Wound surface -->
+          <rect x="180" y="90" width="96" height="14" rx="4" fill="#FDDCB5" stroke="#E8B48A" stroke-width="1"/>
+          <ellipse cx="228" cy="90" rx="16" ry="5" fill="#FEB4B4" stroke="#C91B1B" stroke-width="1"/>
+          <!-- Camera at angle -->
+          <rect x="256" y="36" width="28" height="20" rx="5" fill="#999"/>
+          <rect x="266" y="32" width="8" height="6" rx="3" fill="#999"/>
+          <circle cx="270" cy="46" r="6" fill="#777" stroke="#fff" stroke-width="1.5"/>
+          <!-- Oblique line -->
+          <line x1="268" y1="56" x2="228" y2="88" stroke="#C91B1B" stroke-width="2" stroke-dasharray="3,3"/>
+          <!-- Warning -->
+          <text x="228" y="118" text-anchor="middle" font-size="8" fill="#C91B1B" font-family="sans-serif">Causes parallax distortion</text>
+          <!-- Red X -->
+          <circle cx="270" cy="28" r="8" fill="#FEF2F2" stroke="#C91B1B" stroke-width="1.2"/>
+          <text x="270" y="32" text-anchor="middle" font-size="10" font-family="sans-serif" fill="#C91B1B">✗</text>
+        </svg>
+        <div class="pic-caption">Perpendicular positioning prevents size distortion and parallax error</div>
+      </div>
+
+      <div class="sec-sep">Positioning requirements</div>
+      <div class="step">
+        <div class="step-num">1</div>
+        <div><div class="step-title">Consistent distance</div><div class="step-detail">Maintain the same camera-to-wound distance at every visit to allow accurate serial comparison.</div></div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div><div class="step-title">Perpendicular angle (90°)</div><div class="step-detail">Camera lens held directly above and parallel to the wound surface. Oblique angles introduce parallax and make wounds appear larger or smaller than actual.</div></div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div><div class="step-title">Consistent orientation</div><div class="step-detail">Photograph in the same anatomical orientation at each visit (e.g. wound apex always toward patient's head). Use a note or marker if needed.</div></div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div><div class="step-title">Consistent framing</div><div class="step-detail">Include the same amount of surrounding skin each time to detect periwound changes reliably.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lighting & Backgrounds -->
+  <div class="card">
+    <div class="sec-hdr" onclick="toggle(this)">
+      <div class="icon-circle si-a">💡</div>
+      <div class="sec-title-group">
+        <div class="sec-title">Lighting &amp; Background</div>
+        <div class="sec-sub">Controlling image quality</div>
+      </div>
+      <div class="chevron">▼</div>
+    </div>
+    <div class="sec-body">
+
+      <!-- SVG: Lighting -->
+      <div class="pic-frame">
+        <svg viewBox="0 0 300 130" xmlns="http://www.w3.org/2000/svg">
+          <!-- Good lighting -->
+          <rect x="8" y="8" width="132" height="114" rx="10" fill="#F0FDF4" stroke="#A7F3C3" stroke-width="1.5"/>
+          <text x="74" y="24" text-anchor="middle" font-size="9" font-weight="700" fill="#14803D" font-family="sans-serif">✔ Good — Diffuse even light</text>
+          <!-- Surface -->
+          <rect x="26" y="75" width="92" height="12" rx="3" fill="#fff" stroke="#DDE3EC" stroke-width="1"/>
+          <ellipse cx="72" cy="75" rx="18" ry="6" fill="#FEB4B4" stroke="#C91B1B" stroke-width="1"/>
+          <!-- Light sources - even -->
+          <circle cx="46" cy="42" r="10" fill="#FEF3C7" stroke="#FDE68A" stroke-width="1"/>
+          <text x="46" y="46" text-anchor="middle" font-size="10" font-family="sans-serif">☀</text>
+          <circle cx="100" cy="42" r="10" fill="#FEF3C7" stroke="#FDE68A" stroke-width="1"/>
+          <text x="100" y="46" text-anchor="middle" font-size="10" font-family="sans-serif">☀</text>
+          <!-- Even rays -->
+          <line x1="50" y1="52" x2="60" y2="72" stroke="#FDE68A" stroke-width="1.5" opacity=".7"/>
+          <line x1="72" y1="52" x2="72" y2="72" stroke="#FDE68A" stroke-width="1.5" opacity=".7"/>
+          <line x1="97" y1="52" x2="85" y2="72" stroke="#FDE68A" stroke-width="1.5" opacity=".7"/>
+          <text x="74" y="105" text-anchor="middle" font-size="8" fill="#14803D" font-family="sans-serif">No shadows, true tissue colour</text>
+
+          <!-- Bad lighting -->
+          <rect x="160" y="8" width="132" height="114" rx="10" fill="#FEF2F2" stroke="#FEB4B4" stroke-width="1.5"/>
+          <text x="226" y="24" text-anchor="middle" font-size="9" font-weight="700" fill="#C91B1B" font-family="sans-serif">✗ Poor — Shadow/Flash</text>
+          <!-- Surface -->
+          <rect x="178" y="75" width="92" height="12" rx="3" fill="#fff" stroke="#DDE3EC" stroke-width="1"/>
+          <ellipse cx="224" cy="75" rx="18" ry="6" fill="#FEB4B4" stroke="#C91B1B" stroke-width="1"/>
+          <!-- Single harsh light - flash -->
+          <circle cx="270" cy="36" r="10" fill="#FEF3C7" stroke="#FDE68A" stroke-width="1"/>
+          <text x="270" y="40" text-anchor="middle" font-size="10" font-family="sans-serif">⚡</text>
+          <!-- Shadow cast -->
+          <polygon points="200,75 210,87 230,87 220,75" fill="#aaa" opacity=".35"/>
+          <!-- Reflection blob -->
+          <ellipse cx="238" cy="73" rx="6" ry="3" fill="#fff" opacity=".8"/>
+          <text x="226" y="105" text-anchor="middle" font-size="8" fill="#C91B1B" font-family="sans-serif">Shadows &amp; reflections mask tissue</text>
+        </svg>
+        <div class="pic-caption">Even diffuse lighting reveals true tissue colour · harsh flash creates shadows and specular reflections</div>
+      </div>
+
+      <div class="do-grid">
+        <div class="do-box do">
+          <div class="do-label do">✔ Do</div>
+          Diffuse natural or room light<br>
+          Consistent lighting setup each visit<br>
+          Neutral background (blue pad or sheet)
+        </div>
+        <div class="do-box dont">
+          <div class="do-label dont">✗ Avoid</div>
+          Harsh direct flash<br>
+          Shadows across wound bed<br>
+          Cluttered or colourful backgrounds
+        </div>
+      </div>
+
+      <div class="ib a">
+        <strong>Neutral background</strong>
+        Place a plain coloured drape or clinical pad adjacent to the wound. This separates the wound visually, prevents skin tone confusion, and removes distracting background elements.
+      </div>
+    </div>
+  </div>
+
+  <!-- Measurement ruler -->
+  <div class="card">
+    <div class="sec-hdr" onclick="toggle(this)">
+      <div class="icon-circle si-g">📏</div>
+      <div class="sec-title-group">
+        <div class="sec-title">Measurement Scale</div>
+        <div class="sec-sub">Disposable ruler placement</div>
+      </div>
+      <div class="chevron">▼</div>
+    </div>
+    <div class="sec-body">
+
+      <!-- SVG: Ruler placement -->
+      <div class="pic-frame">
+        <svg viewBox="0 0 300 140" xmlns="http://www.w3.org/2000/svg">
+          <!-- Wound surface -->
+          <rect x="50" y="50" width="200" height="70" rx="10" fill="#FDDCB5" stroke="#E8B48A" stroke-width="1.5"/>
+          <!-- Wound -->
+          <ellipse cx="150" cy="85" rx="45" ry="30" fill="#FEF2F2" stroke="#C91B1B" stroke-width="1.5"/>
+          <ellipse cx="150" cy="85" rx="30" ry="20" fill="#FEB4B4" stroke="#C91B1B" stroke-width="1" opacity=".8"/>
+          <!-- Slough area -->
+          <ellipse cx="142" cy="80" rx="12" ry="8" fill="#F9E4B7" opacity=".9"/>
+
+          <!-- Ruler alongside wound -->
+          <rect x="195" y="55" width="10" height="70" rx="2" fill="#1A6FAF" opacity=".85"/>
+          <!-- Ruler marks -->
+          <line x1="195" y1="60" x2="199" y2="60" stroke="#fff" stroke-width="0.8"/>
+          <line x1="195" y1="65" x2="197" y2="65" stroke="#fff" stroke-width="0.6"/>
+          <line x1="195" y1="70" x2="199" y2="70" stroke="#fff" stroke-width="0.8"/>
+          <line x1="195" y1="75" x2="197" y2="75" stroke="#fff" stroke-width="0.6"/>
+          <line x1="195" y1="80" x2="199" y2="80" stroke="#fff" stroke-width="0.8"/>
+          <line x1="195" y1="85" x2="197" y2="85" stroke="#fff" stroke-width="0.6"/>
+          <line x1="195" y1="90" x2="199" y2="90" stroke="#fff" stroke-width="0.8"/>
+          <line x1="195" y1="95" x2="197" y2="95" stroke="#fff" stroke-width="0.6"/>
+          <line x1="195" y1="100" x2="199" y2="100" stroke="#fff" stroke-width="0.8"/>
+          <line x1="195" y1="105" x2="197" y2="105" stroke="#fff" stroke-width="0.6"/>
+          <line x1="195" y1="110" x2="199" y2="110" stroke="#fff" stroke-width="0.8"/>
+          <line x1="195" y1="115" x2="197" y2="115" stroke="#fff" stroke-width="0.6"/>
+          <line x1="195" y1="120" x2="199" y2="120" stroke="#fff" stroke-width="0.8"/>
+
+          <!-- Labels -->
+          <text x="212" y="60" font-size="8" fill="#1A6FAF" font-family="sans-serif" font-weight="700">0</text>
+          <text x="212" y="70" font-size="8" fill="#1A6FAF" font-family="sans-serif">1</text>
+          <text x="212" y="80" font-size="8" fill="#1A6FAF" font-family="sans-serif">2</text>
+          <text x="212" y="90" font-size="8" fill="#1A6FAF" font-family="sans-serif">3</text>
+          <text x="212" y="100" font-size="8" fill="#1A6FAF" font-family="sans-serif">4</text>
+          <text x="212" y="110" font-size="8" fill="#1A6FAF" font-family="sans-serif">5</text>
+          <text x="212" y="120" font-size="8" fill="#1A6FAF" font-family="sans-serif">6</text>
+          <text x="212" y="130" font-size="8" fill="#1A6FAF" font-family="sans-serif">cm</text>
+
+          <!-- Arrow pointing to ruler -->
+          <text x="230" y="78" font-size="8" fill="#0D2D5E" font-weight="700" font-family="sans-serif">←</text>
+          <text x="232" y="78" font-size="8" fill="#0D2D5E" font-family="sans-serif">Disposable</text>
+          <text x="232" y="88" font-size="8" fill="#0D2D5E" font-family="sans-serif">ruler in frame</text>
+
+          <!-- Not touching wound note -->
+          <rect x="52" y="128" width="197" height="9" rx="3" fill="#DCFCE7"/>
+          <text x="150" y="135" text-anchor="middle" font-size="7.5" fill="#14803D" font-weight="600" font-family="sans-serif">Ruler placed adjacent to wound — not inside wound bed</text>
+        </svg>
+        <div class="pic-caption">Disposable ruler placed parallel to wound edge · never inside the wound bed</div>
+      </div>
+
+      <div class="ib g">
+        <strong>Disposable ruler — best practice</strong>
+        Use a single-use paper or plastic measurement ruler in every close-up photograph. Place it along the longest wound axis, adjacent to but not touching the wound edge. Discard after use.
+      </div>
+
+      <div class="ib r">
+        <strong>Do not reuse rulers</strong>
+        Reusable rulers are a cross-infection risk. Use a new disposable ruler at every visit and photograph before removing it.
+      </div>
+    </div>
+  </div>
+
+  <!-- Before photography checklist -->
+  <div class="card">
+    <div class="sec-hdr" onclick="toggle(this)">
+      <div class="icon-circle si-p">🔧</div>
+      <div class="sec-title-group">
+        <div class="sec-title">Pre-Photography Preparation</div>
+        <div class="sec-sub">Checklist — before every episode</div>
+      </div>
+      <div class="chevron">▼</div>
+    </div>
+    <div class="sec-body">
+      <div class="chk-item"><div class="chk-box" onclick="chk(this)"></div><div><div class="chk-label">Patient identity confirmed</div></div></div>
+      <div class="chk-item"><div class="chk-box" onclick="chk(this)"></div><div><div class="chk-label">Purpose explained to patient</div></div></div>
+      <div class="chk-item"><div class="chk-box" onclick="chk(this)"></div><div><div class="chk-label">Informed consent obtained and documented</div></div></div>
+      <div class="chk-item"><div class="chk-box" onclick="chk(this)"></div><div><div class="chk-label">Approved enterprise device selected (not personal phone)</div><div class="chk-note">Images must not be stored on personal devices</div></div></div>
+      <div class="chk-item"><div class="chk-box" onclick="chk(this)"></div><div><div class="chk-label">Neutral background prepared (pad or drape)</div></div></div>
+      <div class="chk-item"><div class="chk-box" onclick="chk(this)"></div><div><div class="chk-label">Adequate diffuse lighting confirmed — shadows eliminated</div></div></div>
+      <div class="chk-item"><div class="chk-box" onclick="chk(this)"></div><div><div class="chk-label">Disposable measurement ruler ready</div></div></div>
+      <div class="chk-item"><div class="chk-box" onclick="chk(this)"></div><div><div class="chk-label">Patient positioned for wound access and dignity</div></div></div>
+    </div>
+  </div>
+
+</div><!-- /pane1 -->
+
+<!-- ═══════════════ TAB 2: AFTER & STORAGE ═══════════════ -->
+<div class="pane" id="pane2">
+
+  <!-- After photography -->
+  <div class="card open">
+    <div class="sec-hdr" onclick="toggle(this)">
+      <div class="icon-circle si-g">📤</div>
+      <div class="sec-title-group">
+        <div class="sec-title">Immediately After Photography</div>
+        <div class="sec-sub">Upload, document, delete from device</div>
+      </div>
+      <div class="chevron">▼</div>
+    </div>
+    <div class="sec-body">
+
+      <!-- SVG: Workflow -->
+      <div class="pic-frame">
+        <svg viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <marker id="arr2" markerWidth="8" markerHeight="6" refX="6" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#DDE3EC"/>
+            </marker>
+          </defs>
+
+          <rect x="4" y="20" width="56" height="60" rx="8" fill="#E0ECF8" stroke="#BFD9F5" stroke-width="1.2"/>
+          <text x="32" y="46" text-anchor="middle" font-size="20" font-family="sans-serif">📷</text>
+          <text x="32" y="64" text-anchor="middle" font-size="8.5" font-weight="700" fill="#0D2D5E" font-family="sans-serif">Capture</text>
+          <text x="32" y="74" text-anchor="middle" font-size="7.5" fill="#6B7280" font-family="sans-serif">Both shots</text>
+
+          <line x1="60" y1="50" x2="74" y2="50" stroke="#DDE3EC" stroke-width="1.5" marker-end="url(#arr2)"/>
+
+          <rect x="76" y="20" width="56" height="60" rx="8" fill="#DCFCE7" stroke="#A7F3C3" stroke-width="1.2"/>
+          <text x="104" y="46" text-anchor="middle" font-size="20" font-family="sans-serif">⬆️</text>
+          <text x="104" y="64" text-anchor="middle" font-size="8.5" font-weight="700" fill="#14803D" font-family="sans-serif">Upload</text>
+          <text x="104" y="74" text-anchor="middle" font-size="7.5" fill="#6B7280" font-family="sans-serif">To EMR</text>
+
+          <line x1="132" y1="50" x2="146" y2="50" stroke="#DDE3EC" stroke-width="1.5" marker-end="url(#arr2)"/>
+
+          <rect x="148" y="20" width="56" height="60" rx="8" fill="#DBEAFE" stroke="#BFD9F5" stroke-width="1.2"/>
+          <text x="176" y="46" text-anchor="middle" font-size="20" font-family="sans-serif">📝</text>
+          <text x="176" y="64" text-anchor="middle" font-size="8.5" font-weight="700" fill="#1A6FAF" font-family="sans-serif">Document</text>
+          <text x="176" y="74" text-anchor="middle" font-size="7.5" fill="#6B7280" font-family="sans-serif">Full assess.</text>
+
+          <line x1="204" y1="50" x2="218" y2="50" stroke="#DDE3EC" stroke-width="1.5" marker-end="url(#arr2)"/>
+
+          <rect x="220" y="20" width="76" height="60" rx="8" fill="#FEE2E2" stroke="#FEB4B4" stroke-width="1.2"/>
+          <text x="258" y="46" text-anchor="middle" font-size="20" font-family="sans-serif">🗑️</text>
+          <text x="258" y="64" text-anchor="middle" font-size="8.5" font-weight="700" fill="#C91B1B" font-family="sans-serif">Delete local</text>
+          <text x="258" y="74" text-anchor="middle" font-size="7.5" fill="#6B7280" font-family="sans-serif">Off device</text>
+        </svg>
+        <div class="pic-caption">Capture → Upload to EMR → Document assessment → Delete from device</div>
+      </div>
+
+      <div class="ib r">
+        <strong>No images on personal devices</strong>
+        Images must not be retained on personal mobile phones or personal cloud services (iCloud, Google Photos, etc.). Clinical photographs belong in the patient's health record.
+      </div>
+
+      <div class="sec-sep">Post-photography actions</div>
+      <div class="chk-item"><div class="chk-box" onclick="chk(this)"></div><div><div class="chk-label">Images uploaded immediately to EMR or approved platform</div></div></div>
+      <div class="chk-item"><div class="chk-box" onclick="chk(this)"></div><div><div class="chk-label">Images accurately labelled (patient ID, date, wound site)</div></div></div>
+      <div class="chk-item"><div class="chk-box" onclick="chk(this)"></div><div><div class="chk-label">Written wound assessment completed</div><div class="chk-note">Images never replace written documentation</div></div></div>
+      <div class="chk-item"><div class="chk-box" onclick="chk(this)"></div><div><div class="chk-label">Images deleted from capture device after confirmed upload</div></div></div>
+      <div class="chk-item"><div class="chk-box" onclick="chk(this)"></div><div><div class="chk-label">Disposable ruler discarded</div></div></div>
+    </div>
+  </div>
+
+  <!-- Written assessment companion -->
+  <div class="card">
+    <div class="sec-hdr" onclick="toggle(this)">
+      <div class="icon-circle si-b">📋</div>
+      <div class="sec-title-group">
+        <div class="sec-title">Written Assessment — Required Companion</div>
+        <div class="sec-sub">Document all components alongside the photograph</div>
+      </div>
+      <div class="chevron">▼</div>
+    </div>
+    <div class="sec-body">
+      <div class="ib b">
+        <strong>EWMA &amp; Wounds Australia position</strong>
+        Photographs must be interpreted alongside — never in isolation from — a complete written wound assessment. Each image must accompany documented clinical findings.
+      </div>
+
+      <div class="sec-sep">Required documentation elements</div>
+
+      <div class="chk-item"><div class="chk-box" onclick="chk(this)"></div><div><div class="chk-label">Wound dimensions (length × width × depth in cm)</div></div></div>
+      <div class="chk-item"><div class="chk-box" onclick="chk(this)"></div><div><div class="chk-label">Wound bed tissue description</div><div class="chk-note">% granulation, slough, necrosis, epithelialisation</div></div></div>
+      <div class="chk-item"><div class="chk-box" onclick="chk(this)"></div><div><div class="chk-label">Exudate — amount, type and colour</div></div></div>
+      <div class="chk-item"><div class="chk-box" onclick="chk(this)"></div><div><div class="chk-label">Odour</div></div></div>
+      <div class="chk-item"><div class="chk-box" onclick="chk(this)"></div><div><div class="chk-label">Wound edge characteristics</div></div></div>
+      <div class="chk-item"><div class="chk-box" onclick="chk(this)"></div><div><div class="chk-label">Periwound skin condition</div></div></div>
+      <div class="chk-item"><div class="chk-box" onclick="chk(this)"></div><div><div class="chk-label">Infection assessment findings</div></div></div>
+      <div class="chk-item"><div class="chk-box" onclick="chk(this)"></div><div><div class="chk-label">Patient symptoms (pain, itch, heat)</div></div></div>
+      <div class="chk-item"><div class="chk-box" onclick="chk(this)"></div><div><div class="chk-label">Treatment / dressing applied</div></div></div>
+    </div>
+  </div>
+
+  <!-- Storage -->
+  <div class="card">
+    <div class="sec-hdr" onclick="toggle(this)">
+      <div class="icon-circle si-n">🔒</div>
+      <div class="sec-title-group">
+        <div class="sec-title">Secure Storage &amp; Governance</div>
+        <div class="sec-sub">Organisational and legislative requirements</div>
+      </div>
+      <div class="chevron">▼</div>
+    </div>
+    <div class="sec-body">
+
+      <!-- SVG: Storage pathway -->
+      <div class="pic-frame">
+        <svg viewBox="0 0 300 110" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <marker id="arr3" markerWidth="8" markerHeight="6" refX="6" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#DDE3EC"/>
+            </marker>
+          </defs>
+
+          <!-- Device -->
+          <rect x="10" y="30" width="44" height="60" rx="7" fill="#E0ECF8" stroke="#0D2D5E" stroke-width="1.5"/>
+          <rect x="14" y="36" width="36" height="42" rx="4" fill="#DBEAFE"/>
+          <circle cx="32" cy="83" r="3" fill="#0D2D5E" opacity=".4"/>
+          <text x="32" y="56" text-anchor="middle" font-size="16" font-family="sans-serif">📱</text>
+          <text x="32" y="100" text-anchor="middle" font-size="7.5" font-weight="700" fill="#0D2D5E" font-family="sans-serif">Enterprise</text>
+          <text x="32" y="109" text-anchor="middle" font-size="7.5" fill="#6B7280" font-family="sans-serif">Device</text>
+
+          <line x1="54" y1="58" x2="72" y2="58" stroke="#DDE3EC" stroke-width="1.5" marker-end="url(#arr3)"/>
+          <text x="63" y="52" text-anchor="middle" font-size="7" fill="#14803D" font-family="sans-serif">Secure</text>
+          <text x="63" y="61" text-anchor="middle" font-size="7" fill="#14803D" font-family="sans-serif">transfer</text>
+
+          <!-- EMR -->
+          <rect x="74" y="25" width="68" height="70" rx="8" fill="#DCFCE7" stroke="#A7F3C3" stroke-width="1.5"/>
+          <text x="108" y="50" text-anchor="middle" font-size="20" font-family="sans-serif">🏥</text>
+          <text x="108" y="68" text-anchor="middle" font-size="8.5" font-weight="700" fill="#14803D" font-family="sans-serif">EMR / Health</text>
+          <text x="108" y="78" text-anchor="middle" font-size="8.5" font-weight="700" fill="#14803D" font-family="sans-serif">Record</text>
+          <text x="108" y="90" text-anchor="middle" font-size="7.5" fill="#6B7280" font-family="sans-serif">Patient's record</text>
+
+          <line x1="142" y1="58" x2="158" y2="58" stroke="#DDE3EC" stroke-width="1.5" marker-end="url(#arr3)"/>
+          <text x="150" y="52" text-anchor="middle" font-size="7" fill="#6B7280" font-family="sans-serif">Access</text>
+          <text x="150" y="66" text-anchor="middle" font-size="7" fill="#6B7280" font-family="sans-serif">controlled</text>
+
+          <!-- Team access -->
+          <rect x="160" y="25" width="68" height="70" rx="8" fill="#FEF3C7" stroke="#FDE68A" stroke-width="1.5"/>
+          <text x="194" y="50" text-anchor="middle" font-size="20" font-family="sans-serif">👩‍⚕️</text>
+          <text x="194" y="68" text-anchor="middle" font-size="8.5" font-weight="700" fill="#C97A00" font-family="sans-serif">Clinical Team</text>
+          <text x="194" y="78" text-anchor="middle" font-size="8.5" fill="#C97A00" font-family="sans-serif">Review</text>
+          <text x="194" y="90" text-anchor="middle" font-size="7.5" fill="#6B7280" font-family="sans-serif">Telehealth-ready</text>
+
+          <!-- Compliance badge -->
+          <rect x="234" y="30" width="62" height="56" rx="8" fill="#E0ECF8" stroke="#BFD9F5" stroke-width="1.5"/>
+          <text x="265" y="52" text-anchor="middle" font-size="18" font-family="sans-serif">⚖️</text>
+          <text x="265" y="68" text-anchor="middle" font-size="7.5" font-weight="700" fill="#0D2D5E" font-family="sans-serif">Privacy Act</text>
+          <text x="265" y="78" text-anchor="middle" font-size="7.5" fill="#6B7280" font-family="sans-serif">Compliance</text>
+
+          <line x1="228" y1="58" x2="234" y2="58" stroke="#DDE3EC" stroke-width="1.5" marker-end="url(#arr3)"/>
+        </svg>
+        <div class="pic-caption">Enterprise device → Secure EMR upload → Access-controlled clinical review → Privacy legislation compliance</div>
+      </div>
+
+      <div class="ib r">
+        <strong>Governance requirements</strong>
+        Images must be accurately labelled, stored securely within approved organisational systems, remain part of the patient's health record, and comply with the Australian Privacy Act and SVHM digital health governance policies.
+      </div>
+
+      <table>
+        <thead><tr><th>Requirement</th><th>Standard</th></tr></thead>
+        <tbody>
+          <tr><td>Use only enterprise-approved devices</td><td><span class="pill pill-b">Wounds Aus 2023</span></td></tr>
+          <tr><td>Accurate labelling of all images</td><td><span class="pill pill-b">Standard 8</span></td></tr>
+          <tr><td>Secure storage within approved systems</td><td><span class="pill pill-g">Both orgs</span></td></tr>
+          <tr><td>Images remain part of health record</td><td><span class="pill pill-g">Both orgs</span></td></tr>
+          <tr><td>Comply with local privacy legislation</td><td><span class="pill pill-b">EWMA</span></td></tr>
+          <tr><td>No retention on personal devices</td><td><span class="pill pill-r">Mandatory</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Telehealth -->
+  <div class="card">
+    <div class="sec-hdr" onclick="toggle(this)">
+      <div class="icon-circle si-p">📡</div>
+      <div class="sec-title-group">
+        <div class="sec-title">Telehealth &amp; Remote Review</div>
+        <div class="sec-sub">Photography supporting remote wound assessment</div>
+      </div>
+      <div class="chevron">▼</div>
+    </div>
+    <div class="sec-body">
+      <div class="ib b">
+        <strong>EWMA &amp; Wounds Australia position</strong>
+        Standardised photography is the foundation of reliable telehealth wound review. Images from different clinicians and visit dates are only comparable when acquisition technique is consistent.
+      </div>
+
+      <div class="step">
+        <div class="step-num">1</div>
+        <div><div class="step-title">Consistent technique enables serial comparison</div><div class="step-detail">A remote clinician reviewing wound progress depends entirely on technical consistency — same angle, distance, lighting, and framing at every visit.</div></div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div><div class="step-title">Photographs do not replace examination</div><div class="step-detail">Even for telehealth, the on-site clinician must complete a full physical assessment. The photo supplements the verbal report.</div></div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div><div class="step-title">Secure telemedicine platforms only</div><div class="step-detail">Images shared for remote review must travel via secure clinical platforms — not SMS, personal email, or social messaging apps.</div></div>
+      </div>
+
+      <div class="ib g">
+        <strong>Emerging direction (Wounds Australia 2023)</strong>
+        Mobile EMR applications, AI-assisted wound measurement, and automated image integration into clinical documentation are the direction of travel — toward fully integrated digital wound assessment.
+      </div>
+    </div>
+  </div>
+
+  <!-- References -->
+  <div class="card">
+    <div class="sec-hdr" onclick="toggle(this)">
+      <div class="icon-circle si-n">📚</div>
+      <div class="sec-title-group">
+        <div class="sec-title">References</div>
+        <div class="sec-sub">Evidence sources for this guide</div>
+      </div>
+      <div class="chevron">▼</div>
+    </div>
+    <div class="sec-body">
+      <div style="font-size:12px;line-height:1.7;color:var(--muted)">
+        <p style="margin-bottom:8px">1. Wounds Australia. <em>Australian Standards for Wound Prevention and Management, 4th Edition.</em> 2023. Standard 8: Digital Technologies.</p>
+        <p style="margin-bottom:8px">2. Wounds Australia. Publications and Standards Library — eHealth in Wound Care and International Guideline resources.</p>
+        <p style="margin-bottom:8px">3. European Wound Management Association (EWMA). <em>eHealth in Wound Care.</em> Joint EWMA/Wounds Australia position document on telemedicine and digital wound management.</p>
+        <p style="margin-bottom:8px">4. Franks PJ, et al. <em>Management of Patients with Venous Leg Ulcers: Challenges and Current Best Practice.</em> Joint EWMA/Wounds Australia guideline, 2016.</p>
+        <p>5. NSW Agency for Clinical Innovation. <em>Burn Digital Photography — Information for Clinicians</em> (2026). Practical recommendations on consent, anatomical overview images, neutral backgrounds, measurement scales, and secure storage.</p>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /pane2 -->
+
+<script>
+  function showTab(i){
+    document.querySelectorAll('.tab').forEach((t,j)=>t.classList.toggle('active',j===i));
+    document.querySelectorAll('.pane').forEach((p,j)=>p.classList.toggle('active',j===i));
+  }
+
+  function toggle(hdr){
+    hdr.closest('.card').classList.toggle('open');
+  }
+
+  function chk(box){
+    box.classList.toggle('checked');
+    box.textContent = box.classList.contains('checked') ? '✓' : '';
+    const lbl = box.parentElement.querySelector('.chk-label');
+    if(lbl) lbl.classList.toggle('checked', box.classList.contains('checked'));
+  }
+</script>
+</body>
+</html>
