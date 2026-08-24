@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Pathology Tube Guide — SVHM</title>
+<style>
+:root {
+  --navy:#0D2D5E; --navy-mid:#164080;
+  --blue:#1A6FAF; --blue-lt:#E5F0FA;
+  --bg:#EEF2F7; --surface:#FFFFFF;
+  --amber:#C97A00; --amber-bg:#FFFBEB; --amber-bd:#FDE68A;
+  --red:#C91B1B; --red-bg:#FEF2F2; --red-bd:#FEB4B4;
+  --green:#14803D; --green-bg:#F0FDF4; --green-bd:#A7F3C3;
+  --muted:#6B7280; --border:#DDE3EC; --text:#1B2333;
+  --r:13px; --r-sm:8px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  background:var(--bg);color:var(--text);font-size:14px;
+  padding-bottom:60px;-webkit-font-smoothing:antialiased}
+
+/* ── STICKY SHELL ── */
+#stickyShell{position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.22)}
+.hdr{background:var(--navy);padding:12px 16px 0}
+.hdr-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.hdr-eyebrow{font-size:10px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.08em;color:rgba(255,255,255,.45)}
+.hdr-name{font-size:20px;font-weight:800;color:#fff;line-height:1.15;margin-top:2px}
+.hdr-sub{font-size:12px;color:rgba(255,255,255,.5);margin-top:1px}
+
+/* A-Z toggle */
+.sort-toggle{
+  flex-shrink:0;margin-top:4px;
+  font-size:11px;font-weight:700;letter-spacing:.04em;
+  color:rgba(255,255,255,.7);
+  background:rgba(255,255,255,.1);
+  border:1.5px solid rgba(255,255,255,.22);
+  border-radius:16px;padding:5px 12px;
+  cursor:pointer;transition:all .18s;
+  -webkit-tap-highlight-color:transparent;white-space:nowrap;
+}
+.sort-toggle.on{background:rgba(255,255,255,.92);color:var(--navy);border-color:transparent}
+
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:12px}
+.tab{padding:9px 8px;text-align:center;font-size:12px;font-weight:600;
+  color:rgba(255,255,255,.5);border-radius:8px 8px 0 0;
+  cursor:pointer;transition:all .2s;line-height:1.3;
+  -webkit-tap-highlight-color:transparent}
+.tab.active{background:var(--bg);color:var(--navy)}
+
+/* ── TUBE STRIP ── */
+.tube-strip-bar{background:var(--surface);border-bottom:1px solid var(--border);
+  padding:0 14px;min-height:50px;display:flex;align-items:center;gap:10px}
+.tube-strip-bar.hidden{display:none}
+.strip-lbl{font-size:10px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--muted);white-space:nowrap;flex-shrink:0}
+.strip-scroll{display:flex;align-items:center;gap:6px;overflow-x:auto;flex:1;
+  -webkit-overflow-scrolling:touch;padding:9px 0}
+.strip-scroll::-webkit-scrollbar{display:none}
+.strip-empty{font-size:12px;color:var(--muted);font-style:italic;white-space:nowrap}
+.s-pill{display:flex;align-items:center;gap:5px;flex-shrink:0;background:var(--bg);
+  border:1.5px solid;border-radius:16px;padding:3px 10px 3px 5px;
+  font-size:11px;font-weight:600;color:var(--text);white-space:nowrap}
+.s-tube{width:13px;height:22px;border-radius:1px 1px 5px 5px;
+  position:relative;overflow:hidden;flex-shrink:0;border:1.5px solid rgba(0,0,0,.1)}
+.s-cap{position:absolute;top:0;left:-1px;right:-1px;height:7px}
+.s-body{position:absolute;top:7px;left:0;right:0;bottom:0;background:rgba(255,255,255,.45)}
+.s-bottle-pair{display:flex;gap:2px}
+.s-bottle{width:9px;height:22px;border-radius:1px 1px 4px 4px;
+  position:relative;overflow:hidden;border:1.5px solid rgba(0,0,0,.1)}
+.s-bcap{position:absolute;top:0;left:-1px;right:-1px;height:6px}
+.s-kittrio{display:flex;gap:2px;align-items:center}
+.s-ktube{width:7px;height:22px;border-radius:1px 1px 4px 4px;
+  position:relative;overflow:hidden;border:1px solid rgba(0,0,0,.12)}
+.s-ktcap{position:absolute;top:0;left:-1px;right:-1px;height:6px}
+.s-arrow{font-size:12px;color:#C8D0DC;flex-shrink:0}
+
+/* ── PANES ── */
+.pane{display:none}.pane.active{display:block}
+.content{padding:14px}
+
+/* ── CATEGORY LABELS ── */
+.cat-lbl{font-size:10px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--muted);margin:18px 0 7px}
+.cat-lbl:first-child{margin-top:4px}
+/* amber warning notes only */
+.cat-note{font-size:11px;line-height:1.45;padding:6px 10px;
+  border-radius:var(--r-sm);margin:-3px 0 8px;
+  border-left:3px solid var(--amber);background:var(--amber-bg);color:#7A4800}
+
+/* alpha-mode header */
+.alpha-hdr{font-size:10px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--muted);margin:4px 0 10px;
+  display:flex;align-items:center;gap:8px}
+.alpha-count{background:var(--navy);color:#fff;font-size:10px;font-weight:700;
+  padding:1px 7px;border-radius:10px}
+
+/* ── TEST BUTTONS ── */
+.test-grid{display:flex;flex-wrap:wrap;gap:7px}
+.test-btn{padding:7px 13px;border-radius:20px;
+  border:1.5px solid var(--border);background:var(--surface);
+  font-size:13px;font-weight:500;color:var(--text);
+  cursor:pointer;transition:all .15s;
+  -webkit-tap-highlight-color:transparent;user-select:none;line-height:1.3}
+.test-btn.sel{background:var(--navy);border-color:var(--navy);color:#fff;font-weight:600}
+
+/* ── TUBE SUMMARY ── */
+.divider{border:none;border-top:2px dashed var(--border);margin:20px 0 0}
+.tube-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 0 10px}
+.tube-hdr-left{display:flex;align-items:center;gap:8px}
+.tube-hdr-title{font-size:13px;font-weight:700;color:var(--navy)}
+.count-pill{background:var(--navy);color:#fff;font-size:11px;font-weight:700;
+  padding:2px 9px;border-radius:10px;display:none}
+.clear-btn{font-size:12px;font-weight:600;color:var(--red);
+  background:none;border:none;cursor:pointer;padding:4px;display:none}
+.empty-state{background:var(--surface);border-radius:var(--r);
+  padding:32px 20px;text-align:center;color:var(--muted);font-size:13px;
+  box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.empty-icon{font-size:32px;margin-bottom:8px}
+
+/* ── TUBE CARDS ── */
+.tube-card{background:var(--surface);border-radius:var(--r);
+  padding:13px;margin-bottom:10px;
+  box-shadow:0 1px 3px rgba(0,0,0,.06);
+  display:flex;align-items:flex-start;gap:12px;border-left:4px solid transparent}
+.tube-col{display:flex;flex-direction:column;align-items:center;flex-shrink:0;width:40px;gap:5px}
+.order-badge{width:22px;height:22px;border-radius:50%;
+  background:var(--navy);color:#fff;font-size:11px;font-weight:700;
+  display:flex;align-items:center;justify-content:center}
+.tube-vis{width:22px;height:56px;border-radius:2px 2px 8px 8px;
+  border:2px solid rgba(0,0,0,.12);position:relative;overflow:hidden}
+.t-cap{position:absolute;top:0;left:-1px;right:-1px;height:11px}
+.t-body{position:absolute;top:11px;left:0;right:0;bottom:0;background:rgba(255,255,255,.4)}
+.bottle-pair{display:flex;gap:3px}
+.bottle{width:14px;height:56px;border-radius:2px 2px 5px 5px;
+  border:2px solid rgba(0,0,0,.12);position:relative;overflow:hidden}
+.b-cap{position:absolute;top:0;left:-1px;right:-1px;height:9px}
+.b-body{position:absolute;top:9px;left:0;right:0;bottom:0;background:rgba(255,255,255,.35)}
+.kit-trio{display:flex;gap:3px;align-items:flex-end}
+.kt{width:9px;border-radius:1px 1px 5px 5px;border:2px solid rgba(0,0,0,.12);position:relative;overflow:hidden}
+.kt-cap{position:absolute;top:0;left:-1px;right:-1px;height:8px}
+.kt-body{position:absolute;top:8px;left:0;right:0;bottom:0;background:rgba(255,255,255,.35)}
+.tube-info{flex:1;min-width:0}
+.tube-name{font-size:14px;font-weight:700;margin-bottom:2px;line-height:1.25}
+.tube-additive{font-size:11px;color:var(--muted);margin-bottom:8px;line-height:1.4}
+.tests-chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}
+.t-chip{background:var(--blue-lt);color:var(--blue);font-size:11px;font-weight:600;
+  padding:3px 9px;border-radius:10px}
+.t-note{border-left:3px solid var(--blue);background:var(--blue-lt);
+  border-radius:7px;padding:7px 9px;font-size:11px;line-height:1.5;color:var(--blue)}
+.t-note.amber{border-color:var(--amber);background:var(--amber-bg);color:#7A4800}
+.t-note.red{border-color:var(--red);background:var(--red-bg);color:var(--red)}
+.draw-note{background:var(--amber-bg);border:1px solid var(--amber-bd);
+  border-radius:var(--r-sm);padding:10px 12px;
+  font-size:12px;color:#7A5200;line-height:1.5;margin-top:4px}
+
+/* ── CONTACT FOOTER ── */
+.contact-footer{background:var(--navy);border-radius:var(--r);
+  padding:14px 16px;margin-top:16px;color:rgba(255,255,255,.8);font-size:12px;line-height:1.6}
+.contact-footer strong{color:#fff;display:block;font-size:11px;
+  text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+.contact-footer a{color:#93C5FD;text-decoration:none}
+
+/* ── INFO BOXES ── */
+.ib{border-left:3px solid;border-radius:11px;padding:11px 13px;
+  margin-bottom:10px;font-size:13px;line-height:1.5}
+.ib.b{background:var(--blue-lt);border-color:var(--blue)}
+.ib.a{background:var(--amber-bg);border-color:var(--amber)}
+.ib.r{background:var(--red-bg);border-color:var(--red)}
+.ib strong{display:block;font-size:11px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+.ib.b strong{color:var(--blue)}.ib.a strong{color:var(--amber)}.ib.r strong{color:var(--red)}
+
+/* ── SECTION CARD (Tab 1) ── */
+.sc{background:var(--surface);border-radius:var(--r);
+  padding:16px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.sc-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.sc-icon{width:30px;height:30px;border-radius:8px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:15px}
+.sc-title{font-size:14px;font-weight:700;color:var(--navy)}
+.bl{list-style:none}
+.bl li{display:flex;align-items:flex-start;gap:9px;padding:7px 0;
+  border-bottom:1px solid var(--border);font-size:13px;line-height:1.45}
+.bl li:last-child{border-bottom:none}
+.bl-dot{width:6px;height:6px;border-radius:50%;background:var(--blue);flex-shrink:0;margin-top:5px}
+.step-row{display:flex;align-items:flex-start;gap:10px;
+  padding:9px 0;border-bottom:1px solid var(--border)}
+.step-row:last-child{border-bottom:none}
+.step-num{width:24px;height:24px;border-radius:50%;background:var(--navy);color:#fff;
+  font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.step-body{font-size:13px;line-height:1.45}
+.step-body strong{font-weight:700;display:block;margin-bottom:2px}
+.step-body span{color:var(--muted)}
+.req-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.req-item{background:var(--blue-lt);border-radius:var(--r-sm);
+  padding:10px;display:flex;align-items:flex-start;gap:8px}
+.req-icon{font-size:17px;flex-shrink:0;margin-top:1px}
+.req-text{font-size:12px;font-weight:600;color:var(--navy);line-height:1.4}
+</style>
+</head>
+<body>
+
+<!-- ══ STICKY SHELL ══ -->
+<div id="stickyShell">
+  <div class="hdr">
+    <div class="hdr-eyebrow">St Vincent's Pathology · SVHM</div>
+    <div class="hdr-top">
+      <div>
+        <div class="hdr-name">Pathology Tube Guide</div>
+        <div class="hdr-sub">Order of draw · PA-COL-F-61 v15 · 30/09/2022</div>
+      </div>
+      <button class="sort-toggle" id="sortToggle" onclick="toggleSort()">A–Z</button>
+    </div>
+    <div class="tabs">
+      <div class="tab active" id="tab0" onclick="switchTab(0)">🧪 Test Selector</div>
+      <div class="tab"        id="tab1" onclick="switchTab(1)">⚠️ Inadequate Labels</div>
+    </div>
+  </div>
+  <div class="tube-strip-bar" id="tubeStripBar">
+    <div class="strip-lbl">Tubes needed:</div>
+    <div class="strip-scroll" id="stripScroll">
+      <span class="strip-empty">Select tests below</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TAB 0 ══ -->
+<div id="pane0" class="pane active">
+  <div class="content">
+    <div id="testButtons"></div>
+    <hr class="divider">
+    <div class="tube-hdr">
+      <div class="tube-hdr-left">
+        <div class="tube-hdr-title">Required Tubes &amp; Collection Order</div>
+        <span class="count-pill" id="countPill"></span>
+      </div>
+      <button class="clear-btn" id="clearBtn" onclick="clearAll()">Clear all</button>
+    </div>
+    <div id="tubeSummary">
+      <div class="empty-state">
+        <div class="empty-icon">🧪</div>
+        Select tests above to see which tubes are needed
+      </div>
+    </div>
+    <div class="contact-footer">
+      <strong>For unlisted tests</strong>
+      Consult the online Pathology Test Manual at
+      <a href="http://path.svha.org.au">path.svha.org.au</a><br>
+      Central Laboratory: 41 Victoria Parade, Fitzroy &nbsp;·&nbsp;
+      <a href="tel:0392312888">03 9231 2888</a>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TAB 1 ══ -->
+<div id="pane1" class="pane">
+  <div class="content" id="inadequateContent"></div>
+</div>
+
+
+<script>
+// ═══════════════════════════
+//  TUBES
+// ═══════════════════════════
+
+const TUBES = {
+  cultures:{
+    name:'Blood Culture Bottles', shortName:'BC Bottles',
+    additive:'Aerobic + Anaerobic pair — collected FIRST',
+    order:1, capHex:'#1B7A8A', bodyHex:'#5BBCCC', type:'bottles',
+    note:'Collect BEFORE all other tubes. Clean site with ChloraPrep (60 s contact time). Aerobic bottle first, then anaerobic. Fill to volume line (8–10 mL each).',
+    noteStyle:'amber'
+  },
+  citrate:{
+    name:'Sodium Citrate 2.7 mL', shortName:'Na Citrate',
+    additive:'Sodium Citrate (coagulation)',
+    order:2, capHex:'#2E9ED6', bodyHex:'#B3DFF5', type:'tube',
+    note:'Allow to fill to COMPLETION — ratio of blood to anticoagulant is critical. When using a butterfly set with citrate first, draw a discard (non-additive) tube first to remove dead space in tubing.',
+    noteStyle:'red'
+  },
+  sst:{
+    name:'Serum Separator (Gel) 8 mL', shortName:'Red SST 8mL',
+    additive:'Clot Activator + Gel Separator',
+    order:3, capHex:'#BE1C1C', bodyHex:'#FECACA', type:'tube',
+    note:'Invert gently ×8 using figure-of-eight motion. Allow 30 min clot time before centrifugation.',
+    noteStyle:'blue'
+  },
+  sst_vl:{
+    name:'Serum Separator (Gel) 8 mL — Viral Load (Dedicated)', shortName:'Red SST ★VL',
+    additive:'Clot Activator + Gel Separator · Dedicated tube',
+    order:3.5, capHex:'#7F1D1D', bodyHex:'#FCA5A5', type:'tube',
+    note:'ALL Viral Load tests must have a DEDICATED tube — do not combine with other tests. Label clearly with test name. Note: HIV Viral Load uses ACD 6 mL (not this tube).',
+    noteStyle:'red'
+  },
+  lihep:{
+    name:'Lithium Heparin (Gel) 8 mL', shortName:'Green LiHep',
+    additive:'Lithium Heparin',
+    order:4, capHex:'#166534', bodyHex:'#86EFAC', type:'tube',
+    note:'For Troponin in inpatients, ED/ICU/CCU patients, and patients on anticoagulant therapy. C-Peptide & Insulin: refrigerate at 4°C immediately — DO NOT FREEZE. Invert ×8.',
+    noteStyle:'amber'
+  },
+  edta4:{
+    name:'EDTA 4 mL', shortName:'Lavender 4mL',
+    additive:'K₂ EDTA — haematology / genetics / some drug levels',
+    order:5, capHex:'#7B3F9E', bodyHex:'#C9A8DC', type:'tube',
+    note:'Invert immediately ×8 using figure-of-eight motion to prevent clotting.',
+    noteStyle:'blue'
+  },
+  edta6:{
+    name:'EDTA 6 mL (Blood Bank / Bone Markers)', shortName:'Pink EDTA 6mL',
+    additive:'K₂ EDTA — Blood Bank + selected Biochemistry',
+    order:6, capHex:'#C2185B', bodyHex:'#F48FB1', type:'tube',
+    note:'HANDWRITTEN labelling and collector signature required. Blood Bank Laboratory will NOT accept printed labels. Invert ×8.',
+    noteStyle:'red'
+  },
+  grey:{
+    name:'Fluoride Oxalate 2 mL', shortName:'Grey FO 2mL',
+    additive:'Sodium Fluoride / Potassium Oxalate',
+    order:7, capHex:'#555555', bodyHex:'#BBBBBB', type:'tube',
+    note:'Important: allow tube to fill to completion. Invert ×8. For lactate: place on ice immediately after collection.',
+    noteStyle:'blue'
+  },
+  acd:{
+    name:'ACD 6 mL', shortName:'ACD Yellow 6mL',
+    additive:'Acid Citrate Dextrose — Genetic Typing & Viral Load',
+    order:8, capHex:'#A87B00', bodyHex:'#FEF08A', type:'tube',
+    note:'For HIV Viral Load and HLA Typing. Invert ×8 immediately. If both are ordered, HIV Viral Load requires its own dedicated tube.',
+    noteStyle:'blue'
+  },
+  qfg:{
+    name:'Quantiferon Gold Kit (1 mL each)', shortName:'QFG Kit',
+    additive:'Special 3-tube kit: Nil / Antigen / Mitogen',
+    order:9, capHex:'#8B6914', bodyHex:'#F5D78E', type:'kit',
+    note:'Collect exactly 1 mL in each of the three tubes (Nil, Antigen, Mitogen). Shake each tube vigorously 10 times immediately after collection. Process within 16 hours.',
+    noteStyle:'amber'
+  },
+};
+
+// ═══════════════════════════
+//  CATEGORIES
+// ═══════════════════════════
+
+const CATEGORIES = [
+  {
+    label:'Haematology',
+    tests:[
+      {id:'fbe',          label:'FBE (Hb / WCC / Diff / Platelets)', tube:'edta4'},
+      {id:'blood_film',   label:'Blood Film',                         tube:'edta4'},
+      {id:'reticulocytes',label:'Reticulocytes',                      tube:'edta4'},
+      {id:'esr',          label:'ESR',                                tube:'edta4'},
+      {id:'coombs',       label:'Direct Coombs Test',                 tube:'edta4'},
+      {id:'hla_b27',      label:'HLA-B27',                           tube:'edta4'},
+      {id:'cell_markers', label:'Cell Markers (Lymphocyte Markers)',  tube:'edta4'},
+      {id:'tcell',        label:'T-Cell Subsets (CD4 Count)',         tube:'edta4'},
+      {id:'rcf',          label:'Red Cell Folate',                    tube:'edta4'},
+      {id:'pai',          label:'Platelet Associated Immunoglobulin (×2)', tube:'edta4'},
+    ]
+  },
+  {
+    label:'Haematology Biochemistry',
+    tests:[
+      {id:'hba1c',     label:'HbA1c',              tube:'edta4'},
+      {id:'hb_electro',label:'Hb Electrophoresis', tube:'edta4'},
+    ]
+  },
+  {
+    label:'Coagulation',
+    tests:[
+      {id:'inr',         label:'INR / INRD',                  tube:'citrate'},
+      {id:'aptt',        label:'APTT',                        tube:'citrate'},
+      {id:'protein_s',   label:'Protein S',                   tube:'citrate'},
+      {id:'protein_c',   label:'Protein C',                   tube:'citrate'},
+      {id:'lupus_ac',    label:'Lupus Anticoagulant (×2 tubes)', tube:'citrate'},
+      {id:'ddimer',      label:'D-Dimer',                     tube:'citrate'},
+      {id:'clot_factors',label:'Clotting Factors',            tube:'citrate'},
+      {id:'fxa',         label:'FXA',                         tube:'citrate'},
+      {id:'vwd',         label:'VWD Studies',                 tube:'citrate'},
+    ]
+  },
+  {
+    label:'General Biochemistry',
+    tests:[
+      {id:'lfts',     label:'LFTs',                tube:'sst'},
+      {id:'euc',      label:'U&E / EUC',           tube:'sst'},
+      {id:'crp',      label:'CRP',                 tube:'sst'},
+      {id:'egfr',     label:'eGFR / Creatinine',   tube:'sst'},
+      {id:'calcium',  label:'Calcium',             tube:'sst'},
+      {id:'albumin',  label:'Albumin',             tube:'sst'},
+      {id:'magnesium',label:'Magnesium',           tube:'sst'},
+      {id:'phosphate',label:'Phosphate',           tube:'sst'},
+      {id:'uric_acid',label:'Uric Acid',           tube:'sst'},
+      {id:'vitd',     label:'Vitamin D',           tube:'sst'},
+      {id:'iron',     label:'Iron Studies',        tube:'sst'},
+      {id:'b12folate',label:'B12 / Folate',        tube:'sst'},
+      {id:'psa',      label:'PSA',                 tube:'sst'},
+      {id:'cortisol', label:'Cortisol',            tube:'sst'},
+    ]
+  },
+  {
+    label:'Lipid Studies',
+    tests:[
+      {id:'lipids',label:'Lipids (Chol / Trigs / HDL)', tube:'sst'},
+    ]
+  },
+  {
+    label:'Endocrine & Hormones',
+    tests:[
+      {id:'tsh', label:'TSH',            tube:'sst'},
+      {id:'tfts',label:'TFTs (T4 / T3)', tube:'sst'},
+    ]
+  },
+  {
+    label:'Cardiac',
+    catNote:'⚠️ Troponin — Community patients: Red SST. Inpatients, ED / ICU / CCU, or patients on anticoagulant therapy: Lithium Heparin (Green) instead.',
+    tests:[
+      {id:'cardiac_enz', label:'Cardiac Enzymes (CK / LDH)',                      tube:'sst'},
+      {id:'troponin',    label:'Troponin (community)',                             tube:'sst', troponinWarn:true},
+      {id:'troponin_ip', label:'Troponin (inpatient / anticoag / ED / ICU / CCU)',tube:'lihep'},
+      {id:'bnp',         label:'BNP / NT-proBNP',                                 tube:'sst'},
+    ]
+  },
+  {
+    label:'Drug Levels & Antibiotic Assays',
+    tests:[
+      {id:'vanc',       label:'Vancomycin',    tube:'sst'},
+      {id:'gent',       label:'Gentamicin',    tube:'sst'},
+      {id:'digoxin',    label:'Digoxin',       tube:'sst'},
+      {id:'phenytoin',  label:'Phenytoin',     tube:'sst'},
+      {id:'lithium_lvl',label:'Lithium Level', tube:'sst'},
+    ]
+  },
+  {
+    label:'Immunosuppressant Drug Levels',
+    tests:[
+      {id:'cyclosporin',label:'Cyclosporin',  tube:'edta4'},
+      {id:'tacrolimus', label:'Tacrolimus',   tube:'edta4'},
+      {id:'sirolimus',  label:'Sirolimus',    tube:'edta4'},
+      {id:'flecainide', label:'Flecainide',   tube:'edta4'},
+      {id:'amiodarone', label:'Amiodarone',   tube:'edta4'},
+      {id:'perhexiline',label:'Perhexiline',  tube:'edta4'},
+    ]
+  },
+  {
+    label:'Serology',
+    tests:[
+      {id:'hep_ser',  label:'Hepatitis Serology',             tube:'sst'},
+      {id:'ebv_ser',  label:'EBV Serology',                   tube:'sst'},
+      {id:'cmv_ser',  label:'CMV Serology',                   tube:'sst'},
+      {id:'syphilis', label:'Syphilis',                       tube:'sst'},
+      {id:'rubella',  label:'Rubella',                        tube:'sst'},
+      {id:'toxo',     label:'Toxoplasmosis',                  tube:'sst'},
+      {id:'vzv',      label:'Varicella Zoster (VZV)',         tube:'sst'},
+      {id:'hsv_mic',  label:'HSV (Microbial)',                tube:'sst'},
+      {id:'hiv_mic',  label:'HIV (Microbial only, not VL)',   tube:'sst'},
+      {id:'auto_ser', label:'Autoimmune Serology',            tube:'sst'},
+    ]
+  },
+  {
+    label:'Viral Load',
+    catNote:'⚠️ HIV Viral Load → ACD 6 mL (Yellow). Other Viral Loads → Dedicated Red SST 8 mL. All Viral Load tests must have a dedicated tube — do not combine with other tests.',
+    tests:[
+      {id:'hiv_vl', label:'HIV Viral Load',          tube:'acd'},
+      {id:'hbv_vl', label:'Hepatitis B Viral Load',  tube:'sst_vl'},
+      {id:'hcv_vl', label:'Hepatitis C Viral Load',  tube:'sst_vl'},
+      {id:'ebv_vl', label:'EBV Viral Load',          tube:'sst_vl'},
+      {id:'cmv_vl', label:'CMV Viral Load',          tube:'sst_vl'},
+    ]
+  },
+  {
+    label:'Biochemistry — Lithium Heparin',
+    tests:[
+      {id:'cpeptide',label:'C-Peptide (refrigerate 4°C, do not freeze)', tube:'lihep'},
+      {id:'insulin', label:'Insulin (refrigerate 4°C, do not freeze)',   tube:'lihep'},
+    ]
+  },
+  {
+    label:'Molecular Genetics',
+    tests:[
+      {id:'haemo_gene',  label:'Haemochromatosis Gene',       tube:'edta4'},
+      {id:'fv_leiden',   label:'Factor V Leiden',             tube:'edta4'},
+      {id:'prothrombin', label:'Prothrombin Gene Analysis',   tube:'edta4'},
+      {id:'jak2',        label:'JAK2 Gene Analysis',          tube:'edta4'},
+      {id:'thal_gene',   label:'Thalassaemia Gene Analysis',  tube:'edta4'},
+    ]
+  },
+  {
+    label:'Blood Bank',
+    catNote:'⚠️ EDTA 6 mL (Pink) — handwritten label and collector signature mandatory. Printed labels will NOT be accepted.',
+    tests:[
+      {id:'gas',        label:'Blood Group & Antibody Screen', tube:'edta6'},
+      {id:'crossmatch', label:'Crossmatch',                   tube:'edta6'},
+    ]
+  },
+  {
+    label:'Bone Markers',
+    tests:[
+      {id:'ctx',  label:'CTX (Bone Resorption)', tube:'edta6'},
+      {id:'p1np', label:'P1NP (Bone Formation)', tube:'edta6'},
+    ]
+  },
+  {
+    label:'Glucose & Metabolic',
+    tests:[
+      {id:'glucose', label:'Glucose',                  tube:'grey'},
+      {id:'gtt',     label:'Glucose Tolerance Test',   tube:'grey'},
+      {id:'gct',     label:'Glucose Challenge Test',   tube:'grey'},
+      {id:'alcohol', label:'Alcohol',                  tube:'grey'},
+      {id:'lactate', label:'Lactate',                  tube:'grey'},
+    ]
+  },
+  {
+    label:'Genetic Typing',
+    tests:[
+      {id:'hla_typing',label:'HLA Typing', tube:'acd'},
+    ]
+  },
+  {
+    label:'Microbiology',
+    tests:[
+      {id:'bcultures',label:'Blood Cultures (drawn first)', tube:'cultures'},
+    ]
+  },
+  {
+    label:'TB Screening',
+    tests:[
+      {id:'qfg',label:'QFG (Tuberculosis Screen)', tube:'qfg'},
+    ]
+  },
+];
+
+// flat lookup
+const ALL_TESTS = {};
+CATEGORIES.forEach(c => c.tests.forEach(t => { ALL_TESTS[t.id] = t; }));
+
+let selected  = new Set();
+let alphaMode = false;
+
+
+// ═══════════════════════════
+//  RENDER: BUTTONS
+// ═══════════════════════════
+
+function renderButtons() {
+  let html = '';
+
+  if (alphaMode) {
+    // Flatten & sort A–Z
+    const allTests = [];
+    CATEGORIES.forEach(c => c.tests.forEach(t => allTests.push(t)));
+    allTests.sort((a, b) => a.label.localeCompare(b.label));
+    const n = allTests.length;
+    html += `<div class="alpha-hdr">All tests A–Z <span class="alpha-count">${n}</span></div>`;
+    html += `<div class="test-grid">`;
+    allTests.forEach(t => {
+      const s = selected.has(t.id) ? ' sel' : '';
+      html += `<button class="test-btn${s}" onclick="toggleTest('${t.id}')">${t.label}</button>`;
+    });
+    html += `</div>`;
+  } else {
+    // By category — amber warnings only, no blue tube-label notes
+    CATEGORIES.forEach(cat => {
+      html += `<div class="cat-lbl">${cat.label}</div>`;
+      if (cat.catNote) {
+        html += `<div class="cat-note">${cat.catNote}</div>`;
+      }
+      html += `<div class="test-grid">`;
+      cat.tests.forEach(t => {
+        const s = selected.has(t.id) ? ' sel' : '';
+        html += `<button class="test-btn${s}" onclick="toggleTest('${t.id}')">${t.label}</button>`;
+      });
+      html += `</div>`;
+    });
+  }
+
+  document.getElementById('testButtons').innerHTML = html;
+}
+
+
+// ═══════════════════════════
+//  RENDER: STRIP
+// ═══════════════════════════
+
+function renderStrip() {
+  const scroll = document.getElementById('stripScroll');
+  if (selected.size === 0) {
+    scroll.innerHTML = '<span class="strip-empty">Select tests below</span>';
+    return;
+  }
+  const map = buildMap(), sorted = sortKeys(map);
+  let html = '';
+  sorted.forEach((key, i) => {
+    const t = TUBES[key];
+    if (i > 0) html += `<span class="s-arrow">›</span>`;
+    html += `<div class="s-pill" style="border-color:${t.capHex}">${stripIcon(t)}${t.shortName}</div>`;
+  });
+  scroll.innerHTML = html;
+}
+
+function stripIcon(t) {
+  if (t.type === 'bottles') return `<div class="s-bottle-pair">
+    <div class="s-bottle" style="background:${t.bodyHex};border-color:${t.capHex}"><div class="s-bcap" style="background:${t.capHex}"></div></div>
+    <div class="s-bottle" style="background:#C5802A;border-color:#8B5E1A"><div class="s-bcap" style="background:#8B5E1A"></div></div>
+  </div>`;
+  if (t.type === 'kit') return `<div class="s-kittrio">
+    <div class="s-ktube" style="height:18px;background:#E0E0E0;border-color:#888"><div class="s-ktcap" style="background:#888"></div></div>
+    <div class="s-ktube" style="height:22px;background:#FECACA;border-color:#BE1C1C"><div class="s-ktcap" style="background:#BE1C1C"></div></div>
+    <div class="s-ktube" style="height:20px;background:#C9A8DC;border-color:#7B3F9E"><div class="s-ktcap" style="background:#7B3F9E"></div></div>
+  </div>`;
+  return `<div class="s-tube" style="background:${t.bodyHex};border-color:${t.capHex}">
+    <div class="s-cap" style="background:${t.capHex}"></div><div class="s-body"></div>
+  </div>`;
+}
+
+
+// ═══════════════════════════
+//  RENDER: TUBE SUMMARY
+// ═══════════════════════════
+
+function renderTubes() {
+  const summary  = document.getElementById('tubeSummary');
+  const pill     = document.getElementById('countPill');
+  const clearBtn = document.getElementById('clearBtn');
+  if (selected.size === 0) {
+    summary.innerHTML = `<div class="empty-state"><div class="empty-icon">🧪</div>Select tests above to see which tubes are needed</div>`;
+    pill.style.display = clearBtn.style.display = 'none';
+    return;
+  }
+  const map = buildMap(), sorted = sortKeys(map);
+  const n = sorted.length;
+  pill.textContent   = `${n} tube${n !== 1 ? 's' : ''}`;
+  pill.style.display = 'inline-block';
+  clearBtn.style.display = 'block';
+
+  let cards = '';
+  sorted.forEach((key, idx) => {
+    const tube  = TUBES[key];
+    const tests = map[key];
+    const chips = tests.map(l => `<span class="t-chip">${l}</span>`).join('');
+    const vis   = fullVis(tube);
+    const nc    = 't-note' + (tube.noteStyle !== 'blue' ? ' ' + tube.noteStyle : '');
+
+    let extra = '';
+    if (key === 'sst' && selected.has('troponin') && !selected.has('troponin_ip')) {
+      extra = `<div class="t-note amber" style="margin-top:6px">⚠️ <strong style="display:inline;font-weight:700">Inpatients / anticoag / ED / ICU / CCU:</strong> Lithium Heparin (Green) required for Troponin — select 'Troponin (inpatient…)' above.</div>`;
+    }
+    let luNote = '';
+    if (key === 'citrate' && selected.has('lupus_ac')) {
+      luNote = `<div class="t-note amber" style="margin-top:6px">⚠️ <strong style="display:inline;font-weight:700">Lupus Anticoagulant</strong> requires ×2 Sodium Citrate tubes.</div>`;
+    }
+
+    cards += `<div class="tube-card" style="border-left-color:${tube.capHex}">
+      <div class="tube-col"><div class="order-badge">${idx + 1}</div>${vis}</div>
+      <div class="tube-info">
+        <div class="tube-name">${tube.name}</div>
+        <div class="tube-additive">${tube.additive}</div>
+        <div class="tests-chips">${chips}</div>
+        <div class="${nc}">💡 ${tube.note}</div>
+        ${extra}${luNote}
+      </div>
+    </div>`;
+  });
+
+  let drawNote = sorted.length > 1
+    ? `<div class="draw-note">⚠️ <strong style="font-weight:700">Order of draw</strong> — collect tubes in the numbered order above to prevent additive cross-contamination (PA-COL-F-61 v15).</div>`
+    : '';
+
+  const hasDrug = ['vanc','gent','digoxin','phenytoin','lithium_lvl','cyclosporin','tacrolimus','sirolimus','flecainide','amiodarone','perhexiline'].some(id => selected.has(id));
+  const drugNote = hasDrug
+    ? `<div class="ib a" style="margin-top:10px"><strong>Drug Level Timing</strong>Confirm trough (pre-dose), peak, or random level as required. Document exact collection time and last dose time on the request form.</div>`
+    : '';
+
+  summary.innerHTML = cards + drawNote + drugNote;
+}
+
+function fullVis(tube) {
+  if (tube.type === 'bottles') return `<div class="bottle-pair">
+    <div class="bottle" style="background:${tube.bodyHex};border-color:${tube.capHex}"><div class="b-cap" style="background:${tube.capHex}"></div><div class="b-body"></div></div>
+    <div class="bottle" style="background:#C5802A;border-color:#8B5E1A"><div class="b-cap" style="background:#8B5E1A"></div><div class="b-body"></div></div>
+  </div>`;
+  if (tube.type === 'kit') return `<div class="kit-trio">
+    <div class="kt" style="height:40px;background:#E8E8E8;border-color:#888"><div class="kt-cap" style="background:#888"></div><div class="kt-body"></div></div>
+    <div class="kt" style="height:56px;background:#FECACA;border-color:#BE1C1C"><div class="kt-cap" style="background:#BE1C1C"></div><div class="kt-body"></div></div>
+    <div class="kt" style="height:48px;background:#C9A8DC;border-color:#7B3F9E"><div class="kt-cap" style="background:#7B3F9E"></div><div class="kt-body"></div></div>
+  </div>`;
+  return `<div class="tube-vis" style="background:${tube.bodyHex};border-color:${tube.capHex}">
+    <div class="t-cap" style="background:${tube.capHex}"></div><div class="t-body"></div>
+  </div>`;
+}
+
+function buildMap() {
+  const m = {};
+  selected.forEach(id => {
+    const t = ALL_TESTS[id];
+    if (!m[t.tube]) m[t.tube] = [];
+    m[t.tube].push(t.label);
+  });
+  return m;
+}
+function sortKeys(m) {
+  return Object.keys(m).sort((a, b) => TUBES[a].order - TUBES[b].order);
+}
+
+
+// ═══════════════════════════
+//  INTERACTIONS
+// ═══════════════════════════
+
+function toggleTest(id) {
+  if (selected.has(id)) selected.delete(id); else selected.add(id);
+  renderButtons(); renderStrip(); renderTubes();
+}
+
+function clearAll() {
+  selected.clear();
+  renderButtons(); renderStrip(); renderTubes();
+}
+
+function toggleSort() {
+  alphaMode = !alphaMode;
+  const btn = document.getElementById('sortToggle');
+  btn.textContent = alphaMode ? 'By Category' : 'A–Z';
+  btn.classList.toggle('on', alphaMode);
+  renderButtons();
+}
+
+function switchTab(n) {
+  [0, 1].forEach(i => {
+    document.getElementById('pane' + i).classList.toggle('active', i === n);
+    document.getElementById('tab'  + i).classList.toggle('active', i === n);
+  });
+  document.getElementById('tubeStripBar').classList.toggle('hidden', n === 1);
+}
+
+
+// ═══════════════════════════
+//  TAB 1 CONTENT
+// ═══════════════════════════
+
+document.getElementById('inadequateContent').innerHTML = `
+  <div class="ib r" style="margin-top:6px">
+    <strong>⛔ Policy — No Exceptions</strong>
+    Inadequately labelled specimens must not be processed. The requesting clinician must be notified immediately and a correctly labelled sample recollected.
+  </div>
+  <div class="sc">
+    <div class="sc-head"><div class="sc-icon" style="background:#DBEAFE">📋</div>
+      <div class="sc-title">Minimum Tube Labelling Requirements</div></div>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:10px">Per PA-COL-F-61 v15 — all specimen containers must display:</p>
+    <div class="req-grid">
+      <div class="req-item"><div class="req-icon">👤</div><div class="req-text">Surname<br><span style="font-weight:400;color:var(--muted)">Legal surname</span></div></div>
+      <div class="req-item"><div class="req-icon">🏷️</div><div class="req-text">First name<br><span style="font-weight:400;color:var(--muted)">Legal given name</span></div></div>
+      <div class="req-item"><div class="req-icon">🎂</div><div class="req-text">Date of birth<br><span style="font-weight:400;color:var(--muted)">DD/MM/YYYY</span></div></div>
+      <div class="req-item"><div class="req-icon">⚧</div><div class="req-text">Gender<br><span style="font-weight:400;color:var(--muted)">M or F</span></div></div>
+      <div class="req-item"><div class="req-icon">📅</div><div class="req-text">Date of collection<br><span style="font-weight:400;color:var(--muted)">DD/MM/YYYY</span></div></div>
+      <div class="req-item"><div class="req-icon">🕐</div><div class="req-text">Time of collection<br><span style="font-weight:400;color:var(--muted)">24-hour preferred</span></div></div>
+    </div>
+    <div class="req-item" style="margin-top:8px;background:#FEF3C7">
+      <div class="req-icon">✍️</div>
+      <div class="req-text" style="color:#78350F">Collector's initials<br><span style="font-weight:400">On label at time of collection</span></div>
+    </div>
+    <div class="ib r" style="margin-top:12px;margin-bottom:0">
+      <strong>Blood Bank EDTA 6 mL — additional requirement</strong>
+      Handwritten labelling and collector signature (not initials) is mandatory. The Blood Bank Laboratory will not accept printed labels under any circumstances.
+    </div>
+  </div>
+  <div class="sc">
+    <div class="sc-head"><div class="sc-icon" style="background:#FEE2E2">⚠️</div>
+      <div class="sc-title">Common Causes of Inadequate Labelling</div></div>
+    <ul class="bl">
+      <li><div class="bl-dot"></div>Container completely unlabelled</li>
+      <li><div class="bl-dot"></div>Label on request form does not match label on container</li>
+      <li><div class="bl-dot"></div>Patient name spelled incorrectly, abbreviated, or initials only</li>
+      <li><div class="bl-dot"></div>Date of birth missing or does not match patient record</li>
+      <li><div class="bl-dot"></div>Gender not recorded on label</li>
+      <li><div class="bl-dot"></div>Collection date / time not recorded</li>
+      <li><div class="bl-dot"></div>Collector's initials absent</li>
+      <li><div class="bl-dot"></div>Label applied after leaving the patient's bedside</li>
+      <li><div class="bl-dot"></div>Another patient's label placed on container in error</li>
+      <li><div class="bl-dot"></div>Sticker label partially detached, obscured, or damaged</li>
+      <li><div class="bl-dot"></div>Handwriting illegible</li>
+    </ul>
+  </div>
+  <div class="sc">
+    <div class="sc-head"><div class="sc-icon" style="background:#E0ECF8">📞</div>
+      <div class="sc-title">What To Do</div></div>
+    <div class="step-row"><div class="step-num">1</div>
+      <div class="step-body"><strong>Do not process the specimen</strong><span>Set aside. Do not attempt analysis on any inadequately labelled sample.</span></div></div>
+    <div class="step-row"><div class="step-num">2</div>
+      <div class="step-body"><strong>Contact the requester</strong><span>Call the clinician or nurse who collected the sample. Advise of the specific labelling deficiency.</span></div></div>
+    <div class="step-row"><div class="step-num">3</div>
+      <div class="step-body"><strong>Assess for relabelling</strong><span>If clinical circumstances allow, assess whether the restricted relabelling process below can be followed. Otherwise arrange recollection.</span></div></div>
+    <div class="step-row"><div class="step-num">4</div>
+      <div class="step-body"><strong>Document and report</strong><span>Record in the patient's medical record and submit a Riskman incident report for all inadequately labelled specimens.</span></div></div>
+  </div>
+  <div class="sc">
+    <div class="sc-head"><div class="sc-icon" style="background:#DCFCE7">✅</div>
+      <div class="sc-title">When Can a Specimen Be Relabelled?</div></div>
+    <div class="ib a" style="margin-bottom:12px"><strong>⚠️ Restricted — All Conditions Must Be Met</strong>Relabelling is only permitted when every condition below is simultaneously satisfied.</div>
+    <div class="step-row"><div class="step-num">1</div>
+      <div class="step-body"><strong>Collector is contactable</strong><span>The staff member who collected the specimen must be reachable and able to verify identity directly.</span></div></div>
+    <div class="step-row"><div class="step-num">2</div>
+      <div class="step-body"><strong>Patient identity confirmed × two identifiers</strong><span>Verify using at least two of: full name, DOB, gender — matched against the medical record.</span></div></div>
+    <div class="step-row"><div class="step-num">3</div>
+      <div class="step-body"><strong>Sample integrity intact</strong><span>Specimen must still be viable — not haemolysed, clotted (where inappropriate), inadequate volume, or time-expired.</span></div></div>
+    <div class="step-row"><div class="step-num">4</div>
+      <div class="step-body"><strong>Pathology authorises relabelling</strong><span>Contact the lab directly. Only authorised laboratory staff may approve and document a relabelling event.</span></div></div>
+    <div class="step-row"><div class="step-num">5</div>
+      <div class="step-body"><strong>Document the event</strong><span>Record in the patient's medical record and submit a Riskman report regardless of outcome.</span></div></div>
+  </div>
+  <div class="sc">
+    <div class="sc-head"><div class="sc-icon" style="background:#FCE4EC">🩸</div>
+      <div class="sc-title">Blood Bank — Zero Tolerance</div></div>
+    <div class="ib r"><strong>⛔ Blood Bank EDTA 6 mL — Never Relabelled</strong>Cross Match and Blood Group & Antibody Screen specimens can never be relabelled under any circumstances. A fresh, correctly labelled sample must always be recollected.</div>
+    <ul class="bl">
+      <li><div class="bl-dot"></div>Handwritten labelling and collector signature required at bedside immediately after collection</li>
+      <li><div class="bl-dot"></div>Printed labels will not be accepted by the Blood Bank Laboratory</li>
+      <li><div class="bl-dot"></div>Any discrepancy = mandatory recollection, no exceptions</li>
+    </ul>
+  </div>
+  <div class="ib a">
+    <strong>⚠️ Hazard Warning</strong>
+    Never inject blood into specimen tubes from a needle and syringe. Mix all tubes by gentle figure-of-eight inversion only.
+  </div>
+  <div class="ib b">
+    <strong>📚 References</strong>
+    St Vincent's Pathology PA-COL-F-61 v15 (30/09/2022); NSQHS Safety Standards 1 &amp; 7; AS ISO 15189:2023. For unlisted tests: <strong>path.svha.org.au</strong> or call <strong>03 9231 2888</strong>.
+  </div>`;
+
+// ── INIT ──
+renderButtons();
+</script>
+</body>
+</html>
