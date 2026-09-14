@@ -1,0 +1,1486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Specialist Clinics Handbook 2026 — St Vincent's Hospital Melbourne</title>
+<style>
+:root{
+  --navy:#0D2D5E;--navy-mid:#164080;--blue:#1A6FAF;--blue-lt:#E5F0FA;
+  --bg:#EEF2F7;--surface:#FFFFFF;
+  --amber:#C97A00;--amber-bg:#FFFBEB;--amber-bd:#FDE68A;
+  --red:#C91B1B;--red-bg:#FEF2F2;--red-bd:#FEB4B4;
+  --green:#14803D;--green-bg:#F0FDF4;--green-bd:#A7F3C3;
+  --muted:#6B7280;--border:#DDE3EC;--text:#1B2333;
+  --r:13px;--r-sm:8px;
+  --si-b:#DBEAFE;--si-a:#FEF3C7;--si-g:#DCFCE7;--si-r:#FEE2E2;--si-p:#EDE9FE;--si-n:#E0ECF8;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:15px;color:var(--text);background:var(--bg);min-height:100vh;}
+
+/* ── Header ── */
+#site-header{position:sticky;top:0;z-index:100;background:var(--navy);padding:0 16px;}
+.hdr-inner{display:flex;align-items:center;gap:12px;height:56px;}
+.hdr-logo{width:36px;height:36px;background:var(--navy-mid);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.hdr-logo svg{fill:#fff;}
+.hdr-text{flex:1;min-width:0;}
+.hdr-eyebrow{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#93B4D4;}
+.hdr-title{font-size:15px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.hdr-badge{background:#1A6FAF;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;white-space:nowrap;}
+
+/* ── Search bar ── */
+#search-bar{background:var(--navy-mid);padding:8px 16px;}
+#search-input{width:100%;padding:8px 12px 8px 36px;border-radius:var(--r-sm);border:none;background:#fff;font-size:14px;color:var(--text);outline:none;}
+.search-wrap{position:relative;}
+.search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none;}
+
+/* ── Layout ── */
+.app-body{display:flex;min-height:calc(100vh - 100px);}
+#sidebar{width:260px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;position:sticky;top:100px;height:calc(100vh - 100px);}
+#content{flex:1;padding:20px 16px 100px;min-width:0;}
+
+/* ── Sidebar nav ── */
+.nav-section-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding:16px 16px 6px;}
+.nav-link{display:block;padding:8px 16px;font-size:13.5px;color:var(--text);text-decoration:none;cursor:pointer;border-left:3px solid transparent;transition:background .15s,border-color .15s;}
+.nav-link:hover{background:var(--blue-lt);}
+.nav-link.active{background:var(--blue-lt);border-left-color:var(--blue);color:var(--blue);font-weight:600;}
+.nav-group-toggle{display:flex;align-items:center;justify-content:space-between;padding:8px 16px;font-size:13px;font-weight:700;color:var(--navy);cursor:pointer;user-select:none;}
+.nav-group-toggle:hover{background:var(--blue-lt);}
+.nav-group-toggle .chevron{transition:transform .2s;font-size:10px;}
+.nav-group-toggle.open .chevron{transform:rotate(90deg);}
+.nav-group-items{display:none;}
+.nav-group-items.open{display:block;}
+.nav-group-items .nav-link{padding-left:28px;font-size:13px;}
+
+/* ── Content cards ── */
+.page{display:none;}
+.page.active{display:block;}
+.page-title{font-size:22px;font-weight:800;color:var(--navy);margin-bottom:4px;}
+.page-subtitle{font-size:14px;color:var(--muted);margin-bottom:20px;}
+.card{background:var(--surface);border-radius:var(--r);box-shadow:0 1px 3px rgba(0,0,0,.06);padding:18px;margin-bottom:14px;}
+.card-header{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.card-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.icon-b{background:var(--si-b);}
+.icon-a{background:var(--si-a);}
+.icon-g{background:var(--si-g);}
+.icon-r{background:var(--si-r);}
+.icon-p{background:var(--si-p);}
+.icon-n{background:var(--si-n);}
+.card-title{font-size:15px;font-weight:700;color:var(--navy);}
+.card-sub{font-size:12px;color:var(--muted);}
+h3{font-size:14px;font-weight:700;color:var(--navy);margin:14px 0 8px;}
+h4{font-size:13px;font-weight:700;color:var(--navy-mid);margin:12px 0 6px;}
+p{font-size:14px;line-height:1.6;color:var(--text);margin-bottom:10px;}
+ul,ol{padding-left:20px;margin-bottom:10px;}
+li{font-size:14px;line-height:1.7;color:var(--text);}
+strong{font-weight:700;}
+
+/* ── Info boxes ── */
+.ib{border-left:3px solid;border-radius:11px;padding:12px 14px;margin-bottom:12px;font-size:13.5px;}
+.ib strong{display:block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;}
+.ib.b{background:var(--blue-lt);border-color:var(--blue);}
+.ib.a{background:var(--amber-bg);border-color:var(--amber-bd);color:#78350F;}
+.ib.r{background:var(--red-bg);border-color:var(--red-bd);color:#7F1D1D;}
+.ib.g{background:var(--green-bg);border-color:var(--green-bd);color:#14532D;}
+
+/* ── Tables ── */
+.tbl-wrap{overflow-x:auto;margin-bottom:14px;border-radius:var(--r-sm);border:1px solid var(--border);}
+table{width:100%;border-collapse:collapse;font-size:13.5px;}
+thead th{background:var(--navy);color:#fff;padding:9px 12px;text-align:left;font-size:12px;font-weight:700;}
+tbody td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:top;}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr:nth-child(even){background:#FAFCFF;}
+td strong{color:var(--navy);}
+
+/* ── Contact chips ── */
+.contact-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-bottom:14px;}
+.contact-chip{background:var(--blue-lt);border-radius:var(--r-sm);padding:10px 12px;}
+.contact-chip .role{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--blue);margin-bottom:2px;}
+.contact-chip .name{font-size:14px;font-weight:700;color:var(--navy);}
+.contact-chip .ext{font-size:13px;color:var(--muted);}
+.contact-chip a{color:var(--blue);text-decoration:none;font-size:13px;}
+
+/* ── Clinic area chips ── */
+.clinic-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin-bottom:14px;}
+.clinic-chip{border-radius:var(--r-sm);padding:10px 12px;}
+.clinic-chip.red{background:#FEF2F2;border:1px solid #FEB4B4;}
+.clinic-chip.blue-c{background:#EFF6FF;border:1px solid #BFDBFE;}
+.clinic-chip.green-c{background:var(--green-bg);border:1px solid var(--green-bd);}
+.clinic-chip.yellow{background:var(--amber-bg);border:1px solid var(--amber-bd);}
+.clinic-chip .cname{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:4px;}
+.clinic-chip .cdets{font-size:12px;color:var(--muted);}
+.clinic-chip a{color:var(--blue);text-decoration:none;}
+
+/* ── Meeting timeline ── */
+.meeting-item{display:flex;gap:14px;margin-bottom:12px;}
+.meeting-dot{width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.meeting-body{flex:1;}
+.meeting-title{font-size:14px;font-weight:700;color:var(--navy);}
+.meeting-time{font-size:12px;color:var(--muted);margin-bottom:2px;}
+.meeting-desc{font-size:13.5px;color:var(--text);}
+
+/* ── Pill badges ── */
+.pill{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700;}
+.pill-navy{background:var(--navy);color:#fff;}
+.pill-blue{background:var(--blue);color:#fff;}
+.pill-red{background:var(--red-bg);color:var(--red);border:1px solid var(--red-bd);}
+.pill-amber{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-bd);}
+.pill-green{background:var(--green-bg);color:var(--green);border:1px solid var(--green-bd);}
+
+/* ── Checklist items ── */
+.chk-list{list-style:none;padding:0;margin-bottom:12px;}
+.chk-list li{display:flex;align-items:flex-start;gap:10px;padding:6px 0;border-bottom:1px solid var(--border);}
+.chk-list li:last-child{border-bottom:none;}
+.chk-box{width:22px;height:22px;border-radius:6px;border:2px solid var(--border);flex-shrink:0;margin-top:1px;}
+.chk-label{font-size:13.5px;line-height:1.5;}
+
+/* ── Worksheet answer box ── */
+.answer-box{border:1px solid var(--border);border-radius:var(--r-sm);padding:10px;min-height:60px;background:#FAFCFF;color:var(--muted);font-size:13px;font-style:italic;margin-bottom:12px;}
+.q-label{font-size:13.5px;font-weight:700;color:var(--navy);margin-bottom:6px;}
+.q-prompt{font-size:13.5px;color:var(--text);margin-bottom:8px;}
+
+/* ── Scenario box ── */
+.scenario{background:var(--navy);border-radius:var(--r-sm);padding:14px 16px;margin-bottom:14px;}
+.scenario .s-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#93B4D4;margin-bottom:4px;}
+.scenario p{color:#E2EAF4;font-size:13.5px;margin:0;}
+
+/* ── Pathway step ── */
+.steps{margin-bottom:12px;}
+.step{display:flex;gap:12px;margin-bottom:10px;}
+.step-num{width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.step-body{flex:1;}
+.step-title{font-size:14px;font-weight:700;color:var(--navy);}
+.step-desc{font-size:13px;color:var(--muted);}
+
+/* ── Learning objectives table ── */
+.lo-table table thead th:nth-child(2),.lo-table table thead th:nth-child(3){width:130px;}
+
+/* ── Welcome card ── */
+.welcome-hero{background:var(--navy);border-radius:var(--r);padding:24px;margin-bottom:16px;color:#fff;}
+.welcome-hero h2{font-size:20px;font-weight:800;margin-bottom:6px;}
+.welcome-hero p{color:#B8D0EC;font-size:14px;margin-bottom:0;}
+.welcome-stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:16px;}
+.stat-card{background:var(--surface);border-radius:var(--r-sm);padding:14px;text-align:center;}
+.stat-num{font-size:26px;font-weight:800;color:var(--navy);}
+.stat-label{font-size:12px;color:var(--muted);margin-top:2px;}
+.quick-nav{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;}
+.qn-card{background:var(--surface);border-radius:var(--r-sm);padding:14px;cursor:pointer;display:flex;align-items:center;gap:10px;transition:box-shadow .15s;}
+.qn-card:hover{box-shadow:0 2px 8px rgba(0,0,0,.1);}
+.qn-icon{font-size:22px;}
+.qn-label{font-size:13px;font-weight:700;color:var(--navy);}
+
+/* ── Emergency codes ── */
+.code-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:14px;}
+.code-card{border-radius:var(--r-sm);padding:12px 14px;}
+.code-card .code-word{font-size:15px;font-weight:800;color:var(--navy);margin-bottom:3px;}
+.code-card .code-desc{font-size:13px;color:var(--text);}
+
+/* ── Mobile sidebar toggle ── */
+#menu-btn{display:none;background:none;border:none;cursor:pointer;padding:8px;}
+#overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:90;}
+
+@media(max-width:700px){
+  #sidebar{position:fixed;top:0;left:-270px;height:100vh;z-index:95;transition:left .25s;width:260px;}
+  #sidebar.open{left:0;}
+  #menu-btn{display:flex;align-items:center;}
+  #overlay.open{display:block;}
+  #content{padding:16px 12px 100px;}
+}
+
+/* ── Search results ── */
+#search-results{display:none;background:var(--surface);border-radius:0 0 var(--r-sm) var(--r-sm);border:1px solid var(--border);border-top:none;max-height:320px;overflow-y:auto;position:absolute;left:0;right:0;z-index:200;}
+.sr-item{padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--border);font-size:13.5px;}
+.sr-item:hover{background:var(--blue-lt);}
+.sr-item .sr-title{font-weight:700;color:var(--navy);}
+.sr-item .sr-section{font-size:12px;color:var(--muted);}
+.search-container{position:relative;}
+</style>
+</head>
+<body>
+
+<header id="site-header">
+  <div class="hdr-inner">
+    <button id="menu-btn" aria-label="Menu">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="hdr-logo">
+      <svg width="20" height="20" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm1 14h-2v-5h2v5zm0-7h-2V7h2v2z"/></svg>
+    </div>
+    <div class="hdr-text">
+      <div class="hdr-eyebrow">St Vincent's Hospital Melbourne</div>
+      <div class="hdr-title">Specialist Clinics Handbook 2026</div>
+    </div>
+    <span class="hdr-badge">Graduate Nursing</span>
+  </div>
+  <div id="search-bar">
+    <div class="search-container">
+      <div class="search-wrap">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input id="search-input" type="search" placeholder="Search handbook…" autocomplete="off" aria-label="Search handbook">
+      </div>
+      <div id="search-results"></div>
+    </div>
+  </div>
+</header>
+
+<div id="overlay"></div>
+
+<div class="app-body">
+
+<!-- ── Sidebar ── -->
+<nav id="sidebar" aria-label="Handbook navigation">
+  <div class="nav-section-label">Handbook</div>
+  <a class="nav-link active" data-page="home">🏠&nbsp; Welcome &amp; Overview</a>
+
+  <div class="nav-section-label">Section 1 — General Information</div>
+  <a class="nav-link" data-page="education">📚&nbsp; Education Sessions</a>
+  <a class="nav-link" data-page="leave">📅&nbsp; Leave</a>
+  <a class="nav-link" data-page="competencies">✅&nbsp; Competencies</a>
+  <a class="nav-link" data-page="drugs">💊&nbsp; Drug Protocols</a>
+  <a class="nav-link" data-page="bsl">🩸&nbsp; BSL &amp; Insulin</a>
+  <a class="nav-link" data-page="oxygen">🫁&nbsp; Oxygen Therapy</a>
+  <a class="nav-link" data-page="restraints">🔒&nbsp; Restraints</a>
+  <a class="nav-link" data-page="pressure">🛏️&nbsp; Pressure Injury</a>
+  <a class="nav-link" data-page="falls">⚠️&nbsp; Falls Prevention</a>
+  <a class="nav-link" data-page="bariatric">🏋️&nbsp; Bariatric Patients</a>
+  <a class="nav-link" data-page="arp">💙&nbsp; Acute Resuscitation Plan</a>
+  <a class="nav-link" data-page="support">🤝&nbsp; Staff Support</a>
+  <a class="nav-link" data-page="codes">🚨&nbsp; Emergency Codes</a>
+
+  <div class="nav-section-label">Section 2 — Clinical Area</div>
+  <a class="nav-link" data-page="unit">🏥&nbsp; Unit Outline</a>
+  <a class="nav-link" data-page="directory">📋&nbsp; Clinics Directory</a>
+  <a class="nav-link" data-page="meetings">🗓️&nbsp; Unit Meetings</a>
+  <a class="nav-link" data-page="interpreters">🌐&nbsp; Interpreters</a>
+  <a class="nav-link" data-page="telehealth">📱&nbsp; Telehealth</a>
+  <a class="nav-link" data-page="learning-obj">🎯&nbsp; Learning Objectives</a>
+  <a class="nav-link" data-page="appraisals">📝&nbsp; Performance Appraisals</a>
+
+  <div class="nav-section-label">Section 3 — Workbooks</div>
+  <a class="nav-link" data-page="wb-cardiology">❤️&nbsp; Cardiology &amp; ECG</a>
+  <a class="nav-link" data-page="wb-id">🦠&nbsp; Infectious Disease</a>
+  <a class="nav-link" data-page="wb-uvb">☀️&nbsp; UVB Therapy</a>
+  <a class="nav-link" data-page="wb-ortho">🦴&nbsp; Orthopaedic Fracture</a>
+  <a class="nav-link" data-page="wb-plastics">🩹&nbsp; Plastic / Dermatology</a>
+</nav>
+
+<!-- ── Content ── -->
+<main id="content">
+
+<!-- HOME -->
+<div class="page active" id="page-home">
+  <div class="welcome-hero">
+    <h2>Graduate Nursing Handbook — Specialist Clinics</h2>
+    <p>St Vincent's Hospital Melbourne · 35 Victoria Parade, Fitzroy · 2026 Edition</p>
+  </div>
+  <div class="welcome-stats">
+    <div class="stat-card"><div class="stat-num">250k+</div><div class="stat-label">Non-admitted appointments/year</div></div>
+    <div class="stat-card"><div class="stat-num">22</div><div class="stat-label">Medical &amp; surgical specialties</div></div>
+    <div class="stat-card"><div class="stat-num">85k</div><div class="stat-label">New referrals per annum</div></div>
+    <div class="stat-card"><div class="stat-num">35+</div><div class="stat-label">Consulting rooms</div></div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-b">📖</div><div><div class="card-title">About this Handbook</div><div class="card-sub">For graduate nurses commencing in Specialist Clinics</div></div></div>
+    <p>This handbook provides you with general nursing information, an understanding of the clinical area structure and the various specialties, and an understanding of the complexity of patients cared for in this setting.</p>
+    <div class="ib b"><strong>Completion Expectation</strong>You are expected to have reviewed both sections and completed all worksheets within <strong>three months</strong> of commencing in the clinical area.</div>
+    <h3>Handbook Sections</h3>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">General Information</div><div class="step-desc">Policies, protocols, and essential clinical knowledge for all staff</div></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Clinical Area Information</div><div class="step-desc">Unit structure, contacts, meetings, telehealth, and orientation objectives</div></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Workbooks &amp; Clinical Assessments</div><div class="step-desc">Cardiology, Infectious Disease, UVB Therapy, Orthopaedic, Plastics / Dermatology</div></div></div>
+    </div>
+  </div>
+  <h3 style="margin-bottom:10px;">Quick Navigation</h3>
+  <div class="quick-nav">
+    <div class="qn-card" onclick="navTo('directory')"><div class="qn-icon">📋</div><div class="qn-label">Clinics Directory</div></div>
+    <div class="qn-card" onclick="navTo('drugs')"><div class="qn-icon">💊</div><div class="qn-label">Drug Protocols</div></div>
+    <div class="qn-card" onclick="navTo('codes')"><div class="qn-icon">🚨</div><div class="qn-label">Emergency Codes</div></div>
+    <div class="qn-card" onclick="navTo('telehealth')"><div class="qn-icon">📱</div><div class="qn-label">Telehealth</div></div>
+    <div class="qn-card" onclick="navTo('support')"><div class="qn-icon">🤝</div><div class="qn-label">Staff Support</div></div>
+    <div class="qn-card" onclick="navTo('wb-cardiology')"><div class="qn-icon">❤️</div><div class="qn-label">Workbooks</div></div>
+  </div>
+</div>
+
+<!-- EDUCATION -->
+<div class="page" id="page-education">
+  <div class="page-title">Education Sessions</div>
+  <div class="page-subtitle">Section 1 · General Information</div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-b">📚</div><div><div class="card-title">Local Education Sessions</div></div></div>
+    <p>Education sessions are held mainly on clinic free days or when there is adequate staffing available. Sessions are sent via calendar invite through your Outlook email and cover a variety of topics specific to the unit.</p>
+    <div class="ib a"><strong>Expectation</strong>You are expected to use your initiative and accept responsibility for your own learning needs as opportunities arise.</div>
+    <h3>Familiarise Yourself With</h3>
+    <ul>
+      <li>Emergency Codes</li>
+      <li>Fire Exits &amp; Alarms</li>
+      <li>Fire hoses / extinguishers</li>
+      <li>Who the area wardens are in your clinical area</li>
+      <li>Emergency buzzers</li>
+      <li>Resuscitation equipment / trolley</li>
+      <li>Defibrillator</li>
+      <li>Manual handling equipment</li>
+    </ul>
+  </div>
+</div>
+
+<!-- LEAVE -->
+<div class="page" id="page-leave">
+  <div class="page-title">Leave</div>
+  <div class="page-subtitle">Section 1 · General Information</div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-r">🤒</div><div><div class="card-title">Sick / Personal Leave</div></div></div>
+    <div class="ib r"><strong>Contact First</strong>Please contact the NUM (Emily Pett) directly as early as possible on <a href="tel:0392313770" style="color:var(--red);font-weight:700;">9231 3770</a> between 8:00am – 4:30pm.</div>
+    <p>If calling in sick <strong>outside regular clinic hours</strong>, ring the After Hours Coordinator on <a href="tel:0392314156" style="color:var(--blue);font-weight:700;">9231 4156</a>. Also ring the NUM the following day to inform her of your absence.</p>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-g">📅</div><div><div class="card-title">Annual Leave</div></div></div>
+    <p>Annual leave must be arranged with your Nurse Unit Manager (NUM). Submit leave requests via <strong>UKG</strong> subject to NUM approval depending on staffing availability.</p>
+    <div class="ib a"><strong>Important Limit</strong>Only <strong>2 nurses</strong> can be off the floor at any given time. Speak to your NUM about annual leave at the earliest possible opportunity.</div>
+    <p>During your 6-month rotation you will be required to take your allocated weeks of annual leave — it is your responsibility to plan these well in advance.</p>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-p">🎓</div><div><div class="card-title">Professional Development / Study Leave</div></div></div>
+    <p>In your Graduate/Practice Development year, study days will be assigned and organised by Education and Learning.</p>
+    <p>For all other nursing staff, professional development/study leave must be requested in advance to your NUM. Please check with your NUM/ANUM(s) before booking any study day.</p>
+  </div>
+</div>
+
+<!-- COMPETENCIES -->
+<div class="page" id="page-competencies">
+  <div class="page-title">Competencies</div>
+  <div class="page-subtitle">Section 1 · General Information</div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-g">✅</div><div><div class="card-title">Required Learning</div></div></div>
+    <p>Please refer to <strong>'Required Learning'</strong> under the <strong>'Education'</strong> tab on the intranet page for the competencies you are required to complete.</p>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Go to the Intranet</div><div class="step-desc">Navigate to the Education tab</div></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Click 'What training am I required to complete'</div><div class="step-desc"></div></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Select your designation</div><div class="step-desc">Graduate Nurse, Registered Nurse, or Enrolled Nurse</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- DRUGS -->
+<div class="page" id="page-drugs">
+  <div class="page-title">Drug Protocols</div>
+  <div class="page-subtitle">Section 1 · General Information</div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-a">💊</div><div><div class="card-title">Medication Administration Policy</div></div></div>
+    <p>All nurses must adhere to the St Vincent's Hospital drug administration policy. Medication administration policies and protocols are located on the intranet within the <strong>General Medication Protocols</strong> and the <strong>Australian Injectable Drug Handbook</strong>. Product information is located in MIMS on the intranet.</p>
+    <h3>Key Points</h3>
+    <ul>
+      <li>Drugs of Addiction/Dependence (DDs) are counted at the end of clinic. Staff rostered at 8am must take out the DD keys from the cupboard. Ensure you are familiar with <strong>Enkey</strong>.</li>
+      <li>When administering medication ensure: correct <strong>patient, drug, dose, route, time, frequency, reason</strong> and no allergy.</li>
+      <li>Do not administer any medication if the order is unclear — clarify first with the RMO who prescribed the order.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-r">👥</div><div><div class="card-title">Medications Requiring Double-Check</div><div class="card-sub">Checked by 2 nurses — at least one must be a Grade 2 Year 2+ RN</div></div></div>
+    <ul>
+      <li>Injectable drugs (IV, subcutaneous, intramuscular)</li>
+      <li>Cytotoxic <span class="pill pill-red">RN only</span></li>
+      <li>Oral anticoagulants</li>
+      <li>Pre-operative medication</li>
+      <li>Drugs of Addiction (S8)</li>
+      <li>Drugs of Dependence (S11)</li>
+      <li>Telephone orders</li>
+    </ul>
+    <div class="ib a"><strong>Graduate / EN / Agency Staff</strong>Must double check necessary medication with a St Vincent's Grade 2 Year 2+ Registered Nurse or above.</div>
+    <div class="ib b"><strong>Telephone Orders</strong>Two nurses (at least one RN Grade 2 Year 2+) must clarify telephone orders for medication. Both must sign the treatment sheet. The Medical Officer must countersign within 24 hours.</div>
+    <div class="ib r"><strong>Medication Errors</strong>An incident report / VHIMS must be completed for any medication error.</div>
+  </div>
+</div>
+
+<!-- BSL -->
+<div class="page" id="page-bsl">
+  <div class="page-title">BSL &amp; Insulin Administration</div>
+  <div class="page-subtitle">Section 1 · General Information</div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-r">🩸</div><div><div class="card-title">Blood Sugar Level Management</div><div class="card-sub">When a diabetic patient presents to clinic</div></div></div>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Perform baseline BSL</div></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Document BSL, diabetic history and current medications</div><div class="step-desc">Oral medications and insulin</div></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Notify RMO of abnormal levels</div></div></div>
+    </div>
+    <div class="ib r"><strong>BSL &gt; 15 mmol/L</strong>Check for ketones.</div>
+    <div class="ib a"><strong>BSL &lt; 4 mmol/L</strong>Give 15g glucose gel (1 tube) and recheck BSL in 15 minutes. Repeat if necessary. Once BSL &gt; 4 mmol/L, give a longer-acting carbohydrate (e.g. sandwich, fruit juice).</div>
+    <div class="ib g"><strong>Calibration</strong>Ensure blood sugar machines are calibrated before use.</div>
+    <h3>Additional Considerations</h3>
+    <ul>
+      <li>Always check with RMO prior to withholding insulin</li>
+      <li>Consider diabetic education referrals for newly diagnosed diabetes or unstable BSLs</li>
+      <li>Use the diabetes matrix on the St Vincent's intranet as a resource</li>
+    </ul>
+  </div>
+</div>
+
+<!-- OXYGEN -->
+<div class="page" id="page-oxygen">
+  <div class="page-title">Oxygen Therapy</div>
+  <div class="page-subtitle">Section 1 · General Information</div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-b">🫁</div><div><div class="card-title">Oxygen Administration</div></div></div>
+    <ul>
+      <li>Check patient's baseline oxygen saturation levels and medical history before administering O₂ therapy</li>
+      <li>Ensure the correct device and rate of oxygen is appropriate to maintain adequate saturation levels</li>
+    </ul>
+    <h3>Delivery Devices</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Device</th><th>Flow Rate</th></tr></thead>
+        <tbody>
+          <tr><td>Nasal prongs</td><td>≤ 4 L/min</td></tr>
+          <tr><td>Hudson Mask</td><td>≥ 6 L/min</td></tr>
+          <tr><td>Fisher and Paykel Humidifier O₂ delivery system</td><td>As prescribed</td></tr>
+          <tr><td>HFNC (High Flow Nasal Cannula)</td><td>As prescribed</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h3>Nebulisers</h3>
+    <ul>
+      <li>Via oxygen outlet at <strong>6–8 L/min</strong></li>
+      <li>Via <strong>air pump</strong> if the patient is a CO₂ retainer</li>
+    </ul>
+    <div class="ib a"><strong>Humidified Oxygen</strong>Ensure water level is adequate when using humidified oxygen. Ensure oxygen equipment and nebulisers are within date.</div>
+  </div>
+</div>
+
+<!-- RESTRAINTS -->
+<div class="page" id="page-restraints">
+  <div class="page-title">Restraints</div>
+  <div class="page-subtitle">Section 1 · General Information</div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-r">🔒</div><div><div class="card-title">Restraint Protocol</div></div></div>
+    <div class="ib r"><strong>Strict Protocol</strong>Restraints are only used on patients who are at risk of harming themselves or others. There is a strict protocol when using restraints which can be found in the Policy and Procedure Manual on the intranet.</div>
+  </div>
+</div>
+
+<!-- PRESSURE INJURY -->
+<div class="page" id="page-pressure">
+  <div class="page-title">Pressure Injury Prevention</div>
+  <div class="page-subtitle">Section 1 · General Information</div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-a">🛏️</div><div><div class="card-title">Pressure Injury Management</div></div></div>
+    <div class="ib r"><strong>Mandatory Reporting</strong>An incident report (VHIMS) must be completed for all pressure injuries developed whilst the patient is in care.</div>
+    <ul>
+      <li>Document all pressure injuries in the patient history</li>
+    </ul>
+  </div>
+</div>
+
+<!-- FALLS -->
+<div class="page" id="page-falls">
+  <div class="page-title">Falls Prevention &amp; Management</div>
+  <div class="page-subtitle">Section 1 · General Information</div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-a">⚠️</div><div><div class="card-title">Falls Risk Management</div></div></div>
+    <ul>
+      <li>Patients assessed as a <strong>high falls risk</strong> or a falls <strong>'red alert'</strong> require this information to be communicated during clinical handover and documented on the transport/handover sheet</li>
+      <li>High-risk patients should be checked regularly and located in a high-visibility area if possible</li>
+      <li>A staff member should stay with a patient with cognitive impairment who is at risk of falls while in the bathroom</li>
+    </ul>
+    <div class="ib b"><strong>Post-Fall Actions</strong>All falls must be reported to the Nurse in Charge and Medical Officer. An incident report (VHIMS) must be completed, the incident documented in the patient history, and the NOK must be notified.</div>
+    <p>Refer to the <em>Falls Prevention and Management Clinical Guidelines</em> for immediate post-fall management instructions.</p>
+  </div>
+</div>
+
+<!-- BARIATRIC -->
+<div class="page" id="page-bariatric">
+  <div class="page-title">Bariatric Patients</div>
+  <div class="page-subtitle">Section 1 · General Information</div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-n">🏋️</div><div><div class="card-title">Bariatric Patient Definition</div></div></div>
+    <p>The term <strong>'Bariatric Patient'</strong> is applied to patients unable to be moved using standard lifting, mobility, bed or hygiene equipment due to their size or weight (related to sitting or lying width, not just weight).</p>
+    <div class="ib a"><strong>Key Requirement</strong>Inform the ANUM/NUM if you are notified of a patient having bariatric requirements. Ensure that appropriate equipment is available. Contact the Central Equipment Library or Move Smart team.</div>
+    <div class="ib r"><strong>Bariatric Beds</strong>A bariatric bed must be organised beforehand — there are only <strong>3 bariatric beds</strong> available in the whole hospital.</div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-b">👥</div><div><div class="card-title">Move Smart Considerations</div></div></div>
+    <ul>
+      <li>A minimum of <strong>four (4) staff</strong> must be available for all patient transfers</li>
+      <li>Bariatric transport patients via ambulance are to be transferred directly onto a bariatric bed using a hover matt, hoist or three slide sheets and a pat slide</li>
+      <li>Lateral transfers (bed to bed or bed to chair): no less than <strong>four (4) staff members</strong></li>
+      <li>Most nursing staff have been educated on how to use the <strong>Hover Matt</strong> — use for all lateral and side-to-side transfers</li>
+      <li>Attendant-propelled wheelchairs: pushed by <strong>two (2) staff members</strong>. Encourage patient to assist wherever possible</li>
+    </ul>
+    <div class="ib b"><strong>Policy Reference</strong>Refer to the Patient Manual Handling — Bariatric Patient Policy on the intranet.</div>
+  </div>
+</div>
+
+<!-- ARP -->
+<div class="page" id="page-arp">
+  <div class="page-title">Acute Resuscitation Plan</div>
+  <div class="page-subtitle">Section 1 · General Information</div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-r">💙</div><div><div class="card-title">ARP Orders</div></div></div>
+    <div class="ib b"><strong>Policy Reference</strong>Refer to intranet — 'Resuscitation Plans and Goals of Care Plans'</div>
+    <ul>
+      <li>ARP orders must be <strong>verbally handed over</strong> to all nursing staff and documented on the handover sheet</li>
+      <li>This form should be kept with the patient's Medical History at all times</li>
+    </ul>
+  </div>
+</div>
+
+<!-- SUPPORT -->
+<div class="page" id="page-support">
+  <div class="page-title">Staff Support</div>
+  <div class="page-subtitle">Section 1 · General Information</div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-b">⭐</div><div><div class="card-title">STAR! — Support Team Action Response</div><div class="card-sub">Critical Incident Stress Management (peer support) program</div></div></div>
+    <p>STAR is a multi-disciplinary peer team empowering St. Vincent's staff to manage their own stress and deal with critical incidents in the workplace. STAR members are equipped with the knowledge and skills to provide <strong>confidential emotional support</strong> to individuals and teams who request assistance.</p>
+    <div class="ib g"><strong>Available 24/7</strong>STAR is available 24 hours, 7 days a week via switchboard on <strong>99</strong> or <a href="tel:0392312211" style="color:var(--green);font-weight:700;">9231 2211</a></div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-p">🫂</div><div><div class="card-title">ACCESS — Employee Assistance Program</div><div class="card-sub">Offered through Assure</div></div></div>
+    <p>A voluntary counselling and advisory service providing assistance with personal and work-related problems. The service is <strong>confidential</strong> and provides effective, short-term, solution-focused counselling.</p>
+    <div class="ib g"><strong>Phone</strong><a href="tel:1800808374" style="color:var(--green);font-size:16px;font-weight:800;">1800 808 374</a></div>
+    <p>After-hours telephone counselling is available <strong>24 hours, 365 days a year</strong> for urgent cases.</p>
+  </div>
+</div>
+
+<!-- EMERGENCY CODES -->
+<div class="page" id="page-codes">
+  <div class="page-title">Emergency Codes</div>
+  <div class="page-subtitle">Section 1 · General Information</div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-r">🚨</div><div><div class="card-title">Standard Emergency Codes</div><div class="card-sub">Familiarise yourself with all codes on commencement</div></div></div>
+    <div class="code-grid">
+      <div class="code-card" style="background:#FEE2E2;border:1px solid #FEB4B4;"><div class="code-word" style="color:#7F1D1D;">Code Red</div><div class="code-desc">Fire</div></div>
+      <div class="code-card" style="background:#FEE2E2;border:1px solid #FEB4B4;"><div class="code-word" style="color:#7F1D1D;">Code Blue</div><div class="code-desc">Medical Emergency</div></div>
+      <div class="code-card" style="background:#FEF3C7;border:1px solid #FDE68A;"><div class="code-word" style="color:#78350F;">Code Yellow</div><div class="code-desc">Internal Emergency</div></div>
+      <div class="code-card" style="background:#FEF3C7;border:1px solid #FDE68A;"><div class="code-word" style="color:#78350F;">Code Orange</div><div class="code-desc">Evacuation</div></div>
+      <div class="code-card" style="background:#EDE9FE;border:1px solid #C4B5FD;"><div class="code-word" style="color:#4C1D95;">Code Purple</div><div class="code-desc">Bomb Threat</div></div>
+      <div class="code-card" style="background:#DCFCE7;border:1px solid #A7F3C3;"><div class="code-word" style="color:#14532D;">Code Green</div><div class="code-desc">External Emergency</div></div>
+      <div class="code-card" style="background:#DBEAFE;border:1px solid #BFDBFE;"><div class="code-word" style="color:#1E3A8A;">Code Black</div><div class="code-desc">Personal Threat</div></div>
+      <div class="code-card" style="background:#F3F4F6;border:1px solid #D1D5DB;"><div class="code-word" style="color:#111827;">Code White</div><div class="code-desc">Aggression</div></div>
+    </div>
+    <div class="ib a"><strong>Familiarise On Commencement</strong>Know your fire exits, alarms, fire hoses/extinguishers, area wardens, emergency buzzers, resuscitation equipment, defibrillator, and manual handling equipment.</div>
+  </div>
+</div>
+
+<!-- UNIT OUTLINE -->
+<div class="page" id="page-unit">
+  <div class="page-title">Unit Outline</div>
+  <div class="page-subtitle">Section 2 · Clinical Area Information</div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-b">🏥</div><div><div class="card-title">Specialist Clinics Overview</div></div></div>
+    <p>Specialist Clinics provide over <strong>250,000 non-admitted patient appointments</strong> per year across <strong>22 different medical and surgical specialties</strong>, and receive <strong>85,000 new referrals per annum</strong>. Specialist Clinics provide a gateway to the hospital for patients requiring elective surgery and ongoing chronic disease management. Major referral base is via General Practitioners from all areas of Victoria.</p>
+    <h3>Location</h3>
+    <ul>
+      <li><strong>Ground Floor, Daly Wing (Building D)</strong> — 35 Victoria Parade</li>
+      <li><strong>3rd Floor Healy Wing (Building C)</strong></li>
+    </ul>
+    <h3>Facilities</h3>
+    <ul>
+      <li>35+ fully equipped consulting rooms</li>
+      <li>Two treatment rooms</li>
+      <li>Plaster room</li>
+      <li>Dermatological testing room</li>
+      <li>Two waiting rooms &amp; staff room</li>
+      <li>Pre-admission centre, radiology, pharmacy &amp; outpatient pathology (same floor)</li>
+    </ul>
+    <h3>Hours of Operation</h3>
+    <div class="ib b"><strong>Clinic Hours</strong>Operations: 0800–1730 · Staff shifts: 0800–1800 · Most clinics: 0900–1200 and 1400–1700</div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-n">🏗️</div><div><div class="card-title">Department Structure</div></div></div>
+    <ul>
+      <li>Operations Manager</li>
+      <li>Nurse Unit Manager</li>
+      <li>Case Coordination Teams</li>
+      <li>Registered Nurses</li>
+      <li>Enrolled Nurses</li>
+      <li>Clerical Staff (PSCs)</li>
+      <li>SSAs</li>
+      <li>Volunteers</li>
+    </ul>
+    <h3>Graduate Nurses</h3>
+    <p>All graduate nurses commence at the novice level and require assistance developing assessment and clinical skills. A preceptor will guide you through the orientation program and assist you in developing your role in the Care Centre.</p>
+  </div>
+</div>
+
+<!-- DIRECTORY -->
+<div class="page" id="page-directory">
+  <div class="page-title">Specialist Clinics Directory</div>
+  <div class="page-subtitle">Section 2 · Clinical Area Information</div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-b">📋</div><div><div class="card-title">Key Contacts</div></div></div>
+    <div class="contact-grid">
+      <div class="contact-chip"><div class="role">Clinic Operations Manager</div><div class="name">Rachael Andrews</div><div class="ext"><a href="tel:13484">#13484</a></div></div>
+      <div class="contact-chip"><div class="role">Clerical Team Manager</div><div class="name">Mary Dafilis</div><div class="ext"><a href="tel:13775">#13775</a></div></div>
+      <div class="contact-chip"><div class="role">Nursing Unit Manager</div><div class="name">Emily Pett</div><div class="ext"><a href="tel:13937">#13937</a></div></div>
+      <div class="contact-chip"><div class="role">ANUM</div><div class="name">Dylene Van Zyl</div><div class="ext"><a href="tel:13770">#13770</a></div></div>
+      <div class="contact-chip"><div class="role">ANUM</div><div class="name">Jaclyn Hannon</div><div class="ext"><a href="tel:13770">#13770</a></div></div>
+      <div class="contact-chip"><div class="role">Graduate Nurse Coordinator</div><div class="name"></div><div class="ext"><a href="tel:13847">#13847</a></div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-n">🏢</div><div><div class="card-title">Clinic Areas</div></div></div>
+    <div class="clinic-grid">
+      <div class="clinic-chip red"><div class="cname">🔴 Red Clinic</div><div class="cdets">Nurse: <a href="tel:15074">#15074</a><br>Reception: <a href="tel:13416">#13416</a></div></div>
+      <div class="clinic-chip blue-c"><div class="cname">🔵 Blue Clinic</div><div class="cdets">Nurse: <a href="tel:15071">#15071</a><br>Reception: <a href="tel:13412">#13412</a></div></div>
+      <div class="clinic-chip green-c"><div class="cname">🟢 Green Clinic</div><div class="cdets">Nurse: <a href="tel:13934">#13934</a><br>Reception: <a href="tel:14763">#14763</a></div></div>
+      <div class="clinic-chip yellow"><div class="cname">🟡 Yellow Clinic</div><div class="cdets">3rd Floor Healy Wing<br>Reception: <a href="tel:11560">#11560</a><br>Floor Nurse: TBC</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-p">🏥</div><div><div class="card-title">Case Coordination Teams &amp; Heads of Units</div></div></div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Unit / Specialty</th><th>Nurse Case Coordinator</th><th>Referral Officer</th><th>Head of Unit</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Neurosurgery</strong></td><td>Marielle Colat #1253</td><td>TBC #3492</td><td>Paul Smith</td></tr>
+          <tr><td><strong>Neurology<br>Rheumatology<br>Respiratory</strong></td><td>Creina Hansen #1102/1253</td><td>Siian Cook #1252</td><td>Mark Cook<br>Sheeron On<br>Matthew Cronon</td></tr>
+          <tr><td><strong>Orthopaedics</strong></td><td>Helen Boffa #1246</td><td>Rachelle Argondizzo #1249</td><td>Jarrad Stevens</td></tr>
+          <tr><td><strong>Cardiology<br>Vascular<br>Cardiothoracic</strong></td><td>Alix Massey #1250</td><td>Geetan Jhamb #3563</td><td>Andrew MacIsaac<br>Dominic Robinson<br>A/Shone IP</td></tr>
+          <tr><td><strong>Endocrinology<br>Haematology<br>Infectious Disease</strong></td><td>Victoria Collier #3431</td><td>Jonathan Tan / Vandna Sharma #3419</td><td>Richard MacIsaac<br>Hang Quach<br>John Daffy</td></tr>
+          <tr><td><strong>Plastics / Hands<br>OMF / Breast<br>DOS / General Sx</strong></td><td>Kylie Powell #1247<br>Pauline Miller</td><td>Keziah Delastrico #1248</td><td>Damien Grinsell<br>Joseph Gunn<br>Caroline Baker</td></tr>
+          <tr><td><strong>Urology<br>ENT</strong></td><td>Melissa Angus #1251</td><td>TBA #1252</td><td>Jeremy Goad<br>Ben Dixon</td></tr>
+          <tr><td><strong>Dermatology<br>General Medicine</strong></td><td>Maria Garita #1254</td><td>Melissa Fernandez #1255</td><td>Chris Baker<br>John Darby</td></tr>
+          <tr><td><strong>Gastroenterology<br>Colorectal<br>Hepatobiliary</strong></td><td>Renata Tizi #3225</td><td>Mathew Grima #1256</td><td>Alex Thompson<br>James Keck<br>Simon Banting / Michael Hui</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h3>Case Coordination Team Responsibilities</h3>
+    <ul>
+      <li>Management of referrals in accordance with the Specialist Clinics Access Policy</li>
+      <li>Ensure patients are scheduled within the clinically recommended timeframe</li>
+      <li>Ensure patients are scheduled in turn</li>
+      <li>Oversight of scheduling clinic appointments — ensuring patients see the most appropriate health professional</li>
+      <li>Monitor and manage appointment cancellations and failure to attends as per SVHM policy</li>
+    </ul>
+    <h3>Your Role in the Flow Team</h3>
+    <ul>
+      <li>Coordinating the flow of patients through specialist clinics</li>
+      <li>Attending to patients' clinical needs: dressings, plaster care, ECGs, vital signs, patient assessment</li>
+      <li>Supervise and support staff and workflow</li>
+      <li>Ensure patients are discharged from clinic with a clear plan</li>
+      <li>Assist with monitoring and audit processes</li>
+      <li>Maintain good working relationships with clerical, medical and allied health staff</li>
+      <li>Liaise with Nurse Clinical Coordinator regarding discharges and failed-to-attend patients</li>
+    </ul>
+  </div>
+</div>
+
+<!-- MEETINGS -->
+<div class="page" id="page-meetings">
+  <div class="page-title">Unit Meetings</div>
+  <div class="page-subtitle">Section 2 · Clinical Area Information</div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-b">🗓️</div><div><div class="card-title">Regular Staff Meetings</div></div></div>
+    <div class="meeting-item">
+      <div class="meeting-dot">1</div>
+      <div class="meeting-body">
+        <div class="meeting-time">1st Wednesday of every month · 12:30</div>
+        <div class="meeting-title">Unit Meeting</div>
+        <div class="meeting-desc">Held by the Operations Manager</div>
+      </div>
+    </div>
+    <div class="meeting-item">
+      <div class="meeting-dot">2</div>
+      <div class="meeting-body">
+        <div class="meeting-time">2nd Wednesday of every month · 12:30</div>
+        <div class="meeting-title">General Nurses Meeting</div>
+        <div class="meeting-desc">Discuss things particular to the nursing team — a forum to raise any concerns</div>
+      </div>
+    </div>
+    <div class="meeting-item">
+      <div class="meeting-dot">3</div>
+      <div class="meeting-body">
+        <div class="meeting-time">Daily · 08:30 (10 minutes)</div>
+        <div class="meeting-title">Daily Management System</div>
+        <div class="meeting-desc">All staff rostered on must attend. Discuss issues from the previous day and anticipated issues for the day ahead, with a management plan.</div>
+      </div>
+    </div>
+    <div class="meeting-item">
+      <div class="meeting-dot">4</div>
+      <div class="meeting-body">
+        <div class="meeting-time">Weekly — time set by preceptor and graduate nurse</div>
+        <div class="meeting-title">Preceptor Meeting</div>
+        <div class="meeting-desc">Debrief from the week's events and discuss the week ahead</div>
+      </div>
+    </div>
+    <div class="meeting-item">
+      <div class="meeting-dot">5</div>
+      <div class="meeting-body">
+        <div class="meeting-time">Monthly</div>
+        <div class="meeting-title">NUM Meeting</div>
+        <div class="meeting-desc">Opportunity to discuss any outstanding issues or concerns. Don't wait for the monthly catch-up if you have an urgent concern.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- INTERPRETERS -->
+<div class="page" id="page-interpreters">
+  <div class="page-title">Interpreters</div>
+  <div class="page-subtitle">Section 2 · Clinical Area Information</div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-g">🌐</div><div><div class="card-title">Interpreter Services</div></div></div>
+    <p>Interpreters are used extensively in the clinics, as around <strong>20% of our patients</strong> do not speak English adequately. We have a number of 'in-house' interpreters generally available Monday to Friday. All other languages must be pre-booked via external providers.</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Language</th><th>Pager Number</th></tr></thead>
+        <tbody>
+          <tr><td>Greek</td><td>254</td></tr>
+          <tr><td>Italian</td><td>253</td></tr>
+          <tr><td>Vietnamese</td><td>258</td></tr>
+          <tr><td>Cantonese / Mandarin</td><td>411</td></tr>
+          <tr><td>Arabic</td><td>476</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- TELEHEALTH -->
+<div class="page" id="page-telehealth">
+  <div class="page-title">Telehealth for Public Clinics</div>
+  <div class="page-subtitle">Section 2 · Clinical Area Information</div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-b">📱</div><div><div class="card-title">What is Telehealth?</div></div></div>
+    <p>Telehealth is the use of technology to provide health care over both long and short distances — transmitting voice, data, images and information rather than moving care recipients, health professionals or educators. Telehealth consultations are treated as the same quality as face-to-face appointments.</p>
+    <p>Undertaken with the consent of the patient, with the understanding that the patient can revert to face-to-face appointments if requested.</p>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-n">⚖️</div><div><div class="card-title">Public vs. Correctional Telehealth</div></div></div>
+    <h3>Corrections (Prison) Patients</h3>
+    <p>SVHM has been utilising telehealth for corrections patients since <strong>2016</strong>. All correctional facilities have Health Direct Telehealth access.</p>
+    <div class="ib r"><strong>Must Run On Time</strong>Correctional telehealth appointments must run on time — processes and staff (guards, nursing, transfer from cell block) are involved. An hour must be left between appointments from the same prison. Must be confirmed with the individual prison facility prior to clinic start.</div>
+    <h3>Public Patients</h3>
+    <p>Platform: <strong>Health Direct video call</strong> — available on desktop, laptops, tablets and smartphones. Patients navigate to: <a href="http://www.svhm.org.au/telehealth" target="_blank" style="color:var(--blue);">www.svhm.org.au/telehealth</a> (Google Chrome or Microsoft Edge).</p>
+    <div class="ib g"><strong>Virtual Waiting Room</strong>Public patients sit in their virtual waiting room until a staff member answers. The platform shows how long a patient has been waiting. Multiple appointments can be booked back-to-back without issue.</div>
+    <h3>Patient Resources</h3>
+    <ul>
+      <li><strong>Brochures</strong> — located at reception of Red, Blue &amp; 3rd Floor clinics</li>
+      <li><strong>Website</strong> — <a href="http://www.svhm.org.au/telehealth" target="_blank" style="color:var(--blue);">www.svhm.org.au/telehealth</a></li>
+    </ul>
+    <h3>How You Can Help</h3>
+    <ul>
+      <li>Familiarise yourself with the Healthdirect video call platform</li>
+      <li>Inform NUM of staff requiring platform access (including yourself)</li>
+      <li>Complete the <strong>Telehealth competency</strong></li>
+    </ul>
+  </div>
+</div>
+
+<!-- LEARNING OBJECTIVES -->
+<div class="page" id="page-learning-obj">
+  <div class="page-title">Learning Objectives</div>
+  <div class="page-subtitle">Section 2 · Clinical Area Information</div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-g">🎯</div><div><div class="card-title">To be achieved within 1 month</div></div></div>
+    <div class="tbl-wrap lo-table">
+      <table>
+        <thead><tr><th>Clinical Skill</th><th>Date Completed</th><th>Sign Off</th></tr></thead>
+        <tbody>
+          <tr><td>Oxygen Administration</td><td>……/……/…….</td><td></td></tr>
+          <tr><td>Neurological Observations</td><td>……/……/…….</td><td></td></tr>
+          <tr><td>Basic dressings and suture removal</td><td>……/……/…….</td><td></td></tr>
+          <tr><td>Urinalysis</td><td>……/……/…….</td><td></td></tr>
+          <tr><td>Blood glucose monitoring</td><td>……/……/…….</td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-b">🎯</div><div><div class="card-title">To be achieved by end of rotation</div></div></div>
+    <div class="tbl-wrap lo-table">
+      <table>
+        <thead><tr><th>Clinical Skill</th><th>Date</th><th>Sign Off</th></tr></thead>
+        <tbody>
+          <tr><td>Observe Plaster cast application</td><td>……/……/……</td><td></td></tr>
+          <tr><td>Complete Plaster Cast Application (supervised)</td><td>……/……/…….</td><td></td></tr>
+          <tr><td>Casting Application — sign off</td><td>……/……/…….</td><td></td></tr>
+          <tr><td>Observe VAC dressings</td><td>……/……/……</td><td></td></tr>
+          <tr><td>Complete VAC Dressing Application</td><td>……/……/…….</td><td></td></tr>
+          <tr><td>Observe Complex Wound Dressing</td><td>……/……/……</td><td></td></tr>
+          <tr><td>Complete Complex Wound Dressing</td><td>……/……/…….</td><td></td></tr>
+          <tr><td>Observe Venesection Procedure</td><td>……/……/……</td><td></td></tr>
+          <tr><td>Complete Venesection Procedure</td><td>……/……/…….</td><td></td></tr>
+          <tr><td>UVB Procedural Observation</td><td>……/……/……</td><td></td></tr>
+          <tr><td>UVB Procedural — sign off</td><td>……/……/……</td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-a">📚</div><div><div class="card-title">Workbooks</div></div></div>
+    <div class="tbl-wrap lo-table">
+      <table>
+        <thead><tr><th>Workbook</th><th>Date Completed</th><th>Sign Off</th></tr></thead>
+        <tbody>
+          <tr><td>Minor Procedures / Plastics / Dermatology</td><td>……/……/…….</td><td></td></tr>
+          <tr><td>Blood Tests</td><td>……/……/…….</td><td></td></tr>
+          <tr><td>Infectious Diseases</td><td>……/……/…….</td><td></td></tr>
+          <tr><td>Orthopaedic Fracture</td><td>……/……/…….</td><td></td></tr>
+          <tr><td>Cardiology Workbook / ECG</td><td>……/……/…….</td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- APPRAISALS -->
+<div class="page" id="page-appraisals">
+  <div class="page-title">Performance Appraisals</div>
+  <div class="page-subtitle">Section 2 · Clinical Area Information</div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-p">📝</div><div><div class="card-title">Appraisal Requirements</div></div></div>
+    <div class="ib a"><strong>Your Responsibility</strong>Ensure appraisals are completed online and returned to Education and Learning, 3rd Floor Healy Building, by the due date.</div>
+    <h3>Graduate Timetable</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Timetable</th><th>Description</th><th>Date</th></tr></thead>
+        <tbody>
+          <tr><td><span class="pill pill-blue">At 6 weeks</span></td><td>Informal meeting with you, your preceptor and the NUM to discuss your progress</td><td>……/……/…….</td></tr>
+          <tr><td><span class="pill pill-navy">At 4 months</span></td><td>Appraisal done by your preceptor and NUM</td><td>……/……/…….</td></tr>
+          <tr><td><span class="pill pill-navy">At 6 months</span></td><td>Exit / end of rotation interview conducted with your NUM +/- ANUM(s)</td><td>……/……/……</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- WORKBOOK: CARDIOLOGY -->
+<div class="page" id="page-wb-cardiology">
+  <div class="page-title">Cardiology &amp; ECG Workbook</div>
+  <div class="page-subtitle">Section 3 · Workbooks &amp; Clinical Assessments</div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-r">❤️</div><div><div class="card-title">Learning Outcomes</div></div></div>
+    <p>Upon completion of this workbook, learners will be able to:</p>
+    <ul>
+      <li>Explain the cardiac conduction pathway</li>
+      <li>Correctly place a 12-lead ECG</li>
+      <li>Identify normal sinus rhythm</li>
+      <li>Recognise common arrhythmias</li>
+      <li>Understand ECG intervals and waveforms</li>
+      <li>Escalate abnormal findings appropriately</li>
+    </ul>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-b">🫀</div><div><div class="card-title">Section 1: Cardiac Anatomy &amp; Physiology</div></div></div>
+    <div class="q-label">Q: Why is the left ventricle thicker than the right ventricle?</div>
+    <div class="answer-box">Write your answer here…</div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-p">⚡</div><div><div class="card-title">Section 2: Cardiac Conduction System</div></div></div>
+    <h3>Electrical Pathway</h3>
+    <div class="ib n" style="background:var(--si-n);border-left:3px solid var(--blue);">
+      <p style="margin-bottom:6px;"><strong>SA Node →</strong> _________________ → <strong>Bundle of His →</strong> _________________ → <strong>Purkinje Fibres</strong></p>
+    </div>
+    <div class="q-label">Q: What is the role of the SA node?</div>
+    <div class="answer-box">Write your answer here…</div>
+    <div class="q-label">Q: Why is the AV node important?</div>
+    <div class="answer-box">Write your answer here…</div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-g">📊</div><div><div class="card-title">Section 3: ECG Lead Placement</div></div></div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Electrode</th><th>Placement</th></tr></thead>
+        <tbody>
+          <tr><td>V1</td><td></td></tr>
+          <tr><td>V2</td><td></td></tr>
+          <tr><td>V3</td><td></td></tr>
+          <tr><td>V4</td><td></td></tr>
+          <tr><td>V5</td><td></td></tr>
+          <tr><td>V6</td><td></td></tr>
+          <tr><td>RA / LA</td><td></td></tr>
+          <tr><td>RL / LL</td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h3>Scenario 1: The Routine ECG</h3>
+    <div class="scenario"><div class="s-label">Clinical Scenario</div><p>You have been asked to obtain a 12-lead ECG on a stable 55-year-old patient attending a cardiology clinic.</p></div>
+    <div class="q-label">Q: What position would you place the patient in before obtaining the ECG?</div>
+    <div class="answer-box">Write your answer here…</div>
+    <div class="q-label">Q: What instructions would you give the patient before recording the ECG?</div>
+    <div class="answer-box">Write your answer here…</div>
+    <div class="q-label">Q: What might happen if the patient is talking, moving their arms, or crossing their legs during recording?</div>
+    <div class="answer-box">Write your answer here…</div>
+    <h3>Scenario 2: The Short of Breath Patient</h3>
+    <div class="scenario"><div class="s-label">Clinical Scenario</div><p>You are asked to perform a 12-lead ECG on a patient with acute pulmonary oedema. When you attempt to lay the patient flat, they become increasingly distressed and report they cannot breathe.</p></div>
+    <div class="q-label">Q: What concerns do you have about proceeding in a fully supine position?</div>
+    <div class="answer-box">Write your answer here…</div>
+    <div class="q-label">Q: How might you modify the patient's position while still obtaining an ECG?</div>
+    <div class="answer-box">Write your answer here…</div>
+    <div class="q-label">Q: What additional information should be documented on the ECG record?</div>
+    <div class="answer-box">Write your answer here…</div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-a">📉</div><div><div class="card-title">ECG Quality and Artefact</div></div></div>
+    <h3>Scenario 3: "This ECG Looks Strange"</h3>
+    <div class="scenario"><div class="s-label">Clinical Scenario</div><p>You complete an ECG and notice the trace appears irregular and "fuzzy." You observe that the patient is shivering.</p></div>
+    <div class="q-label">Q: What could be causing the abnormal appearance of the ECG?</div>
+    <div class="answer-box">Write your answer here…</div>
+    <div class="q-label">Q: How would you determine whether the tracing represents a true arrhythmia or artefact?</div>
+    <div class="answer-box">Write your answer here…</div>
+    <h3>Scenario 4: Parkinson's Disease</h3>
+    <div class="scenario"><div class="s-label">Clinical Scenario</div><p>A patient with Parkinson's disease has significant upper limb tremors.</p></div>
+    <div class="q-label">Q: What challenges might this create when obtaining an ECG?</div>
+    <div class="answer-box">Write your answer here…</div>
+    <div class="q-label">Q: What strategies could you use to improve ECG quality?</div>
+    <div class="answer-box">Write your answer here…</div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-n">🧠</div><div><div class="card-title">Positioning and Clinical Judgement</div></div></div>
+    <h3>Agree or Disagree?</h3>
+    <div class="ib a"><strong>Statement 1</strong>"The ECG is more important than patient comfort." Agree / Disagree — Why?</div>
+    <div class="answer-box">Write your answer here…</div>
+    <div class="ib a"><strong>Statement 2</strong>"If the ECG monitor looks abnormal, the patient must be unstable." Agree / Disagree — Why?</div>
+    <div class="answer-box">Write your answer here…</div>
+    <div class="ib a"><strong>Statement 3</strong>"If I am unsure whether a tracing is artefact, I should assess the patient before escalating." Agree / Disagree — Why?</div>
+    <div class="answer-box">Write your answer here…</div>
+    <h3>Scenario 5: Clinical Reasoning Challenge</h3>
+    <div class="scenario"><div class="s-label">Clinical Scenario</div><p>You enter a patient's room and observe: Monitor HR 180 bpm · Patient talking comfortably · No chest pain · No shortness of breath · BP 125/78</p></div>
+    <div class="q-label">Q: What is your immediate assessment?</div>
+    <div class="answer-box">Write your answer here…</div>
+    <div class="q-label">Q: Does the monitor reading match the patient's presentation?</div>
+    <div class="answer-box">Write your answer here…</div>
+    <div class="q-label">Q: What troubleshooting steps would you perform and who would you notify?</div>
+    <div class="answer-box">Write your answer here…</div>
+  </div>
+</div>
+
+<!-- WORKBOOK: INFECTIOUS DISEASE -->
+<div class="page" id="page-wb-id">
+  <div class="page-title">Infectious Disease Worksheet</div>
+  <div class="page-subtitle">Section 3 · Workbooks &amp; Clinical Assessments</div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-r">🦠</div><div><div class="card-title">Learning Objectives</div></div></div>
+    <ul>
+      <li>Explain the purpose of common vaccinations</li>
+      <li>Identify populations at increased risk of infectious diseases</li>
+      <li>Describe the indications for tetanus boosters</li>
+      <li>Differentiate between PrEP and PEP in HIV prevention</li>
+      <li>Apply knowledge to clinical practice</li>
+    </ul>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-a">💉</div><div><div class="card-title">Topic 1: Tetanus Immunisation</div></div></div>
+    <p>Tetanus is a serious disease caused by the bacterium <em>Clostridium tetani</em>. The bacteria can enter the body through wounds or breaks in the skin and produce a toxin that affects the nervous system.</p>
+    <div class="q-label">Q: What type of wounds increase the risk of tetanus? How long does vaccine protection last? What is the recommended booster schedule?</div>
+    <div class="answer-box">Write your answer here…</div>
+    <h3>Clinical Scenario</h3>
+    <div class="scenario"><div class="s-label">Clinical Scenario</div><p>A 55-year-old gardener presents to the Emergency Department after stepping on a rusty nail. Their last tetanus vaccination was 15 years ago.</p></div>
+    <div class="q-label">Q: Is this patient at risk of tetanus? Why?</div>
+    <div class="answer-box">Write your answer here…</div>
+    <div class="q-label">Q: Would a tetanus booster be indicated? What additional wound care considerations are important?</div>
+    <div class="answer-box">Write your answer here…</div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-b">🤧</div><div><div class="card-title">Topic 2: Influenza</div></div></div>
+    <p>Influenza is a highly contagious viral respiratory illness that can lead to severe complications, hospitalisation, and death — particularly in vulnerable populations.</p>
+    <div class="q-label">Q: Which populations are most susceptible to influenza and its complications? List at least five high-risk groups.</div>
+    <div class="answer-box">Write your answer here…</div>
+    <h3>Key High-Risk Groups</h3>
+    <ul>
+      <li>Adults aged 65 years and older</li>
+      <li>Infants and young children</li>
+      <li>Pregnant women</li>
+      <li>Aboriginal and Torres Strait Islander peoples</li>
+      <li>People with chronic medical conditions</li>
+      <li>Immunocompromised individuals</li>
+      <li>Residents of aged care facilities</li>
+    </ul>
+    <h3>Clinical Scenario</h3>
+    <div class="scenario"><div class="s-label">Clinical Scenario</div><p>An 82-year-old resident in a Residential Aged Care Facility develops fever, cough, and fatigue during influenza season.</p></div>
+    <div class="q-label">Q: Why is this patient at higher risk of severe illness?</div>
+    <div class="answer-box">Write your answer here…</div>
+    <div class="q-label">Q: What infection prevention measures should be implemented?</div>
+    <div class="answer-box">Write your answer here…</div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-p">🔬</div><div><div class="card-title">Topic 3: HIV Prevention — PrEP and PEP</div></div></div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Feature</th><th>PrEP</th><th>PEP</th></tr></thead>
+        <tbody>
+          <tr><td>What does it stand for?</td><td></td><td></td></tr>
+          <tr><td>When is it used?</td><td></td><td></td></tr>
+          <tr><td>Who may benefit?</td><td></td><td></td></tr>
+          <tr><td>Duration of treatment?</td><td></td><td></td></tr>
+          <tr><td>Timing of commencement?</td><td></td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h3>Clinical Scenarios</h3>
+    <div class="scenario"><div class="s-label">Scenario A</div><p>A patient reports ongoing sexual behaviours that place them at increased risk of HIV exposure.</p></div>
+    <div class="q-label">Q: Would PrEP or PEP be most appropriate?</div>
+    <div class="answer-box">Write your answer here…</div>
+    <div class="scenario"><div class="s-label">Scenario B</div><p>A nurse experiences a needlestick injury from a known HIV-positive patient.</p></div>
+    <div class="q-label">Q: Would PrEP or PEP be most appropriate?</div>
+    <div class="answer-box">Write your answer here…</div>
+  </div>
+</div>
+
+<!-- WORKBOOK: UVB -->
+<div class="page" id="page-wb-uvb">
+  <div class="page-title">UVB Therapy Workbook</div>
+  <div class="page-subtitle">Section 3 · Workbooks &amp; Clinical Assessments</div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-a">☀️</div><div><div class="card-title">Learning Outcomes</div></div></div>
+    <ul>
+      <li>Explain the purpose of Narrowband UVB phototherapy</li>
+      <li>Identify common dermatological conditions treated with NB-UVB</li>
+      <li>Recognise the Fitzpatrick Skin Types and understand their influence on treatment</li>
+      <li>Perform safe patient assessment prior to treatment</li>
+      <li>Recognise risks, contraindications and adverse effects</li>
+      <li>Deliver evidence-based patient education</li>
+      <li>Apply clinical reasoning when caring for patients receiving phototherapy</li>
+    </ul>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-b">📖</div><div><div class="card-title">Definition</div></div></div>
+    <p>Ultraviolet B (UVB) therapy (phototherapy) is a dermatological treatment using carefully controlled doses of ultraviolet B light to reduce skin inflammation and slow abnormal skin-cell growth. Commonly used for: <strong>Psoriasis, Eczema/atopic dermatitis, Vitiligo, Generalised itching, and other inflammatory skin conditions</strong>.</p>
+    <p>Narrowband UVB uses a specific wavelength of approximately <strong>311–312 nanometres</strong>. Treatment is delivered through a specialised light cabinet or targeted device, with dose and exposure time prescribed and gradually adjusted according to the patient's skin type, condition and response.</p>
+    <h3>Clinical Scenario</h3>
+    <div class="scenario"><div class="s-label">Clinical Scenario</div><p>A 45-year-old patient referred for Narrowband UVB Phototherapy for widespread plaque psoriasis — first treatment. Has very fair skin, burns easily, never received UV therapy, is anxious about skin cancer, forgot protective eyewear.</p></div>
+    <div class="q-label">Q: What assessments and education are required before commencing treatment?</div>
+    <div class="answer-box">Write your answer here…</div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-g">🔬</div><div><div class="card-title">Activity 1: What is Narrowband UVB?</div></div></div>
+    <div class="q-label">Q: What is Narrowband UVB Phototherapy?</div>
+    <div class="answer-box">Write your answer here…</div>
+    <div class="q-label">Q: Why is Narrowband UVB preferred over Broadband UVB?</div>
+    <div class="answer-box">Write your answer here…</div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-p">🧪</div><div><div class="card-title">Activity 2: Clinical Knowledge — Three Conditions Treated</div></div></div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Condition</th><th>How does NB-UVB help?</th></tr></thead>
+        <tbody>
+          <tr><td>1.</td><td></td><td></td></tr>
+          <tr><td>2.</td><td></td><td></td></tr>
+          <tr><td>3.</td><td></td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-n">🎨</div><div><div class="card-title">Activity 3: Fitzpatrick Skin Types</div></div></div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Skin Type</th><th>Skin Characteristics</th><th>Burns?</th><th>Tans?</th><th>Influence on NB-UVB dosing?</th></tr></thead>
+        <tbody>
+          <tr><td>Type I</td><td></td><td></td><td></td><td></td></tr>
+          <tr><td>Type II</td><td></td><td></td><td></td><td></td></tr>
+          <tr><td>Type III</td><td></td><td></td><td></td><td></td></tr>
+          <tr><td>Type IV</td><td></td><td></td><td></td><td></td></tr>
+          <tr><td>Type V</td><td></td><td></td><td></td><td></td></tr>
+          <tr><td>Type VI</td><td></td><td></td><td></td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="q-label">Critical Thinking: Why is identifying a patient's Fitzpatrick Skin Type essential before commencing treatment?</div>
+    <div class="answer-box">Write your answer here…</div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-g">✅</div><div><div class="card-title">Activity 4: Pre-Treatment Assessment Checklist</div></div></div>
+    <ul class="chk-list">
+      <li><div class="chk-box"></div><div class="chk-label">Correct patient identification</div></li>
+      <li><div class="chk-box"></div><div class="chk-label">Skin type</div></li>
+      <li><div class="chk-box"></div><div class="chk-label">Current medications</div></li>
+      <li><div class="chk-box"></div><div class="chk-label">Photosensitising medications</div></li>
+      <li><div class="chk-box"></div><div class="chk-label">Pregnancy status (where appropriate)</div></li>
+      <li><div class="chk-box"></div><div class="chk-label">Previous sun exposure</div></li>
+      <li><div class="chk-box"></div><div class="chk-label">Previous treatment response</div></li>
+      <li><div class="chk-box"></div><div class="chk-label">Skin assessment</div></li>
+      <li><div class="chk-box"></div><div class="chk-label">Recent sunburn</div></li>
+      <li><div class="chk-box"></div><div class="chk-label">New lesions or suspicious skin changes</div></li>
+      <li><div class="chk-box"></div><div class="chk-label">Ability to stand safely</div></li>
+      <li><div class="chk-box"></div><div class="chk-label">Protective eyewear available</div></li>
+      <li><div class="chk-box"></div><div class="chk-label">Patient understanding</div></li>
+    </ul>
+    <div class="q-label">Q: Which assessment do you believe is the most important and why?</div>
+    <div class="answer-box">Write your answer here…</div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-r">⚠️</div><div><div class="card-title">Activity 5: Spot the Risk</div></div></div>
+    <div class="scenario"><div class="s-label">Scenario A</div><p>Patient spent the weekend at the beach and has mild sunburn.</p></div>
+    <div class="q-label">Q: Would you proceed? Why or why not?</div>
+    <div class="answer-box">Write your answer here…</div>
+    <div class="scenario"><div class="s-label">Scenario B</div><p>The patient has recently started Doxycycline.</p></div>
+    <div class="q-label">Q: Why is this important?</div>
+    <div class="answer-box">Write your answer here…</div>
+    <div class="scenario"><div class="s-label">Scenario C</div><p>The patient forgot their UV protective goggles.</p></div>
+    <div class="q-label">Q: What should you do?</div>
+    <div class="answer-box">Write your answer here…</div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-a">🚨</div><div><div class="card-title">Activity 6: Risks and Side Effects</div></div></div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Risk</th><th>Why does it occur?</th><th>What can the nurse do to reduce the risk?</th></tr></thead>
+        <tbody>
+          <tr><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="q-label">Clinical Reasoning: Which risk requires immediate medical review? Why?</div>
+    <div class="answer-box">Write your answer here…</div>
+  </div>
+</div>
+
+<!-- WORKBOOK: ORTHO -->
+<div class="page" id="page-wb-ortho">
+  <div class="page-title">Orthopaedic Fracture Clinic Workbook</div>
+  <div class="page-subtitle">Section 3 · Workbooks &amp; Clinical Assessments · Cast Care, Clinical Reasoning &amp; Graduate Nursing Skills</div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-b">🦴</div><div><div class="card-title">Learning Outcomes</div></div></div>
+    <ul>
+      <li>Apply clinical reasoning when caring for patients requiring immobilisation</li>
+      <li>Select appropriate nursing assessments before, during and after cast application</li>
+      <li>Recognise early signs of neurovascular compromise and compartment syndrome</li>
+      <li>Provide evidence-based patient education to promote safe recovery</li>
+      <li>Reflect on your role in preventing complications and escalating concerns</li>
+    </ul>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-n">📋</div><div><div class="card-title">Clinical Scenario</div></div></div>
+    <div class="scenario"><div class="s-label">Clinical Scenario — Use for all activities below</div><p>A 32-year-old patient has sustained a displaced distal radius fracture after falling from a bicycle. Following reduction, the Orthopaedic Registrar requests you assist with the application of a below-elbow fibreglass cast. The patient reports increasing pain despite analgesia and has moderate swelling. They smoke 15 cigarettes per day and have Type 2 diabetes. You are responsible for preparing the patient, assisting with cast application, performing neurovascular observations and providing discharge education.</p></div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-g">🧠</div><div><div class="card-title">Activity 1: Clinical Reasoning</div></div></div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Assessment / Consideration</th><th>Why is this important?</th><th>How could it influence nursing care?</th></tr></thead>
+        <tbody>
+          <tr><td>Age</td><td></td><td></td></tr>
+          <tr><td>Fracture type</td><td></td><td></td></tr>
+          <tr><td>Degree of swelling</td><td></td><td></td></tr>
+          <tr><td>Skin integrity</td><td></td><td></td></tr>
+          <tr><td>Neurovascular status</td><td></td><td></td></tr>
+          <tr><td>Diabetes</td><td></td><td></td></tr>
+          <tr><td>Smoking status</td><td></td><td></td></tr>
+          <tr><td>Allergies</td><td></td><td></td></tr>
+          <tr><td>Previous injuries/surgery</td><td></td><td></td></tr>
+          <tr><td>Patient understanding and consent</td><td></td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="ib a"><strong>Critical Thinking — Diabetes &amp; Smoking</strong>How do these factors affect healing? What additional nursing care or education would you provide?</div>
+    <div class="answer-box">Write your answer here…</div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-p">🏗️</div><div><div class="card-title">Activity 2: Selecting the Best Cast</div></div></div>
+    <h3>Scenario A — Newly reduced fracture with significant swelling expected over 48 hours</h3>
+    <ul>
+      <li>☐ Full circumferential fibreglass cast</li>
+      <li>☐ Back slab</li>
+      <li>☐ U-slab</li>
+      <li>☐ Plaster of Paris circumferential cast</li>
+    </ul>
+    <div class="q-label">Q: Explain your choice.</div>
+    <div class="answer-box">Write your answer here…</div>
+    <h3>Scenario B — Patient returns one week later; swelling has significantly reduced and fracture alignment is stable</h3>
+    <div class="q-label">Q: Would your management change? And why?</div>
+    <div class="answer-box">Write your answer here…</div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-g">✅</div><div><div class="card-title">Activity 3: Safe Cast Application Checklist</div></div></div>
+    <ul class="chk-list">
+      <li><div class="chk-box"></div><div class="chk-label">Correct patient identification</div></li>
+      <li><div class="chk-box"></div><div class="chk-label">Consent confirmed</div></li>
+      <li><div class="chk-box"></div><div class="chk-label">Baseline neurovascular observations completed</div></li>
+      <li><div class="chk-box"></div><div class="chk-label">Jewellery removed</div></li>
+      <li><div class="chk-box"></div><div class="chk-label">Limb positioned correctly</div></li>
+      <li><div class="chk-box"></div><div class="chk-label">Appropriate padding applied</div></li>
+      <li><div class="chk-box"></div><div class="chk-label">Correct cast selected</div></li>
+      <li><div class="chk-box"></div><div class="chk-label">Fingers/toes remain visible</div></li>
+      <li><div class="chk-box"></div><div class="chk-label">Comfort assessed</div></li>
+      <li><div class="chk-box"></div><div class="chk-label">Documentation completed</div></li>
+    </ul>
+    <div class="q-label">Q: Why should baseline neurovascular observations always be performed before cast application?</div>
+    <div class="answer-box">Write your answer here…</div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-r">🩺</div><div><div class="card-title">Activity 4: Neurovascular Assessment</div></div></div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Assessment</th><th>What are you assessing?</th><th>Normal Findings</th><th>Abnormal Findings</th></tr></thead>
+        <tbody>
+          <tr><td>Pain</td><td></td><td></td><td></td></tr>
+          <tr><td>Colour</td><td></td><td></td><td></td></tr>
+          <tr><td>Temperature</td><td></td><td></td><td></td></tr>
+          <tr><td>Capillary refill</td><td></td><td></td><td></td></tr>
+          <tr><td>Pulse</td><td></td><td></td><td></td></tr>
+          <tr><td>Movement</td><td></td><td></td><td></td></tr>
+          <tr><td>Sensation</td><td></td><td></td><td></td></tr>
+          <tr><td>Swelling</td><td></td><td></td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="q-label">Q: Which finding would concern you the most? And why?</div>
+    <div class="answer-box">Write your answer here…</div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-a">⚠️</div><div><div class="card-title">Activity 5: Spot the Problem</div></div></div>
+    <div class="scenario"><div class="s-label">Scenario 1</div><p>Your patient reports increasing pain that is not relieved by analgesia.</p></div>
+    <div class="q-label">Q: What should you do?</div>
+    <div class="answer-box">Write your answer here…</div>
+    <div class="scenario"><div class="s-label">Scenario 2</div><p>The patient's fingers are pale, cool and numb.</p></div>
+    <div class="q-label">Q: What complication are you concerned about? What actions should you take immediately?</div>
+    <div class="answer-box">Write your answer here…</div>
+    <div class="scenario"><div class="s-label">Scenario 3</div><p>The cast has become soft after the patient showered. The patient has called through to clinics.</p></div>
+    <div class="q-label">Q: What advice and management are required?</div>
+    <div class="answer-box">Write your answer here…</div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-r">🚨</div><div><div class="card-title">Activity 6: Compartment Syndrome Recognition</div></div></div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Sign (5 P's)</th><th>What does it mean?</th><th>Why is it an emergency?</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Pain</strong></td><td></td><td></td></tr>
+          <tr><td><strong>Pallor</strong></td><td></td><td></td></tr>
+          <tr><td><strong>Paraesthesia</strong></td><td></td><td></td></tr>
+          <tr><td><strong>Pulselessness</strong></td><td></td><td></td></tr>
+          <tr><td><strong>Paralysis</strong></td><td></td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="ib r"><strong>Escalation Exercise</strong>Your patient develops increasing pain, numbness and reduced finger movement one hour after cast application.<br><br>What are your immediate nursing priorities? Who would you notify? What documentation is required?</div>
+    <div class="answer-box">Write your answer here…</div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-g">🎓</div><div><div class="card-title">Activity 7: Patient Education</div></div></div>
+    <p>Using language the patient would understand, explain:</p>
+    <ul>
+      <li>How to care for their cast</li>
+      <li>How to reduce swelling</li>
+      <li>Activities to avoid</li>
+      <li>When to seek urgent medical attention</li>
+      <li>Why they should never insert objects inside the cast</li>
+      <li>How smoking affects fracture healing</li>
+    </ul>
+    <div class="answer-box" style="min-height:120px;">Write your explanation here…</div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-n">🪟</div><div><div class="card-title">Activity 9: Window in a Cast</div></div></div>
+    <div class="q-label">Q: Why might a clinician create a window in a circumferential cast? List at least four reasons.</div>
+    <div class="answer-box">Write your answer here…</div>
+    <div class="q-label">Q: Your patient has a surgical wound beneath their cast. How would a cast window assist with ongoing management?</div>
+    <div class="answer-box">Write your answer here…</div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-b">📋</div><div><div class="card-title">Clinical Skills Sign-Off: Fracture Clinic / Casting</div></div></div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Skill</th><th>Competent</th><th>Feedback</th></tr></thead>
+        <tbody>
+          <tr><td>Prepared patient for cast application</td><td>☐</td><td></td></tr>
+          <tr><td>Assisted with cast application</td><td>☐</td><td></td></tr>
+          <tr><td>Performed accurate neurovascular assessment</td><td>☐</td><td></td></tr>
+          <tr><td>Recognised abnormal findings</td><td>☐</td><td></td></tr>
+          <tr><td>Escalated concerns appropriately</td><td>☐</td><td></td></tr>
+          <tr><td>Delivered patient education effectively</td><td>☐</td><td></td></tr>
+          <tr><td>Demonstrated clinical reasoning</td><td>☐</td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Supervisor / Education Nurse: ____________________________________________ &nbsp; Date: _____________________</p>
+    <p>Graduate Nurse: ______________________________________________ &nbsp; Date: _______________________</p>
+    <p>NUM Signature: ______________________________________________ &nbsp; Date: _______________________</p>
+  </div>
+</div>
+
+<!-- WORKBOOK: PLASTICS / DERMATOLOGY -->
+<div class="page" id="page-wb-plastics">
+  <div class="page-title">Plastic / Dermatology Surgery Worksheet</div>
+  <div class="page-subtitle">Section 3 · Workbooks &amp; Clinical Assessments</div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-p">🩹</div><div><div class="card-title">Learning Outcomes</div></div></div>
+    <ul>
+      <li>Identify six key functions of the skin and relate them to nursing care</li>
+      <li>Describe the phases of wound healing and recognise expected clinical features</li>
+      <li>Differentiate healing by primary and secondary intention</li>
+      <li>Complete and document a holistic complex wound assessment using a structured framework</li>
+      <li>Recognise deterioration and escalate concerns according to local policy</li>
+    </ul>
+    <h3>Skin Anatomy Labels to Know</h3>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">
+      <span class="pill pill-navy">Epidermis</span><span class="pill pill-navy">Hair Shaft</span><span class="pill pill-navy">Vein</span><span class="pill pill-navy">Hair Root</span><span class="pill pill-navy">Artery</span><span class="pill pill-navy">Hair Follicle</span><span class="pill pill-navy">Adipose Tissue</span><span class="pill pill-navy">Eccrine Sweat Gland</span><span class="pill pill-navy">Sensory Nerve</span><span class="pill pill-navy">Hypodermis</span><span class="pill pill-navy">Dermis</span><span class="pill pill-navy">Pacinian Corpuscle</span><span class="pill pill-navy">Sebaceous Gland</span><span class="pill pill-navy">Arrector Pili Muscle</span><span class="pill pill-navy">Pore</span>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-g">🏛️</div><div><div class="card-title">Activity 1: Functions of the Skin</div></div></div>
+    <div class="q-label">Q: What are the six main functions of the skin?</div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Function</th><th>#</th><th>Function</th></tr></thead>
+        <tbody>
+          <tr><td>1.</td><td></td><td>4.</td><td></td></tr>
+          <tr><td>2.</td><td></td><td>5.</td><td></td></tr>
+          <tr><td>3.</td><td></td><td>6.</td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="q-label">Clinical Link: Choose two functions and explain how impairment may affect a dermatology patient.</div>
+    <div class="answer-box" style="min-height:80px;">Write your answer here…</div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-a">🔄</div><div><div class="card-title">Activity 2: Phases of Wound Healing</div></div></div>
+    <div class="ib b"><strong>Terminology Note</strong>Some resources describe four stages by separating haemostasis from inflammation. This workbook uses a three-phase model: inflammatory phase (including haemostasis), proliferative phase and maturation/remodelling phase.</div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Phase</th><th>Approx. Duration</th><th>Key Events</th><th>Expected Appearance / Nursing Considerations</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Inflammatory</strong><br>(including haemostasis)</td><td></td><td></td><td></td></tr>
+          <tr><td><strong>Proliferative</strong></td><td></td><td></td><td></td></tr>
+          <tr><td><strong>Maturation / Remodelling</strong></td><td></td><td></td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="q-label">Q: List four patient, wound or treatment factors that may delay healing.</div>
+    <div class="answer-box">1. _____  2. _____  3. _____  4. _____</div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-b">🔀</div><div><div class="card-title">Activity 3: Primary and Secondary Intention</div></div></div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Feature</th><th>Primary Intention</th><th>Secondary Intention</th></tr></thead>
+        <tbody>
+          <tr><td>Description</td><td></td><td></td></tr>
+          <tr><td>Example</td><td></td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="q-label">Application: A patient has a wide wound with tissue loss and edges that cannot be approximated. Which type of healing is expected, and what features would you monitor?</div>
+    <div class="answer-box" style="min-height:80px;">Write your answer here…</div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon icon-n">🔍</div><div><div class="card-title">Activity 4: Complex Wound Assessment</div></div></div>
+    <div class="ib b"><strong>Consistent Approach</strong>Assess the whole person → identify wound cause → assess the wound → consider wound edge and surrounding skin → evaluate pain and infection risk → plan review and escalation.</div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Assessment Domain</th><th>What to Consider</th><th>Learner Notes</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Person &amp; History</strong></td><td>Presenting concern; onset and duration; wound cause; comorbidities; vascular status; diabetes; medications; allergies; smoking; nutrition; continence; mobility; psychosocial impact; goals of care</td><td></td></tr>
+          <tr><td><strong>Wound Location &amp; Type</strong></td><td>Exact anatomical location; wound type/aetiology; acute or chronic; surgical history; recurrence; pressure injury classification where applicable</td><td></td></tr>
+          <tr><td><strong>Measurements</strong></td><td>Length × width × depth (cm); undermining, tracking or sinus; wound shape; comparison with previous assessment</td><td></td></tr>
+          <tr><td><strong>Wound Bed</strong></td><td>Approximate % and location of viable granulation/epithelial tissue, slough and necrotic tissue</td><td></td></tr>
+          <tr><td><strong>Exudate &amp; Odour</strong></td><td>Amount, colour, consistency and odour after cleansing; dressing strike-through</td><td></td></tr>
+          <tr><td><strong>Wound Edge &amp; Periwound Skin</strong></td><td>Edge condition; maceration; erythema; warmth; oedema; induration; excoriation; rash; blistering</td><td></td></tr>
+          <tr><td><strong>Pain &amp; Neurovascular Status</strong></td><td>Pain score at rest and during care; sensation; distal colour, warmth, movement, pulses, capillary refill</td><td></td></tr>
+          <tr><td><strong>Infection &amp; Deterioration</strong></td><td>Local or systemic signs: increasing pain, spreading erythema, purulent exudate, malodour, delayed healing, fever. Escalate urgently when concerned.</td><td></td></tr>
+          <tr><td><strong>Plan &amp; Evaluation</strong></td><td>Cleansing and dressing plan; pressure redistribution; referrals; patient education; goals; reassessment frequency; escalation plan</td><td></td></tr>
+          <tr><td><strong>Photography &amp; Documentation</strong></td><td>Obtain consent; follow organisational policy; use approved equipment and storage; include measurement scale if permitted; never use personal device</td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h3>Case Study</h3>
+    <div class="scenario"><div class="s-label">Case Study</div><p>A patient attending dermatology has a lower-leg wound that has increased in size over two weeks. The surrounding skin is red and warm, pain has increased, and the dressing is saturated earlier than expected.</p></div>
+    <div class="q-label">Q: What additional assessment information would you collect?</div>
+    <div class="answer-box">Write your answer here…</div>
+    <div class="q-label">Q: What findings require escalation?</div>
+    <div class="answer-box">Write your answer here…</div>
+    <div class="q-label">Q: What would you document and communicate during clinical handover?</div>
+    <div class="answer-box">Write your answer here…</div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+// ── Navigation ──
+const links = document.querySelectorAll('.nav-link[data-page]');
+const pages = document.querySelectorAll('.page');
+
+function navTo(pageId) {
+  pages.forEach(p => p.classList.remove('active'));
+  links.forEach(l => l.classList.remove('active'));
+  const target = document.getElementById('page-' + pageId);
+  if (target) target.classList.add('active');
+  const link = document.querySelector('.nav-link[data-page="' + pageId + '"]');
+  if (link) link.classList.add('active');
+  document.getElementById('content').scrollTop = 0;
+  window.scrollTo(0,0);
+  closeSidebar();
+}
+
+links.forEach(link => {
+  link.addEventListener('click', () => navTo(link.dataset.page));
+});
+
+// ── Mobile sidebar ──
+const sidebar = document.getElementById('sidebar');
+const overlay = document.getElementById('overlay');
+const menuBtn = document.getElementById('menu-btn');
+
+menuBtn.addEventListener('click', () => {
+  sidebar.classList.toggle('open');
+  overlay.classList.toggle('open');
+});
+function closeSidebar() {
+  sidebar.classList.remove('open');
+  overlay.classList.remove('open');
+}
+overlay.addEventListener('click', closeSidebar);
+
+// ── Search ──
+const searchIndex = [
+  {page:'home', title:'Welcome & Overview', text:'welcome overview graduate nursing st vincents hospital specialist clinics'},
+  {page:'education', title:'Education Sessions', text:'education sessions training learning fire exits alarms wardens defibrillator manual handling'},
+  {page:'leave', title:'Leave', text:'sick personal annual professional development study leave emily pett NUM 9231 3770 after hours UKG'},
+  {page:'competencies', title:'Competencies', text:'competencies required learning intranet education graduate registered enrolled nurse'},
+  {page:'drugs', title:'Drug Protocols', text:'drug medication administration policy drugs addiction dependence enkey injectable cytotoxic anticoagulants telephone orders VHIMS incident'},
+  {page:'bsl', title:'BSL & Insulin', text:'blood sugar level BSL insulin diabetic ketones glucose gel hypoglycaemia mmol RMO calibration'},
+  {page:'oxygen', title:'Oxygen Therapy', text:'oxygen therapy saturation nasal prongs hudson mask HFNC humidifier nebuliser CO2 retainer'},
+  {page:'restraints', title:'Restraints', text:'restraints risk harming protocol policy procedure'},
+  {page:'pressure', title:'Pressure Injury Prevention', text:'pressure injury VHIMS incident report documentation'},
+  {page:'falls', title:'Falls Prevention', text:'falls risk red alert handover high visibility cognitive impairment VHIMS NOK'},
+  {page:'bariatric', title:'Bariatric Patients', text:'bariatric patients hover matt hoist slide sheets four staff lateral transfer wheelchair move smart'},
+  {page:'arp', title:'Acute Resuscitation Plan', text:'acute resuscitation plan ARP goals of care handover sheet medical history'},
+  {page:'support', title:'Staff Support', text:'STAR support team action response critical incident peer support ACCESS assure counselling EAP 1800808374'},
+  {page:'codes', title:'Emergency Codes', text:'emergency codes red fire blue medical yellow internal orange evacuation purple bomb green external black personal white aggression'},
+  {page:'unit', title:'Unit Outline', text:'unit outline specialist clinics 250000 22 specialties 85000 referrals ground floor daly wing healy wing consulting rooms treatment plaster dermatology'},
+  {page:'directory', title:'Clinics Directory', text:'directory rachael andrews mary dafilis emily pett dylene van zyl jaclyn hannon red blue green yellow clinic neurosurgery neurology rheumatology orthopaedics cardiology dermatology gastroenterology'},
+  {page:'meetings', title:'Unit Meetings', text:'unit meetings wednesday 1230 daily management system 0830 preceptor NUM monthly'},
+  {page:'interpreters', title:'Interpreters', text:'interpreters greek italian vietnamese cantonese mandarin arabic pager 20%'},
+  {page:'telehealth', title:'Telehealth', text:'telehealth healthdirect video call corrections prison public patients svhm.org.au/telehealth chrome edge'},
+  {page:'learning-obj', title:'Learning Objectives', text:'learning objectives oxygen neurological observations dressings suture urinalysis blood glucose plaster cast VAC wound venesection UVB'},
+  {page:'appraisals', title:'Performance Appraisals', text:'performance appraisals 6 weeks 4 months 6 months preceptor NUM education learning healy building'},
+  {page:'wb-cardiology', title:'Cardiology & ECG Workbook', text:'cardiology ECG 12 lead placement SA node AV bundle purkinje sinus rhythm arrhythmia artefact scenario positioning'},
+  {page:'wb-id', title:'Infectious Disease Worksheet', text:'infectious disease tetanus influenza HIV PrEP PEP clostridium tetani vaccination high risk aged care'},
+  {page:'wb-uvb', title:'UVB Therapy Workbook', text:'UVB phototherapy narrowband fitzpatrick skin type psoriasis eczema vitiligo contraindications doxycycline eyewear'},
+  {page:'wb-ortho', title:'Orthopaedic Fracture Workbook', text:'orthopaedic fracture clinic cast application plaster fibreglass neurovascular compartment syndrome back slab 5P pain pallor paraesthesia pulselessness paralysis'},
+  {page:'wb-plastics', title:'Plastic / Dermatology Worksheet', text:'plastics dermatology skin functions wound healing primary secondary intention complex wound assessment exudate periwound'},
+];
+
+const searchInput = document.getElementById('search-input');
+const searchResults = document.getElementById('search-results');
+
+searchInput.addEventListener('input', function() {
+  const q = this.value.trim().toLowerCase();
+  if (!q) { searchResults.style.display='none'; return; }
+  const matches = searchIndex.filter(item =>
+    item.title.toLowerCase().includes(q) || item.text.toLowerCase().includes(q)
+  ).slice(0,8);
+  if (!matches.length) { searchResults.style.display='none'; return; }
+  searchResults.innerHTML = matches.map(m =>
+    `<div class="sr-item" onclick="navTo('${m.page}');document.getElementById('search-input').value='';document.getElementById('search-results').style.display='none';">
+      <div class="sr-title">${m.title}</div>
+    </div>`
+  ).join('');
+  searchResults.style.display='block';
+});
+
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.search-container')) searchResults.style.display='none';
+});
+searchInput.addEventListener('keydown', function(e) {
+  if (e.key==='Escape') { searchResults.style.display='none'; this.value=''; }
+});
+</script>
+</body>
+</html>
