@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Specialist Clinics Handbook 2026</title>
+<style>
+:root{
+  --navy:#0D2D5E;--navy-mid:#164080;--blue:#1A6FAF;--blue-lt:#E5F0FA;
+  --bg:#EEF2F7;--surface:#FFFFFF;
+  --amber:#C97A00;--amber-bg:#FFFBEB;--amber-bd:#FDE68A;
+  --red:#C91B1B;--red-bg:#FEF2F2;--red-bd:#FEB4B4;
+  --green:#14803D;--green-bg:#F0FDF4;--green-bd:#A7F3C3;
+  --muted:#6B7280;--border:#DDE3EC;--text:#1B2333;
+  --r:13px;--r-sm:8px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:14px;color:var(--text);background:var(--bg);min-height:100vh;}
+
+/* ── PIN Gate ── */
+#pin-gate{position:fixed;inset:0;background:var(--navy);display:flex;align-items:center;justify-content:center;z-index:1000;flex-direction:column;gap:20px;}
+.pin-card{background:var(--surface);border-radius:16px;padding:32px 28px;width:320px;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,.35);}
+.pin-card .logo{font-size:32px;margin-bottom:12px;}
+.pin-card h2{font-size:17px;font-weight:800;color:var(--navy);margin-bottom:4px;}
+.pin-card .sub{font-size:13px;color:var(--muted);margin-bottom:20px;}
+.pin-input{width:100%;padding:12px;text-align:center;font-size:22px;font-weight:800;letter-spacing:.2em;border:2px solid var(--border);border-radius:var(--r-sm);font-family:inherit;color:var(--navy);outline:none;margin-bottom:12px;}
+.pin-input:focus{border-color:var(--blue);}
+.pin-error{color:var(--red);font-size:12px;font-weight:600;min-height:18px;margin-bottom:8px;}
+.pin-btn{width:100%;padding:12px;background:var(--navy);color:#fff;border:none;border-radius:var(--r-sm);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;}
+.pin-btn:hover{background:var(--navy-mid);}
+
+/* ── Header ── */
+#admin-header{background:var(--navy);padding:0 20px;position:sticky;top:0;z-index:100;}
+.admin-hdr-inner{display:flex;align-items:center;gap:12px;height:56px;}
+.admin-badge{background:#C97A00;color:#fff;font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.06em;}
+.hdr-eyebrow{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#93B4D4;}
+.hdr-title{font-size:15px;font-weight:800;color:#fff;}
+.hdr-spacer{flex:1;}
+.hdr-link{color:#93B4D4;font-size:12px;text-decoration:none;padding:6px 10px;border-radius:6px;}
+.hdr-link:hover{background:rgba(255,255,255,.1);color:#fff;}
+.hdr-logout{background:rgba(255,255,255,.12);color:#fff;font-size:12px;font-weight:700;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-family:inherit;}
+.hdr-logout:hover{background:rgba(255,255,255,.2);}
+
+/* ── Tabs ── */
+#tab-bar{background:var(--navy-mid);display:flex;padding:0 20px;border-bottom:1px solid rgba(255,255,255,.08);}
+.tab-btn{padding:12px 18px;font-size:13px;font-weight:700;color:#93B4D4;border:none;background:none;cursor:pointer;border-bottom:3px solid transparent;font-family:inherit;transition:color .15s;}
+.tab-btn:hover{color:#fff;}
+.tab-btn.active{color:#fff;border-bottom-color:#fff;}
+
+/* ── Layout ── */
+.admin-content{max-width:1100px;margin:0 auto;padding:24px 20px 80px;}
+.section-panel{display:none;}
+.section-panel.active{display:block;}
+
+/* ── Save indicator ── */
+#save-toast{position:fixed;bottom:24px;right:20px;background:var(--green);color:#fff;font-size:13px;font-weight:700;padding:10px 18px;border-radius:var(--r-sm);opacity:0;transition:opacity .3s;pointer-events:none;z-index:500;}
+#save-toast.show{opacity:1;}
+
+/* ── Cards ── */
+.card{background:var(--surface);border-radius:var(--r);box-shadow:0 1px 3px rgba(0,0,0,.06);padding:20px;margin-bottom:16px;}
+.card-title{font-size:15px;font-weight:800;color:var(--navy);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.card-title .ct-icon{font-size:18px;}
+.section-title{font-size:18px;font-weight:800;color:var(--navy);margin-bottom:6px;}
+.section-sub{font-size:13px;color:var(--muted);margin-bottom:20px;}
+
+/* ── Field groups ── */
+.field-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-bottom:0;}
+.field-group{display:flex;flex-direction:column;gap:4px;}
+.field-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);}
+.field-input{padding:8px 10px;border:1px solid var(--border);border-radius:var(--r-sm);font-size:13.5px;font-family:inherit;color:var(--text);background:#FAFCFF;outline:none;transition:border-color .15s;}
+.field-input:focus{border-color:var(--blue);outline:2px solid rgba(26,111,175,.15);}
+.field-input.changed{border-color:var(--amber);background:var(--amber-bg);}
+.contact-section-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--blue);margin:20px 0 10px;border-bottom:2px solid var(--blue-lt);padding-bottom:6px;}
+
+/* ── Sign-off items ── */
+.so-list{display:flex;flex-direction:column;gap:8px;}
+.so-item{display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:var(--r-sm);border:1px solid var(--border);background:#FAFCFF;transition:background .15s;}
+.so-item.is-signed{background:var(--green-bg);border-color:var(--green-bd);}
+.so-item-label{flex:1;font-size:13.5px;font-weight:600;color:var(--navy);}
+.so-item-label small{display:block;font-size:11px;font-weight:400;color:var(--muted);}
+.so-toggle{display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none;}
+.so-toggle input[type=checkbox]{width:18px;height:18px;accent-color:var(--green);cursor:pointer;}
+.so-toggle-label{font-size:12px;font-weight:700;color:var(--muted);}
+.so-item.is-signed .so-toggle-label{color:var(--green);}
+.so-fields{display:flex;gap:8px;align-items:center;margin-left:auto;}
+.so-field-sm{padding:5px 8px;border:1px solid var(--border);border-radius:6px;font-size:12px;font-family:inherit;color:var(--text);background:#fff;outline:none;width:130px;}
+.so-field-sm:focus{border-color:var(--blue);}
+.so-fields input[type=date].so-field-sm{width:150px;}
+.so-item.is-signed .so-field-sm{background:var(--green-bg);}
+.so-group-header{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:18px 0 8px;padding-bottom:5px;border-bottom:1px solid var(--border);}
+
+/* ── Info box ── */
+.ib{border-left:3px solid;border-radius:10px;padding:10px 13px;margin-bottom:14px;font-size:13.5px;}
+.ib strong{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px;}
+.ib.a{background:var(--amber-bg);border-color:var(--amber-bd);color:#78350F;}
+.ib.b{background:var(--blue-lt);border-color:var(--blue);}
+.ib.g{background:var(--green-bg);border-color:var(--green-bd);color:#14532D;}
+
+/* ── Buttons ── */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:var(--r-sm);border:none;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:opacity .15s;}
+.btn:hover{opacity:.82;}
+.btn-navy{background:var(--navy);color:#fff;}
+.btn-red{background:var(--red-bg);color:var(--red);border:1px solid var(--red-bd);}
+.btn-outline{background:var(--surface);border:1px solid var(--border);color:var(--text);}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;}
+
+/* ── PIN change section ── */
+.pin-section{background:var(--surface);border-radius:var(--r);box-shadow:0 1px 3px rgba(0,0,0,.06);padding:20px;margin-bottom:16px;}
+.pin-section .card-title{margin-bottom:12px;}
+.pin-row{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;}
+.pin-row .field-group{min-width:160px;}
+
+/* ── Stats bar ── */
+.stats-bar{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:20px;}
+.stat-card{background:var(--surface);border-radius:var(--r-sm);padding:14px;text-align:center;}
+.stat-num{font-size:26px;font-weight:800;color:var(--navy);}
+.stat-label{font-size:11px;color:var(--muted);margin-top:2px;}
+.stat-card.signed-stat .stat-num{color:var(--green);}
+.stat-card.pending-stat .stat-num{color:var(--amber);}
+</style>
+</head>
+<body>
+
+<!-- ── PIN Gate ── -->
+<div id="pin-gate">
+  <div class="pin-card">
+    <div class="logo">🔐</div>
+    <h2>Admin Access</h2>
+    <div class="sub">Specialist Clinics Handbook 2026<br>Enter your admin PIN to continue</div>
+    <input type="password" inputmode="numeric" class="pin-input" id="pin-input" placeholder="••••" maxlength="8" autocomplete="off">
+    <div class="pin-error" id="pin-error"></div>
+    <button class="pin-btn" onclick="checkPin()">Unlock Admin</button>
+    <p style="margin-top:14px;font-size:11px;color:var(--muted);">Default PIN: 1234 · Change in Settings tab</p>
+  </div>
+</div>
+
+<!-- ── Main App (hidden until PIN) ── -->
+<div id="admin-app" style="display:none;">
+
+  <header id="admin-header">
+    <div class="admin-hdr-inner">
+      <div>
+        <div class="hdr-eyebrow">St Vincent's Hospital Melbourne</div>
+        <div class="hdr-title">Specialist Clinics Handbook — Admin</div>
+      </div>
+      <span class="admin-badge">Admin</span>
+      <div class="hdr-spacer"></div>
+      <a class="hdr-link" href="Specialist_Clinics_Handbook_2026.html" target="_blank">Open Handbook ↗</a>
+      <button class="hdr-logout" onclick="logout()">Lock</button>
+    </div>
+  </header>
+
+  <div id="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('contacts')">📋 Contacts</button>
+    <button class="tab-btn" onclick="switchTab('signoffs')">✅ Learning Objectives</button>
+    <button class="tab-btn" onclick="switchTab('appraisals')">📝 Appraisals</button>
+    <button class="tab-btn" onclick="switchTab('settings')">⚙️ Settings</button>
+  </div>
+
+  <div class="admin-content">
+
+    <!-- ══ CONTACTS TAB ══ -->
+    <div class="section-panel active" id="panel-contacts">
+      <div class="section-title">Contact Directory</div>
+      <div class="section-sub">Changes save automatically and are reflected immediately in the handbook app.</div>
+
+      <div class="ib a"><strong>How it works</strong>Edit any field below. Changes are stored in the browser and loaded by the handbook app each time it opens. Both files must be in the same folder on your device.</div>
+
+      <!-- Key Staff -->
+      <div class="card">
+        <div class="card-title"><span class="ct-icon">👥</span> Key Staff</div>
+        <div id="contacts-key-staff"></div>
+      </div>
+
+      <!-- Clinic Areas -->
+      <div class="card">
+        <div class="card-title"><span class="ct-icon">🏢</span> Clinic Area Contacts</div>
+        <div id="contacts-clinic-areas"></div>
+      </div>
+
+      <!-- After Hours & Support -->
+      <div class="card">
+        <div class="card-title"><span class="ct-icon">🚨</span> After Hours &amp; Support Services</div>
+        <div id="contacts-support"></div>
+      </div>
+
+      <!-- Email -->
+      <div class="card">
+        <div class="card-title"><span class="ct-icon">📧</span> Workbook Report Email</div>
+        <div id="contacts-email"></div>
+        <p style="font-size:12px;color:var(--muted);margin-top:10px;">This email address is pre-filled in all workbook report and learning objective email buttons in the handbook.</p>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-red" onclick="resetContacts()">↺ Reset all contacts to defaults</button>
+      </div>
+    </div>
+
+    <!-- ══ SIGN-OFFS TAB ══ -->
+    <div class="section-panel" id="panel-signoffs">
+      <div class="section-title">Learning Objectives — Sign-Off</div>
+      <div class="section-sub">Formally sign off completed skills. Status is displayed in the handbook app immediately.</div>
+
+      <div class="stats-bar" id="lo-stats"></div>
+
+      <div class="card">
+        <div class="card-title"><span class="ct-icon">🎯</span> 1-Month Skills</div>
+        <div class="so-list" id="so-1month"></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="ct-icon">🎯</span> End of Rotation Skills</div>
+        <div class="so-list" id="so-eor"></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="ct-icon">📚</span> Workbooks</div>
+        <div class="so-list" id="so-workbooks"></div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-outline" onclick="signOffAll('lo')">✓ Sign off all Learning Objectives</button>
+        <button class="btn btn-red" onclick="clearAllSignoffs('lo')">↺ Clear all LO sign-offs</button>
+      </div>
+    </div>
+
+    <!-- ══ APPRAISALS TAB ══ -->
+    <div class="section-panel" id="panel-appraisals">
+      <div class="section-title">Performance Appraisals — Sign-Off</div>
+      <div class="section-sub">Record completion of graduate appraisal milestones. Status is displayed in the handbook app immediately.</div>
+
+      <div class="stats-bar" id="ap-stats"></div>
+
+      <div class="card">
+        <div class="card-title"><span class="ct-icon">📝</span> Graduate Appraisal Timetable</div>
+        <div class="ib b"><strong>Note</strong>Sign-off here records formal completion of each milestone. The graduate's self-recorded date in the handbook app is separate.</div>
+        <div class="so-list" id="so-appraisals"></div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-outline" onclick="signOffAll('ap')">✓ Sign off all Appraisals</button>
+        <button class="btn btn-red" onclick="clearAllSignoffs('ap')">↺ Clear all Appraisal sign-offs</button>
+      </div>
+    </div>
+
+    <!-- ══ SETTINGS TAB ══ -->
+    <div class="section-panel" id="panel-settings">
+      <div class="section-title">Settings</div>
+      <div class="section-sub">Admin configuration for the Specialist Clinics Handbook.</div>
+
+      <div class="pin-section">
+        <div class="card-title"><span class="ct-icon">🔐</span> Change Admin PIN</div>
+        <div class="pin-row">
+          <div class="field-group">
+            <label class="field-label">Current PIN</label>
+            <input type="password" class="field-input" id="pin-current" maxlength="8" placeholder="Current PIN">
+          </div>
+          <div class="field-group">
+            <label class="field-label">New PIN</label>
+            <input type="password" class="field-input" id="pin-new" maxlength="8" placeholder="New PIN (min 4 digits)">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Confirm New PIN</label>
+            <input type="password" class="field-input" id="pin-confirm" maxlength="8" placeholder="Confirm new PIN">
+          </div>
+          <button class="btn btn-navy" onclick="changePin()" style="margin-bottom:1px;">Update PIN</button>
+        </div>
+        <p id="pin-msg" style="font-size:12px;margin-top:10px;min-height:18px;"></p>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="ct-icon">⚠️</span> Data Management</div>
+        <div class="ib a"><strong>Important</strong>All handbook data is stored in your browser's localStorage. Data is specific to this device and browser. To share sign-offs across devices, use the email functions in the handbook.</div>
+        <div class="btn-row">
+          <button class="btn btn-red" onclick="resetAll()">🗑️ Reset ALL data to defaults</button>
+        </div>
+        <p style="font-size:12px;color:var(--muted);margin-top:10px;">This will clear all contact edits, sign-offs, and appraisal records. The PIN will not be reset.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="ct-icon">ℹ️</span> About</div>
+        <p style="font-size:13px;color:var(--muted);line-height:1.7;">
+          <strong style="color:var(--navy);">Specialist Clinics Handbook 2026</strong><br>
+          Admin App · St Vincent's Hospital Melbourne<br>
+          Both the handbook file and this admin file must be stored in the same folder for localStorage sharing to work.<br><br>
+          <strong style="color:var(--navy);">localStorage keys used:</strong><br>
+          <code style="font-size:11px;background:var(--bg);padding:2px 5px;border-radius:4px;">sc_hb_contacts</code> — contact overrides<br>
+          <code style="font-size:11px;background:var(--bg);padding:2px 5px;border-radius:4px;">sc_hb_signoffs</code> — sign-off records<br>
+          <code style="font-size:11px;background:var(--bg);padding:2px 5px;border-radius:4px;">sc_hb_pin</code> — admin PIN
+        </p>
+      </div>
+    </div>
+
+  </div><!-- /admin-content -->
+</div><!-- /admin-app -->
+
+<div id="save-toast">✓ Saved</div>
+
+<script>
+// ── Storage keys ──
+const SC_CONTACTS_KEY = 'sc_hb_contacts';
+const SC_SIGNOFFS_KEY  = 'sc_hb_signoffs';
+const SC_PIN_KEY       = 'sc_hb_pin';
+const DEFAULT_PIN_HASH = btoa('1234');
+
+// ── Default contacts (mirrors user app) ──
+const defaultContacts = {
+  'ops-manager':    {label:'Clinic Operations Manager',      name:'Rachael Andrews',        ext:'13484', phone:'',            email:''},
+  'clerical-mgr':   {label:'Clerical Team Manager',          name:'Mary Dafilis',            ext:'13775', phone:'',            email:''},
+  'num':            {label:'Nursing Unit Manager',            name:'Emily Pett',              ext:'13937', phone:'9231 3770',   email:''},
+  'anum-1':         {label:'ANUM',                            name:'Dylene Van Zyl',          ext:'13770', phone:'',            email:'dylene.vanzyl@svha.org.au'},
+  'anum-2':         {label:'ANUM',                            name:'Jaclyn Hannon',           ext:'13770', phone:'',            email:''},
+  'grad-coord':     {label:'Graduate Nurse Coordinator',      name:'',                        ext:'13847', phone:'',            email:''},
+  'pdn':            {label:'Practice Development Nurse',      name:'',                        ext:'',      phone:'',            email:''},
+  'red-nurse':      {label:'Red Clinic — Nurse',              name:'',                        ext:'15074', phone:'',            email:''},
+  'red-reception':  {label:'Red Clinic — Reception',          name:'',                        ext:'13416', phone:'',            email:''},
+  'blue-nurse':     {label:'Blue Clinic — Nurse',             name:'',                        ext:'15071', phone:'',            email:''},
+  'blue-reception': {label:'Blue Clinic — Reception',         name:'',                        ext:'13412', phone:'',            email:''},
+  'green-nurse':    {label:'Green Clinic — Nurse',            name:'',                        ext:'13934', phone:'',            email:''},
+  'green-reception':{label:'Green Clinic — Reception',        name:'',                        ext:'14763', phone:'',            email:''},
+  'yellow-reception':{label:'Yellow Clinic — Reception',      name:'',                        ext:'11560', phone:'',            email:''},
+  'after-hours':    {label:'After Hours Coordinator',         name:'After Hours Coordinator',  ext:'',      phone:'9231 4156',   email:''},
+  'star-support':   {label:'STAR! Critical Incident Support', name:'',                        ext:'99',    phone:'9231 2211',   email:''},
+  'access-eap':     {label:'ACCESS Employee Assistance',      name:'Assure',                  ext:'',      phone:'1800 808 374', email:''},
+  'report-email':   {label:'Workbook Report Email',           name:'Dylene Van Zyl',          ext:'',      phone:'',            email:'dylene.vanzyl@svha.org.au'},
+};
+
+// ── Learning Objectives items ──
+const loItems = {
+  '1month': [
+    {id:'lo-o2',    label:'Oxygen Administration'},
+    {id:'lo-neuro', label:'Neurological Observations'},
+    {id:'lo-dress', label:'Basic dressings and suture removal'},
+    {id:'lo-urine', label:'Urinalysis'},
+    {id:'lo-bgl',   label:'Blood glucose monitoring'},
+  ],
+  'eor': [
+    {id:'lo-cast-obs',   label:'Observe Plaster cast application'},
+    {id:'lo-cast-sup',   label:'Complete Plaster Cast Application (supervised)'},
+    {id:'lo-cast-so',    label:'Casting Application — sign off'},
+    {id:'lo-vac-obs',    label:'Observe VAC dressings'},
+    {id:'lo-vac-comp',   label:'Complete VAC Dressing Application'},
+    {id:'lo-wound-obs',  label:'Observe Complex Wound Dressing'},
+    {id:'lo-wound-comp', label:'Complete Complex Wound Dressing'},
+    {id:'lo-vene-obs',   label:'Observe Venesection Procedure'},
+    {id:'lo-vene-comp',  label:'Complete Venesection Procedure'},
+    {id:'lo-uvb-obs',    label:'UVB Procedural Observation'},
+    {id:'lo-uvb-so',     label:'UVB Procedural — sign off'},
+  ],
+  'workbooks': [
+    {id:'lo-wb-plastics', label:'Minor Procedures / Plastics / Dermatology'},
+    {id:'lo-wb-blood',    label:'Blood Tests'},
+    {id:'lo-wb-id',       label:'Infectious Diseases'},
+    {id:'lo-wb-ortho',    label:'Orthopaedic Fracture'},
+    {id:'lo-wb-cardio',   label:'Cardiology Workbook / ECG'},
+  ],
+};
+
+const appraisalItems = [
+  {id:'ap-6wk', label:'6-Week Milestone', desc:'Informal meeting — preceptor, NUM, and graduate'},
+  {id:'ap-4mo', label:'4-Month Appraisal', desc:'Formal appraisal by preceptor and NUM'},
+  {id:'ap-6mo', label:'6-Month Exit Interview', desc:'Exit / end of rotation interview with NUM +/- ANUM(s)'},
+];
+
+// ── Storage helpers ──
+function getStoredContacts() {
+  try { return JSON.parse(localStorage.getItem(SC_CONTACTS_KEY) || '{}'); }
+  catch(e) { return {}; }
+}
+function saveContacts(obj) {
+  localStorage.setItem(SC_CONTACTS_KEY, JSON.stringify(obj));
+}
+function getSignoffs() {
+  try { return JSON.parse(localStorage.getItem(SC_SIGNOFFS_KEY) || '{}'); }
+  catch(e) { return {}; }
+}
+function saveSignoffs(obj) {
+  localStorage.setItem(SC_SIGNOFFS_KEY, JSON.stringify(obj));
+}
+function getStoredPin() {
+  return localStorage.getItem(SC_PIN_KEY) || DEFAULT_PIN_HASH;
+}
+
+// ── PIN logic ──
+document.getElementById('pin-input').addEventListener('keydown', e => { if(e.key==='Enter') checkPin(); });
+
+function checkPin() {
+  const val = document.getElementById('pin-input').value;
+  const err = document.getElementById('pin-error');
+  if (btoa(val) === getStoredPin()) {
+    document.getElementById('pin-gate').style.display = 'none';
+    document.getElementById('admin-app').style.display = 'block';
+    initAdmin();
+  } else {
+    err.textContent = 'Incorrect PIN. Please try again.';
+    document.getElementById('pin-input').value = '';
+    document.getElementById('pin-input').focus();
+    setTimeout(() => { err.textContent = ''; }, 3000);
+  }
+}
+
+function logout() {
+  document.getElementById('admin-app').style.display = 'none';
+  document.getElementById('pin-gate').style.display = 'flex';
+  document.getElementById('pin-input').value = '';
+}
+
+function changePin() {
+  const cur  = document.getElementById('pin-current').value;
+  const nw   = document.getElementById('pin-new').value;
+  const conf = document.getElementById('pin-confirm').value;
+  const msg  = document.getElementById('pin-msg');
+  if (btoa(cur) !== getStoredPin()) { msg.style.color=getComputedStyle(document.documentElement).getPropertyValue('--red'); msg.textContent='Current PIN is incorrect.'; return; }
+  if (nw.length < 4) { msg.style.color=getComputedStyle(document.documentElement).getPropertyValue('--red'); msg.textContent='New PIN must be at least 4 characters.'; return; }
+  if (nw !== conf) { msg.style.color=getComputedStyle(document.documentElement).getPropertyValue('--red'); msg.textContent='New PINs do not match.'; return; }
+  localStorage.setItem(SC_PIN_KEY, btoa(nw));
+  msg.style.color='#14803D';
+  msg.textContent='PIN updated successfully.';
+  document.getElementById('pin-current').value='';
+  document.getElementById('pin-new').value='';
+  document.getElementById('pin-confirm').value='';
+  setTimeout(()=>{ msg.textContent=''; },4000);
+}
+
+// ── Tabs ──
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('panel-'+tab).classList.add('active');
+}
+
+// ── Toast ──
+let toastTimer;
+function showToast() {
+  const t = document.getElementById('save-toast');
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 1800);
+}
+
+// ── Build contact editor ──
+function buildContactSection(containerId, keys) {
+  const container = document.getElementById(containerId);
+  const stored = getStoredContacts();
+  container.innerHTML = '';
+  keys.forEach(k => {
+    const def = defaultContacts[k];
+    const override = stored[k] || {};
+    const cur = {...def, ...override};
+    const isEmailOnly = (!def.ext && !def.phone && k === 'report-email');
+
+    const div = document.createElement('div');
+    div.style.marginBottom = '14px';
+    div.innerHTML = `<div class="contact-section-label">${def.label}</div>
+      <div class="field-grid">
+        ${!isEmailOnly ? `<div class="field-group">
+          <label class="field-label">Name</label>
+          <input class="field-input" data-key="${k}" data-field="name" value="${cur.name||''}" placeholder="Name">
+        </div>` : ''}
+        ${def.ext !== undefined && !isEmailOnly ? `<div class="field-group">
+          <label class="field-label">Extension</label>
+          <input class="field-input" data-key="${k}" data-field="ext" value="${cur.ext||''}" placeholder="e.g. 13937">
+        </div>` : ''}
+        ${def.phone !== undefined && !isEmailOnly ? `<div class="field-group">
+          <label class="field-label">Direct Phone</label>
+          <input class="field-input" data-key="${k}" data-field="phone" value="${cur.phone||''}" placeholder="e.g. 9231 3770">
+        </div>` : ''}
+        ${def.email !== undefined ? `<div class="field-group">
+          <label class="field-label">Email Address</label>
+          <input class="field-input" data-key="${k}" data-field="email" type="email" value="${cur.email||''}" placeholder="email@svha.org.au">
+        </div>` : ''}
+      </div>`;
+    container.appendChild(div);
+  });
+
+  container.querySelectorAll('.field-input').forEach(input => {
+    input.addEventListener('input', () => { input.classList.add('changed'); });
+    input.addEventListener('change', () => { saveContactField(input); });
+    input.addEventListener('blur', () => { if(input.classList.contains('changed')) saveContactField(input); });
+  });
+}
+
+function saveContactField(input) {
+  const k = input.dataset.key;
+  const f = input.dataset.field;
+  const stored = getStoredContacts();
+  if (!stored[k]) stored[k] = {};
+  stored[k][f] = input.value.trim();
+  saveContacts(stored);
+  input.classList.remove('changed');
+  showToast();
+}
+
+function resetContacts() {
+  if (!confirm('Reset all contacts to their default values? This cannot be undone.')) return;
+  localStorage.removeItem(SC_CONTACTS_KEY);
+  buildAllContactSections();
+  showToast();
+}
+
+function buildAllContactSections() {
+  buildContactSection('contacts-key-staff',   ['ops-manager','clerical-mgr','num','anum-1','anum-2','grad-coord','pdn']);
+  buildContactSection('contacts-clinic-areas',['red-nurse','red-reception','blue-nurse','blue-reception','green-nurse','green-reception','yellow-reception']);
+  buildContactSection('contacts-support',     ['after-hours','star-support','access-eap']);
+  buildContactSection('contacts-email',       ['report-email']);
+}
+
+// ── Build sign-off UI ──
+function buildSignoffSection(containerId, items) {
+  const container = document.getElementById(containerId);
+  const signoffs = getSignoffs();
+  container.innerHTML = '';
+  items.forEach(item => {
+    const so = signoffs[item.id] || {signed:false, signedBy:'', signedDate:''};
+    const div = document.createElement('div');
+    div.className = 'so-item' + (so.signed ? ' is-signed' : '');
+    div.id = 'so-item-' + item.id;
+    div.innerHTML = `
+      <label class="so-toggle" title="Toggle sign-off">
+        <input type="checkbox" ${so.signed?'checked':''} onchange="toggleSignoff('${item.id}',this)">
+        <span class="so-toggle-label">${so.signed ? '✓ Signed off' : 'Not signed off'}</span>
+      </label>
+      <div class="so-item-label">${item.label}${item.desc ? '<small>'+item.desc+'</small>' : ''}</div>
+      <div class="so-fields">
+        <input type="text" class="so-field-sm" id="so-by-${item.id}" value="${so.signedBy||''}" placeholder="Signed by" 
+          oninput="updateSignoffField('${item.id}','signedBy',this.value)" ${!so.signed?'disabled':''}>
+        <input type="date" class="so-field-sm" id="so-date-${item.id}" value="${so.signedDate||''}" 
+          oninput="updateSignoffField('${item.id}','signedDate',this.value)" ${!so.signed?'disabled':''}>
+      </div>`;
+    container.appendChild(div);
+  });
+}
+
+function toggleSignoff(id, checkbox) {
+  const signoffs = getSignoffs();
+  if (!signoffs[id]) signoffs[id] = {signed:false, signedBy:'', signedDate:''};
+  signoffs[id].signed = checkbox.checked;
+  if (checkbox.checked && !signoffs[id].signedDate) {
+    const today = new Date().toISOString().split('T')[0];
+    signoffs[id].signedDate = today;
+  }
+  saveSignoffs(signoffs);
+  // Refresh the item
+  const item = document.getElementById('so-item-'+id);
+  if (item) {
+    item.classList.toggle('is-signed', checkbox.checked);
+    const label = item.querySelector('.so-toggle-label');
+    if (label) label.textContent = checkbox.checked ? '✓ Signed off' : 'Not signed off';
+    const byField = document.getElementById('so-by-'+id);
+    const dtField = document.getElementById('so-date-'+id);
+    if (byField) { byField.disabled = !checkbox.checked; if(checkbox.checked && signoffs[id].signedDate) dtField.value = signoffs[id].signedDate; }
+    if (dtField) dtField.disabled = !checkbox.checked;
+  }
+  updateStats();
+  showToast();
+}
+
+function updateSignoffField(id, field, value) {
+  const signoffs = getSignoffs();
+  if (!signoffs[id]) signoffs[id] = {signed:false, signedBy:'', signedDate:''};
+  signoffs[id][field] = value;
+  saveSignoffs(signoffs);
+  showToast();
+}
+
+function signOffAll(group) {
+  const today = new Date().toISOString().split('T')[0];
+  const signoffs = getSignoffs();
+  const items = group === 'lo'
+    ? [...loItems['1month'], ...loItems['eor'], ...loItems['workbooks']]
+    : appraisalItems;
+  items.forEach(item => {
+    if (!signoffs[item.id]) signoffs[item.id] = {};
+    signoffs[item.id].signed = true;
+    if (!signoffs[item.id].signedDate) signoffs[item.id].signedDate = today;
+  });
+  saveSignoffs(signoffs);
+  rebuildSignoffPanels();
+  showToast();
+}
+
+function clearAllSignoffs(group) {
+  if (!confirm('Clear all ' + (group==='lo'?'Learning Objective':'Appraisal') + ' sign-offs? This cannot be undone.')) return;
+  const signoffs = getSignoffs();
+  const items = group === 'lo'
+    ? [...loItems['1month'], ...loItems['eor'], ...loItems['workbooks']]
+    : appraisalItems;
+  items.forEach(item => { delete signoffs[item.id]; });
+  saveSignoffs(signoffs);
+  rebuildSignoffPanels();
+  showToast();
+}
+
+function rebuildSignoffPanels() {
+  buildSignoffSection('so-1month',    loItems['1month']);
+  buildSignoffSection('so-eor',       loItems['eor']);
+  buildSignoffSection('so-workbooks', loItems['workbooks']);
+  buildSignoffSection('so-appraisals',appraisalItems);
+  updateStats();
+}
+
+// ── Stats ──
+function updateStats() {
+  const signoffs = getSignoffs();
+  const allLO = [...loItems['1month'],...loItems['eor'],...loItems['workbooks']];
+  const loSigned  = allLO.filter(i => signoffs[i.id]?.signed).length;
+  const apSigned  = appraisalItems.filter(i => signoffs[i.id]?.signed).length;
+
+  const loStats = document.getElementById('lo-stats');
+  if (loStats) loStats.innerHTML = `
+    <div class="stat-card signed-stat"><div class="stat-num">${loSigned}</div><div class="stat-label">Signed off</div></div>
+    <div class="stat-card pending-stat"><div class="stat-num">${allLO.length - loSigned}</div><div class="stat-label">Awaiting sign-off</div></div>
+    <div class="stat-card"><div class="stat-num">${allLO.length}</div><div class="stat-label">Total items</div></div>`;
+
+  const apStats = document.getElementById('ap-stats');
+  if (apStats) apStats.innerHTML = `
+    <div class="stat-card signed-stat"><div class="stat-num">${apSigned}</div><div class="stat-label">Milestones signed off</div></div>
+    <div class="stat-card pending-stat"><div class="stat-num">${appraisalItems.length - apSigned}</div><div class="stat-label">Milestones pending</div></div>
+    <div class="stat-card"><div class="stat-num">${appraisalItems.length}</div><div class="stat-label">Total milestones</div></div>`;
+}
+
+// ── Reset all ──
+function resetAll() {
+  if (!confirm('This will clear ALL contact edits, sign-offs, and appraisal records. Continue?')) return;
+  localStorage.removeItem(SC_CONTACTS_KEY);
+  localStorage.removeItem(SC_SIGNOFFS_KEY);
+  buildAllContactSections();
+  rebuildSignoffPanels();
+  showToast();
+}
+
+// ── Init ──
+function initAdmin() {
+  buildAllContactSections();
+  rebuildSignoffPanels();
+}
+</script>
+</body>
+</html>
