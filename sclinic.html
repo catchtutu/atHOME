@@ -233,6 +233,27 @@ input.date-input:focus{outline:2px solid var(--blue);border-color:var(--blue);}
 .user-tick{width:22px;height:22px;accent-color:var(--green);cursor:pointer;border-radius:5px;}
 .lo-row-done{background:var(--green-bg)!important;}
 .lo-row-done td{color:#14532D;}
+/* ── Firebase status pill ── */
+#firebase-status{display:flex;align-items:center;gap:5px;font-size:11px;color:#93B4D4;margin-left:8px;white-space:nowrap;}
+#firebase-status .fs-name{max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+#fs-dot{font-size:9px;transition:color .4s;}
+/* ── Connection modal ── */
+#connect-modal{display:none;position:fixed;inset:0;z-index:500;align-items:center;justify-content:center;}
+#connect-overlay{position:absolute;inset:0;background:rgba(13,45,94,.82);}
+#connect-card{position:relative;background:var(--surface);border-radius:16px;padding:30px 26px;width:340px;max-width:94vw;box-shadow:0 12px 48px rgba(0,0,0,.35);}
+#connect-card .cc-logo{font-size:30px;text-align:center;margin-bottom:10px;}
+#connect-card h2{font-size:17px;font-weight:800;color:var(--navy);text-align:center;margin-bottom:5px;}
+#connect-card p{font-size:13px;color:var(--muted);text-align:center;margin-bottom:18px;line-height:1.5;}
+#connect-code{width:100%;padding:13px;text-align:center;font-size:22px;font-weight:800;letter-spacing:.25em;text-transform:uppercase;border:2px solid var(--border);border-radius:var(--r-sm);font-family:inherit;color:var(--navy);outline:none;margin-bottom:8px;}
+#connect-code:focus{border-color:var(--blue);}
+#connect-error{color:var(--red);font-size:12px;font-weight:600;min-height:18px;text-align:center;margin-bottom:10px;}
+.cc-btn{width:100%;padding:11px;border-radius:var(--r-sm);border:none;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:8px;}
+.cc-btn-primary{background:var(--navy);color:#fff;}
+.cc-btn-primary:hover{background:var(--navy-mid);}
+.cc-btn-skip{background:var(--bg);color:var(--muted);font-size:12px;padding:8px;}
+.cc-btn-skip:hover{color:var(--text);}
+.cc-divider{text-align:center;font-size:11px;color:var(--muted);margin:4px 0 10px;}
+#connect-user-info{display:none;position:fixed;bottom:70px;right:14px;background:var(--navy);color:#fff;font-size:12px;font-weight:700;padding:8px 14px;border-radius:20px;cursor:pointer;z-index:50;box-shadow:0 2px 10px rgba(0,0,0,.2);}
 </style>
 </head>
 <body>
@@ -250,6 +271,10 @@ input.date-input:focus{outline:2px solid var(--blue);border-color:var(--blue);}
       <div class="hdr-title">Specialist Clinics Handbook 2026</div>
     </div>
     <span class="hdr-badge">Graduate Nursing</span>
+    <div id="firebase-status" title="Firebase connection status">
+      <span id="fs-dot" style="color:#6B7280;">●</span>
+      <span class="fs-name" id="fs-label">Offline</span>
+    </div>
   </div>
   <div id="search-bar">
     <div class="search-container">
@@ -263,6 +288,26 @@ input.date-input:focus{outline:2px solid var(--blue);border-color:var(--blue);}
 </header>
 
 <div id="overlay"></div>
+
+<!-- ── Firebase connection modal ── -->
+<div id="connect-modal">
+  <div id="connect-overlay" onclick="dismissConnect()"></div>
+  <div id="connect-card">
+    <div class="cc-logo">📘</div>
+    <h2>Connect your Progress</h2>
+    <p>Enter the access code provided by your Clinical Educator to link this handbook to your supervised program.</p>
+    <input type="text" id="connect-code" placeholder="e.g. KL7M2P" maxlength="6" autocomplete="off"
+      oninput="this.value=this.value.toUpperCase()"
+      onkeydown="if(event.key==='Enter')connectUser()">
+    <div id="connect-error"></div>
+    <button class="cc-btn cc-btn-primary" onclick="connectUser()">Connect →</button>
+    <div class="cc-divider">or</div>
+    <button class="cc-btn cc-btn-skip" onclick="dismissConnect()">Continue offline (progress saved locally only)</button>
+  </div>
+</div>
+
+<!-- ── Connected user pill ── -->
+<div id="connect-user-info" onclick="showReconnectOption()" title="Tap to disconnect"></div>
 
 <div class="app-body">
 
@@ -1458,7 +1503,28 @@ input.date-input:focus{outline:2px solid var(--blue);border-color:var(--blue);}
 </main>
 </div>
 
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
 <script>
+// ════════════════════════════════════════════════════════════════
+// FIREBASE CONFIGURATION — paste your project config here
+// Firebase Console → Project Settings → Your apps → SDK setup
+// ════════════════════════════════════════════════════════════════
+const FIREBASE_CONFIG = {
+  apiKey:            "PASTE_API_KEY",
+  authDomain:        "PASTE_PROJECT_ID.firebaseapp.com",
+  databaseURL:       "https://PASTE_PROJECT_ID-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:         "PASTE_PROJECT_ID",
+  storageBucket:     "PASTE_PROJECT_ID.appspot.com",
+  messagingSenderId: "PASTE_SENDER_ID",
+  appId:             "PASTE_APP_ID"
+};
+const DB_PATH            = 'sc_handbook';
+const SC_FB_SESSION_KEY  = 'sc_hb_firebase_session'; // localStorage: {userId, name}
+// ════════════════════════════════════════════════════════════════
+
 // ── LocalStorage keys (shared with admin app) ──
 const SC_CONTACTS_KEY      = 'sc_hb_contacts';
 const SC_SIGNOFFS_KEY      = 'sc_hb_signoffs';
@@ -1512,6 +1578,7 @@ function saveUserProgress(checkbox) {
   prog[id].ticked = checkbox.checked;
   localStorage.setItem(SC_USER_PROGRESS_KEY, JSON.stringify(prog));
   applyRowStyle(id, prog[id].ticked);
+  syncProgressToFirebase(id, {ticked: checkbox.checked});
 }
 function applyRowStyle(id, ticked) {
   const row = document.querySelector(`.user-tick[data-lo-id="${id}"]`)?.closest('tr');
@@ -1612,7 +1679,138 @@ function renderSignoffs() {
   });
 }
 
-// ── Navigation ──
+// ── Firebase state ──
+let db = null;
+let fbUserId   = null;
+let fbUserName = null;
+let _soListener = null;
+let _ctListener = null;
+
+// ── Firebase init ──
+function initFirebase() {
+  try {
+    if (FIREBASE_CONFIG.apiKey === 'PASTE_API_KEY') return; // not configured yet
+    firebase.initializeApp(FIREBASE_CONFIG);
+    db = firebase.database();
+    const session = JSON.parse(localStorage.getItem(SC_FB_SESSION_KEY) || 'null');
+    if (session?.userId && session?.name) {
+      fbUserId   = session.userId;
+      fbUserName = session.name;
+      activateSession();
+    } else {
+      setTimeout(() => {
+        document.getElementById('connect-modal').style.display = 'flex';
+      }, 600);
+    }
+  } catch(e) { console.warn('Firebase init:', e); }
+}
+
+function showConnectModal() {
+  document.getElementById('connect-modal').style.display = 'flex';
+}
+function dismissConnect() {
+  document.getElementById('connect-modal').style.display = 'none';
+  setFbStatus(false);
+}
+
+async function connectUser() {
+  const code = (document.getElementById('connect-code').value || '').trim().toUpperCase();
+  const err  = document.getElementById('connect-error');
+  if (code.length < 4) { err.textContent = 'Please enter your full access code.'; return; }
+  err.textContent = 'Connecting…'; err.style.color = 'var(--muted)';
+  try {
+    const snap = await db.ref(DB_PATH + '/codeIndex/' + code).get();
+    if (!snap.exists()) {
+      err.textContent = 'Code not found. Check with your Clinical Educator.';
+      err.style.color = 'var(--red)'; return;
+    }
+    fbUserId = snap.val();
+    const pSnap = await db.ref(DB_PATH + '/users/' + fbUserId + '/profile').get();
+    const profile = pSnap.val() || {};
+    fbUserName = profile.name || 'Graduate';
+    localStorage.setItem(SC_FB_SESSION_KEY, JSON.stringify({userId: fbUserId, name: fbUserName}));
+    document.getElementById('connect-modal').style.display = 'none';
+    document.getElementById('connect-code').value = '';
+    activateSession();
+  } catch(e) {
+    err.textContent = 'Connection error — check internet and try again.';
+    err.style.color = 'var(--red)';
+    console.error(e);
+  }
+}
+
+function activateSession() {
+  if (!fbUserId || !db) return;
+  setFbStatus(true);
+
+  // Show connected pill
+  const pill = document.getElementById('connect-user-info');
+  if (pill) { pill.textContent = '👤 ' + fbUserName; pill.style.display = 'block'; }
+
+  // Update lastSeen
+  db.ref(DB_PATH + '/users/' + fbUserId + '/profile/lastSeen').set(new Date().toISOString());
+
+  // Load progress from Firebase → merge with localStorage
+  db.ref(DB_PATH + '/users/' + fbUserId + '/progress').once('value', snap => {
+    const fb  = snap.val() || {};
+    const loc = getUserProgress();
+    const merged = {...loc};
+    Object.keys(fb).forEach(id => {
+      if (!merged[id]) merged[id] = {};
+      if (fb[id].ticked !== undefined) merged[id].ticked = fb[id].ticked;
+      if (fb[id].date)                 merged[id].date   = fb[id].date;
+    });
+    localStorage.setItem(SC_USER_PROGRESS_KEY, JSON.stringify(merged));
+    renderUserProgress();
+  });
+
+  // Sign-offs: real-time listener
+  if (_soListener) _soListener();
+  _soListener = db.ref(DB_PATH + '/signoffs/' + fbUserId).on('value', snap => {
+    const so = snap.val() || {};
+    localStorage.setItem(SC_SIGNOFFS_KEY, JSON.stringify(so));
+    renderSignoffs();
+  });
+
+  // Contacts: real-time listener (admin updates flow to all users)
+  if (_ctListener) _ctListener();
+  _ctListener = db.ref(DB_PATH + '/contacts').on('value', snap => {
+    if (snap.val()) {
+      localStorage.setItem(SC_CONTACTS_KEY, JSON.stringify(snap.val()));
+      renderContacts();
+    }
+  });
+}
+
+function setFbStatus(connected) {
+  const dot   = document.getElementById('fs-dot');
+  const label = document.getElementById('fs-label');
+  if (!dot || !label) return;
+  if (connected) {
+    dot.style.color   = '#4ADE80';
+    label.textContent = fbUserName || 'Connected';
+  } else {
+    dot.style.color   = '#6B7280';
+    label.textContent = 'Offline';
+  }
+}
+
+function syncProgressToFirebase(id, data) {
+  if (!db || !fbUserId) return;
+  db.ref(DB_PATH + '/users/' + fbUserId + '/progress/' + id).update(data)
+    .catch(e => console.warn('Sync error:', e));
+}
+
+function showReconnectOption() {
+  if (confirm('Disconnect "' + fbUserName + '" from this device?')) {
+    localStorage.removeItem(SC_FB_SESSION_KEY);
+    fbUserId = fbUserName = null;
+    const pill = document.getElementById('connect-user-info');
+    if (pill) pill.style.display = 'none';
+    setFbStatus(false);
+    setTimeout(() => document.getElementById('connect-modal').style.display = 'flex', 300);
+  }
+}
 const links = document.querySelectorAll('.nav-link[data-page]');
 const pages = document.querySelectorAll('.page');
 
@@ -1641,14 +1839,16 @@ overlay.addEventListener('click', closeSidebar);
 renderContacts();
 renderSignoffs();
 renderUserProgress();
+initFirebase();
 
-// ── Persist LO date inputs to localStorage ──
+// ── Persist LO date inputs to localStorage + Firebase ──
 document.querySelectorAll('#page-learning-obj input.date-input').forEach(input => {
   input.addEventListener('change', function() {
     const prog = getUserProgress();
     if (!prog[this.id]) prog[this.id] = {};
     prog[this.id].date = this.value;
     localStorage.setItem(SC_USER_PROGRESS_KEY, JSON.stringify(prog));
+    syncProgressToFirebase(this.id, {date: this.value});
   });
 });
 
