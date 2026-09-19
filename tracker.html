@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clinical Competency Tracker — HITH &amp; District Nursing · SVHM</title>
+<style>
+:root{
+  --navy:#1B3A6B;--navy-l:#254e8f;--teal:#00838a;
+  --bg:#f0f4f8;--card:#fff;--bdr:#e2e8f0;--txt:#1e293b;--muted:#64748b;
+  --ok:#16a34a;--ok-bg:#dcfce7;--ok-bdr:#86efac;
+  --warn:#b45309;--warn-bg:#fef3c7;--warn-bdr:#fcd34d;
+  --err:#dc2626;--err-bg:#fee2e2;--err-bdr:#fca5a5;
+  --gray:#94a3b8;--gray-bg:#f1f5f9;--r:8px;
+  --sh:0 1px 3px rgba(0,0,0,.1);--sh2:0 12px 32px rgba(0,0,0,.18);
+}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f172a;--card:#1e293b;--bdr:#334155;--txt:#f1f5f9;--muted:#94a3b8;--gray-bg:#1e293b;
+}}
+:root[data-theme="dark"]{--bg:#0f172a;--card:#1e293b;--bdr:#334155;--txt:#f1f5f9;--muted:#94a3b8;--gray-bg:#1e293b;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;}
+.hdr{background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:56px;flex-shrink:0;position:sticky;top:0;z-index:50;}
+.hdr-brand{display:flex;align-items:center;gap:10px;}
+.hdr-title{font-size:14px;font-weight:700;line-height:1.2;}
+.hdr-sub{font-size:10px;opacity:.6;}
+.hdr-right{display:flex;gap:6px;align-items:center;}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:8px 14px;border:none;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;transition:.15s;white-space:nowrap;line-height:1;}
+.btn:disabled{opacity:.4;cursor:not-allowed;}
+.btn-primary{background:var(--teal);color:#fff;}.btn-primary:hover:not(:disabled){background:#006870;}
+.btn-navy{background:var(--navy);color:#fff;}.btn-navy:hover:not(:disabled){background:var(--navy-l);}
+.btn-danger{background:var(--err);color:#fff;}.btn-danger:hover:not(:disabled){background:#b91c1c;}
+.btn-outline{background:transparent;color:var(--txt);border:1.5px solid var(--bdr);}.btn-outline:hover:not(:disabled){background:var(--gray-bg);}
+.btn-ghost{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.3);}.btn-ghost:hover:not(:disabled){background:rgba(255,255,255,.12);}
+.btn-sm{padding:5px 10px;font-size:12px;}
+.btn-xs{padding:3px 8px;font-size:11px;}
+.land{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(150deg,#162d55 0%,#1a5276 100%);color:#fff;padding:32px;text-align:center;}
+.land h1{font-size:26px;font-weight:800;margin-bottom:6px;}
+.land .lsub{font-size:14px;opacity:.7;margin-bottom:44px;}
+.lcards{display:flex;gap:20px;flex-wrap:wrap;justify-content:center;}
+.lcard{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:16px;padding:30px 28px;min-width:200px;max-width:220px;cursor:pointer;transition:.2s;backdrop-filter:blur(8px);}
+.lcard:hover{background:rgba(255,255,255,.2);transform:translateY(-4px);box-shadow:0 20px 40px rgba(0,0,0,.2);}
+.lcard .icon{font-size:42px;margin-bottom:12px;}
+.lcard h3{font-size:17px;font-weight:700;margin-bottom:6px;}
+.lcard p{font-size:12px;opacity:.7;line-height:1.4;}
+.lfooter{margin-top:36px;font-size:11px;opacity:.35;}
+.lgn-bg{min-height:100vh;background:linear-gradient(150deg,#162d55 0%,#1a5276 100%);display:flex;align-items:center;justify-content:center;padding:20px;}
+.lgn{background:var(--card);border-radius:16px;padding:36px;width:100%;max-width:380px;box-shadow:var(--sh2);}
+.lgn h2{font-size:20px;font-weight:800;color:var(--navy);margin-bottom:4px;}
+.lgn .desc{color:var(--muted);font-size:13px;margin-bottom:22px;line-height:1.4;}
+.fg{margin-bottom:15px;}
+.fg label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:5px;}
+.fg input,.fg select{width:100%;padding:10px 12px;border:2px solid var(--bdr);border-radius:var(--r);font-size:14px;background:var(--card);color:var(--txt);outline:none;transition:.15s;}
+.fg input:focus,.fg select:focus{border-color:var(--teal);}
+.pin-inp{font-size:28px!important;letter-spacing:12px!important;text-align:center!important;font-weight:800!important;font-family:monospace!important;}
+.errmsg{color:var(--err);font-size:12px;margin-top:5px;display:none;}
+.errmsg.show{display:block;}
+.back-lnk{background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;padding:0;}
+.back-lnk:hover{color:var(--txt);}
+.adm{display:flex;flex-direction:column;min-height:100vh;}
+.adm-body{flex:1;padding:20px;max-width:1280px;margin:0 auto;width:100%;}
+.tabs{display:flex;gap:3px;margin-bottom:18px;background:var(--card);border-radius:var(--r);padding:4px;box-shadow:var(--sh);width:fit-content;flex-wrap:wrap;}
+.tab{padding:7px 15px;border-radius:6px;border:none;cursor:pointer;font-size:13px;font-weight:600;background:transparent;color:var(--muted);transition:.15s;}
+.tab:hover{color:var(--txt);}
+.tab.act{background:var(--navy);color:#fff;}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:13px;margin-bottom:18px;}
+.sc{background:var(--card);border-radius:var(--r);padding:16px 18px;box-shadow:var(--sh);border-left:4px solid var(--teal);}
+.sc.ok{border-color:var(--ok);}.sc.warn{border-color:#d97706;}.sc.bad{border-color:var(--err);}
+.sc .sl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:5px;}
+.sc .sv{font-size:28px;font-weight:800;color:var(--navy);line-height:1.1;}
+.sc .ss{font-size:11px;color:var(--muted);margin-top:2px;}
+.pbar{height:6px;background:var(--bdr);border-radius:3px;overflow:hidden;margin-top:7px;}
+.pfill{height:100%;border-radius:3px;}
+.pfill.g{background:var(--ok);}.pfill.m{background:#d97706;}.pfill.r{background:var(--err);}
+.ov-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-bottom:18px;}
+.ov-card{background:var(--card);border-radius:var(--r);padding:18px;box-shadow:var(--sh);}
+.ov-title{font-size:13px;font-weight:800;color:var(--navy);margin-bottom:14px;}
+.ov-row{margin-bottom:10px;}.ov-row:last-child{margin-bottom:0;}
+.ov-row-top{display:flex;justify-content:space-between;margin-bottom:3px;}
+.ov-lbl{font-size:11px;color:var(--muted);}.ov-pct{font-size:11px;font-weight:700;}
+.tbl-wrap{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;}
+.tbl-hdr{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid var(--bdr);gap:10px;flex-wrap:wrap;}
+.tbl-hdr-title{font-size:13px;font-weight:700;color:var(--navy);}
+.tbl-scroll{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+th{background:var(--navy);color:#fff;padding:9px 13px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;}
+td{padding:10px 13px;border-bottom:1px solid var(--bdr);font-size:13px;vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr.rc:hover td{background:rgba(0,131,138,.05);cursor:pointer;}
+.toolbar{display:flex;gap:10px;margin-bottom:13px;flex-wrap:wrap;align-items:center;}
+.srch{flex:1;min-width:180px;padding:8px 11px;border:1.5px solid var(--bdr);border-radius:var(--r);font-size:13px;background:var(--card);color:var(--txt);outline:none;}
+.srch:focus{border-color:var(--teal);}
+.fsel{padding:8px 10px;border:1.5px solid var(--bdr);border-radius:var(--r);font-size:13px;background:var(--card);color:var(--txt);outline:none;cursor:pointer;}
+.fsel:focus{border-color:var(--teal);}
+.badge{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap;}
+.b-ok{background:var(--ok-bg);color:#166534;border:1px solid var(--ok-bdr);}
+.b-ip{background:var(--warn-bg);color:#92400e;border:1px solid var(--warn-bdr);}
+.b-nc{background:var(--err-bg);color:#991b1b;border:1px solid var(--err-bdr);}
+.b-nr{background:var(--gray-bg);color:var(--muted);border:1px solid var(--bdr);}
+.b-pin{background:#ede9fe;color:#5b21b6;border:1px solid #c4b5fd;}
+.b-nopin{background:var(--gray-bg);color:var(--muted);border:1px solid var(--bdr);}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.52);z-index:200;display:flex;align-items:center;justify-content:center;padding:12px;backdrop-filter:blur(4px);}
+.modal{background:var(--card);border-radius:14px;width:100%;max-width:660px;max-height:92vh;overflow-y:auto;box-shadow:var(--sh2);}
+.modal.sm{max-width:420px;}
+.mhdr{padding:20px 24px 16px;border-bottom:1px solid var(--bdr);display:flex;align-items:flex-start;justify-content:space-between;gap:12px;position:sticky;top:0;background:var(--card);z-index:1;}
+.mtitle{font-size:16px;font-weight:800;color:var(--navy);}
+.msub{font-size:12px;color:var(--muted);margin-top:2px;}
+.mclose{background:none;border:none;cursor:pointer;color:var(--muted);font-size:18px;padding:3px 6px;border-radius:4px;}
+.mclose:hover{background:var(--gray-bg);}
+.mbody{padding:20px 24px;}
+.mfoot{padding:13px 24px 20px;border-top:1px solid var(--bdr);display:flex;gap:10px;justify-content:flex-end;align-items:center;flex-wrap:wrap;}
+.mfoot-l{flex:1;}
+.pin-box{background:var(--navy);color:#fff;border-radius:var(--r);padding:14px 18px;text-align:center;margin:10px 0;}
+.pin-lbl{font-size:10px;text-transform:uppercase;letter-spacing:1px;opacity:.6;margin-bottom:4px;}
+.pin-num{font-size:32px;font-weight:800;letter-spacing:10px;font-family:monospace;}
+.pin-acts{display:flex;gap:7px;justify-content:center;margin-top:9px;}
+.csec{margin-bottom:20px;}
+.chead{display:flex;align-items:center;justify-content:space-between;padding-bottom:7px;margin-bottom:9px;border-bottom:2px solid var(--bdr);}
+.ctitle{font-size:13px;font-weight:800;color:var(--navy);}
+.citems{display:flex;flex-direction:column;gap:6px;}
+.citem{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--gray-bg);border-radius:7px;gap:8px;flex-wrap:wrap;}
+.citem-lbl{font-size:12px;font-weight:600;flex:1;min-width:130px;}
+.citem-r{display:flex;align-items:center;gap:5px;flex-shrink:0;}
+.esel{padding:4px 7px;border:1.5px solid var(--bdr);border-radius:5px;font-size:11px;background:var(--card);color:var(--txt);outline:none;}
+.esel:focus{border-color:var(--teal);}
+.edate{padding:4px 7px;border:1.5px solid var(--bdr);border-radius:5px;font-size:11px;background:var(--card);color:var(--txt);outline:none;}
+.edate:focus{border-color:var(--teal);}
+.comp-cat{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);margin-bottom:14px;overflow:hidden;}
+.comp-cat-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--bdr);background:var(--gray-bg);gap:10px;flex-wrap:wrap;}
+.comp-cat-name{font-size:14px;font-weight:800;color:var(--navy);}
+.comp-comps{padding:12px 18px;}
+.comp-row{display:flex;align-items:center;justify-content:space-between;padding:7px 10px;background:var(--gray-bg);border-radius:6px;margin-bottom:6px;gap:8px;}
+.comp-row:last-child{margin-bottom:0;}
+.comp-row-name{font-size:12px;font-weight:600;}
+.comp-row-acts{display:flex;gap:5px;align-items:center;flex-shrink:0;}
+.uview{max-width:580px;margin:0 auto;padding:20px 14px;}
+.uhdr{background:var(--navy);color:#fff;border-radius:14px;padding:20px;margin-bottom:18px;}
+.uname{font-size:19px;font-weight:800;margin-bottom:3px;}
+.umeta{font-size:12px;opacity:.65;}
+.u-chips{display:flex;gap:7px;margin-top:13px;flex-wrap:wrap;}
+.ucard{background:var(--card);border-radius:12px;padding:16px;margin-bottom:13px;box-shadow:var(--sh);}
+.uchead{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px;gap:8px;}
+.uctitle{font-size:13px;font-weight:800;color:var(--navy);}
+.urow{display:flex;align-items:flex-start;justify-content:space-between;padding:8px 10px;background:var(--gray-bg);border-radius:7px;margin-bottom:5px;gap:10px;}
+.urow:last-child{margin-bottom:0;}
+.urow-lbl{font-size:12px;font-weight:500;flex:1;}
+.setting-box{background:var(--card);border-radius:var(--r);padding:20px;box-shadow:var(--sh);margin-bottom:16px;}
+.setting-title{font-size:14px;font-weight:800;color:var(--navy);margin-bottom:4px;}
+.setting-sub{font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.5;}
+.ibox{border-radius:var(--r);padding:12px 14px;font-size:12px;line-height:1.5;margin-bottom:13px;}
+.ibox strong{display:block;margin-bottom:2px;}
+.ibox-info{background:#e0f2fe;border-left:4px solid #0284c7;color:#0c4a6e;}
+.ibox-warn{background:var(--warn-bg);border-left:4px solid #d97706;color:#78350f;}
+.ibox-ok{background:var(--ok-bg);border-left:4px solid var(--ok);color:#14532d;}
+.toast{position:fixed;bottom:20px;right:20px;background:var(--navy);color:#fff;padding:10px 16px;border-radius:var(--r);font-size:13px;z-index:999;box-shadow:var(--sh2);animation:slin .2s ease;max-width:320px;}
+@keyframes slin{from{transform:translateY(14px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.spin{display:inline-block;width:20px;height:20px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:rot .7s linear infinite;}
+.spin.dk{border-color:var(--bdr);border-top-color:var(--navy);}
+@keyframes rot{to{transform:rotate(360deg);}}
+.ldscr{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;}
+.ldscr p{color:var(--muted);font-size:14px;}
+.sechd{font-size:13px;font-weight:800;color:var(--navy);margin-bottom:11px;margin-top:18px;}
+.sechd:first-child{margin-top:0;}
+.divider{height:1px;background:var(--bdr);margin:16px 0;}
+.txt-muted{color:var(--muted);}
+.chip-cc{display:inline-flex;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;background:#dbeafe;color:#1e40af;}
+code{background:var(--gray-bg);padding:2px 6px;border-radius:4px;font-size:12px;}
+@media(max-width:600px){
+  .adm-body{padding:12px;}
+  .lcards{flex-direction:column;align-items:center;}
+  .lcard{max-width:100%;}
+  .tabs{width:100%;}.tab{flex:1;text-align:center;padding:7px 6px;font-size:12px;}
+  th,td{padding:8px 9px;}
+  .mbody,.mhdr,.mfoot{padding-left:14px;padding-right:14px;}
+  .stats{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+<script id="data-seed" type="application/json">
+{"staff": [{"id": "637013", "name": "Alexandra Hall (On Leave)", "costCentre": "District Nursing", "pin": null, "comps": {"ivc": {"online": "Completed - 30-Jun-2023", "practical": "Completed - 22-Jun-2021", "otj": "Completed - 22-Jun-2021"}, "male-idc": {"online": "Completed - 24-Sep-2024", "practical": "No record", "otj": "No record"}, "cvad": {"online": "Not Completed", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "655083", "name": "Amy Smyth", "costCentre": "District Nursing", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "No record", "otj": "No record"}, "male-idc": {"online": "Completed - 27-Jan-2026", "practical": "Completed - 21-Feb-2024", "otj": "Completed - 21-Feb-2024"}, "cvad": {"online": "In Progress", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "646056", "name": "Annabelle Chan", "costCentre": "HITH", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "No record", "otj": "No record"}, "male-idc": {"online": "No record", "practical": "No record", "otj": "No record"}, "cvad": {"online": "No record", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "656767", "name": "Anne Calabro", "costCentre": "District Nursing", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "No record", "otj": "No record"}, "male-idc": {"online": "No record", "practical": "No record", "otj": "No record"}, "cvad": {"online": "Completed - 02-Jan-2026", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "651518", "name": "Ante Radojkovich", "costCentre": "HITH", "pin": null, "comps": {"ivc": {"online": "Completed - 05-Jan-2023", "practical": "In Progress", "otj": "No record"}, "male-idc": {"online": "Completed - 21-Jan-2025", "practical": "In Progress", "otj": "No record"}, "cvad": {"online": "In Progress", "practical": "No record", "flush-patency": "Completed - 18-Sep-2025", "blood-sampling": "Completed - 18-Sep-2025", "blood-cultures": "Completed - 18-Sep-2025", "dressing-mgmt": "Completed - 18-Sep-2025", "removal": "No record"}}}, {"id": "622125", "name": "Audrey Tiong", "costCentre": "HITH", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "Completed - 08-Oct-2018", "otj": "Completed - 08-Oct-2018"}, "male-idc": {"online": "Completed - 30-May-2021", "practical": "No record", "otj": "No record"}, "cvad": {"online": "No record", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "650820", "name": "Bernard Wai Hung Chan", "costCentre": "HITH", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "No record", "otj": "No record"}, "male-idc": {"online": "No record", "practical": "No record", "otj": "No record"}, "cvad": {"online": "No record", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "648960", "name": "Brodie Nicholson", "costCentre": "Residential In Reach", "pin": null, "comps": {"ivc": {"online": "In Progress", "practical": "No record", "otj": "No record"}, "male-idc": {"online": "No record", "practical": "No record", "otj": "No record"}, "cvad": {"online": "No record", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "623709", "name": "Camille Ann Piad", "costCentre": "HITH", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "Completed - (date not recorded)", "otj": "Completed - 01-Jan-2020"}, "male-idc": {"online": "No record", "practical": "Completed - 13-Nov-2019", "otj": "Completed - 13-Nov-2019"}, "cvad": {"online": "In Progress", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "9000409", "name": "Caris Gelmi", "costCentre": "HITH", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "Completed - 08-Oct-2018", "otj": "Completed - 08-Oct-2018"}, "male-idc": {"online": "Completed - 29-Apr-2018", "practical": "Completed - 10-Oct-2018", "otj": "Completed - 10-Oct-2018"}, "cvad": {"online": "No record", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "653898", "name": "Cathy Hayes", "costCentre": "HITH", "pin": null, "comps": {"ivc": {"online": "Completed - 13-Jun-2024", "practical": "Completed - 13-Jun-2024", "otj": "No record"}, "male-idc": {"online": "Completed - 22-Jan-2025", "practical": "In Progress", "otj": "No record"}, "cvad": {"online": "In Progress", "practical": "Completed - 20-Jan-2025", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "654532", "name": "Cathy Tan (On Leave)", "costCentre": "District Nursing", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "No record", "otj": "No record"}, "male-idc": {"online": "Completed - 27-Sep-2023", "practical": "Completed - (date not recorded)", "otj": "Completed - 01-Jan-2020"}, "cvad": {"online": "No record", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "5008299", "name": "Corinne Howell", "costCentre": "HITH", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "No record", "otj": "No record"}, "male-idc": {"online": "Completed - 14-Feb-2017", "practical": "Completed - 14-Feb-2017", "otj": "Completed - 14-Feb-2017"}, "cvad": {"online": "No record", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "648069", "name": "Dana Ramesh", "costCentre": "HITH", "pin": null, "comps": {"ivc": {"online": "Completed - 16-Sep-2024", "practical": "In Progress", "otj": "No record"}, "male-idc": {"online": "Completed - 09-Oct-2022", "practical": "Completed - 12-Oct-2022", "otj": "Completed - 12-Oct-2022"}, "cvad": {"online": "Completed - 15-Jun-2026", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "644148", "name": "Dorothy Bowers", "costCentre": "HITH", "pin": null, "comps": {"ivc": {"online": "Not Completed", "practical": "In Progress", "otj": "No record"}, "male-idc": {"online": "No record", "practical": "No record", "otj": "No record"}, "cvad": {"online": "No record", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "640595", "name": "Eimear Morris (On Leave)", "costCentre": "HITH", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "No record", "otj": "No record"}, "male-idc": {"online": "No record", "practical": "No record", "otj": "No record"}, "cvad": {"online": "In Progress", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "1125843", "name": "Ela Cato", "costCentre": "HITH", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "No record", "otj": "No record"}, "male-idc": {"online": "No record", "practical": "No record", "otj": "No record"}, "cvad": {"online": "Completed - 07-Aug-2025", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "659467", "name": "Emma Cullen", "costCentre": "HITH", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "No record", "otj": "No record"}, "male-idc": {"online": "No record", "practical": "No record", "otj": "No record"}, "cvad": {"online": "In Progress", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "632181", "name": "Fatima Khan", "costCentre": "HITH", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "No record", "otj": "No record"}, "male-idc": {"online": "No record", "practical": "No record", "otj": "No record"}, "cvad": {"online": "Completed - 29-Aug-2022", "practical": "No record", "flush-patency": "Completed - 14-Sep-2023", "blood-sampling": "Completed - 14-Sep-2023", "blood-cultures": "Completed - 14-Sep-2023", "dressing-mgmt": "Completed - 14-Sep-2023", "removal": "No record"}}}, {"id": "155985", "name": "Glennys Pendlebury", "costCentre": "Residential In Reach", "pin": null, "comps": {"ivc": {"online": "Completed - 26-Nov-2022", "practical": "No record", "otj": "No record"}, "male-idc": {"online": "Completed - 19-Sep-2024", "practical": "No record", "otj": "No record"}, "cvad": {"online": "In Progress", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "5004993", "name": "Grant Bueno", "costCentre": "HITH", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "No record", "otj": "No record"}, "male-idc": {"online": "No record", "practical": "No record", "otj": "No record"}, "cvad": {"online": "No record", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "253669", "name": "Grant Virtue", "costCentre": "District Nursing", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "No record", "otj": "No record"}, "male-idc": {"online": "Completed - 20-Nov-2013", "practical": "Completed - 20-Nov-2013", "otj": "Completed - 20-Nov-2013"}, "cvad": {"online": "In Progress", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "631395", "name": "Holly Williams (On Leave)", "costCentre": "HITH", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "Completed - (date not recorded)", "otj": "Completed - 01-Jan-2020"}, "male-idc": {"online": "No record", "practical": "No record", "otj": "No record"}, "cvad": {"online": "In Progress", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "639079", "name": "Huimin (Jimmy) Jin (On Leave)", "costCentre": "District Nursing", "pin": null, "comps": {"ivc": {"online": "Completed - 05-Oct-2022", "practical": "Completed - 02-Feb-2022", "otj": "Completed - 02-Feb-2022"}, "male-idc": {"online": "Completed - 10-Mar-2023", "practical": "Completed - 19-Apr-2023", "otj": "Completed - 19-Apr-2023"}, "cvad": {"online": "Completed - 28-Jun-2026", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "626552", "name": "James Danckert", "costCentre": "Residential In Reach", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "No record", "otj": "No record"}, "male-idc": {"online": "No record", "practical": "No record", "otj": "No record"}, "cvad": {"online": "No record", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "635795", "name": "Jane Waterworth (On Leave)", "costCentre": "HITH", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "No record", "otj": "No record"}, "male-idc": {"online": "No record", "practical": "No record", "otj": "No record"}, "cvad": {"online": "No record", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "623588", "name": "Jean-Louis Kocher", "costCentre": "HITH", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "No record", "otj": "No record"}, "male-idc": {"online": "Completed - 13-Apr-2025", "practical": "Completed - 17-Jul-2025", "otj": "No record"}, "cvad": {"online": "In Progress", "practical": "Completed - 05-May-2025", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "625681", "name": "JENNY NGUYEN", "costCentre": "Residential In Reach", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "No record", "otj": "No record"}, "male-idc": {"online": "No record", "practical": "In Progress", "otj": "No record"}, "cvad": {"online": "In Progress", "practical": "Completed - 07-Aug-2023", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "261718", "name": "Judith Fitzgerald", "costCentre": "District Nursing", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "No record", "otj": "No record"}, "male-idc": {"online": "Completed - 04-Dec-2021", "practical": "In Progress", "otj": "No record"}, "cvad": {"online": "In Progress", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "657855", "name": "Junyoung Kim", "costCentre": "District Nursing", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "No record", "otj": "No record"}, "male-idc": {"online": "Completed - 11-Feb-2025", "practical": "Completed - 12-Feb-2025", "otj": "No record"}, "cvad": {"online": "Not Completed", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "630903", "name": "Kaman Yeung", "costCentre": "HITH", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "Completed - (date not recorded)", "otj": "Completed - 01-Jan-2020"}, "male-idc": {"online": "Completed - 19-Mar-2021", "practical": "Completed - 06-Dec-2023", "otj": "Completed - 06-Dec-2023"}, "cvad": {"online": "Completed - 23-Sep-2023", "practical": "Completed - 15-Nov-2023", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "9000463", "name": "Karen Trinh", "costCentre": "HITH", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "Completed - 19-Feb-2015", "otj": "Completed - 19-Feb-2015"}, "male-idc": {"online": "Completed - 03-Oct-2014", "practical": "Completed - 03-Oct-2014", "otj": "Completed - 03-Oct-2014"}, "cvad": {"online": "No record", "practical": "No record", "flush-patency": "Completed - 18-Dec-2023", "blood-sampling": "Completed - 18-Dec-2023", "blood-cultures": "Completed - 18-Dec-2023", "dressing-mgmt": "Completed - 18-Dec-2023", "removal": "No record"}}}, {"id": "639364", "name": "Kate Moylan", "costCentre": "HITH", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "Completed - 22-Jul-2022", "otj": "Completed - 22-Jul-2022"}, "male-idc": {"online": "No record", "practical": "No record", "otj": "No record"}, "cvad": {"online": "Completed - 17-Oct-2023", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "72206", "name": "Kathryn Bowman", "costCentre": "Residential In Reach", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "No record", "otj": "No record"}, "male-idc": {"online": "No record", "practical": "No record", "otj": "No record"}, "cvad": {"online": "No record", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "129437", "name": "Kristen Grant", "costCentre": "District Nursing", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "No record", "otj": "No record"}, "male-idc": {"online": "Completed - 10-Mar-2014", "practical": "Completed - 26-Mar-2014", "otj": "Completed - 26-Mar-2014"}, "cvad": {"online": "In Progress", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "637029", "name": "Lauren Brymner", "costCentre": "HITH", "pin": null, "comps": {"ivc": {"online": "Completed - 21-Jul-2021", "practical": "Completed - 24-Jun-2021", "otj": "Completed - 24-Jun-2021"}, "male-idc": {"online": "Completed - 07-Jan-2026", "practical": "Not Completed", "otj": "No record"}, "cvad": {"online": "Completed - 05-Jun-2024", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "620757", "name": "Lauren McKenzie", "costCentre": "District Nursing", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "Completed - (date not recorded)", "otj": "Completed - 01-Jan-2020"}, "male-idc": {"online": "Completed - 15-Sep-2022", "practical": "Completed - 21-Sep-2022", "otj": "Completed - 21-Sep-2022"}, "cvad": {"online": "Completed - 07-Mar-2026", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "5008426", "name": "Leo Marshall-Vuong", "costCentre": "HITH", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "No record", "otj": "No record"}, "male-idc": {"online": "Completed - 14-Nov-2017", "practical": "Completed - 14-Nov-2017", "otj": "Completed - 14-Nov-2017"}, "cvad": {"online": "No record", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "629435", "name": "Lisa McCarthy", "costCentre": "HITH", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "No record", "otj": "No record"}, "male-idc": {"online": "No record", "practical": "No record", "otj": "No record"}, "cvad": {"online": "No record", "practical": "No record", "flush-patency": "Completed - 18-Dec-2023", "blood-sampling": "Completed - 18-Dec-2023", "blood-cultures": "Completed - 18-Dec-2023", "dressing-mgmt": "Completed - 18-Dec-2023", "removal": "Completed - 19-Feb-2023"}}}, {"id": "625271", "name": "Lucy Simpson", "costCentre": "Residential In Reach", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "Not Completed", "otj": "No record"}, "male-idc": {"online": "No record", "practical": "No record", "otj": "No record"}, "cvad": {"online": "No record", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "5009233", "name": "Madeline Fox (On Leave)", "costCentre": "District Nursing", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "No record", "otj": "No record"}, "male-idc": {"online": "Completed - 16-Nov-2023", "practical": "In Progress", "otj": "No record"}, "cvad": {"online": "No record", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "642669", "name": "Madlin Glasbergen", "costCentre": "HITH", "pin": null, "comps": {"ivc": {"online": "Completed - 08-Mar-2022", "practical": "Completed - 08-Mar-2022", "otj": "Completed - 08-Mar-2022"}, "male-idc": {"online": "No record", "practical": "No record", "otj": "No record"}, "cvad": {"online": "No record", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "157783", "name": "Melissa Hills", "costCentre": "HITH", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "No record", "otj": "No record"}, "male-idc": {"online": "No record", "practical": "No record", "otj": "No record"}, "cvad": {"online": "No record", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "635366", "name": "Michael Bean", "costCentre": "HITH", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "No record", "otj": "No record"}, "male-idc": {"online": "No record", "practical": "No record", "otj": "No record"}, "cvad": {"online": "No record", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "647112", "name": "Michelle Sun", "costCentre": "District Nursing", "pin": null, "comps": {"ivc": {"online": "In Progress", "practical": "No record", "otj": "No record"}, "male-idc": {"online": "Completed - 28-Jan-2024", "practical": "Completed - 24-Apr-2024", "otj": "Completed - 24-Apr-2024"}, "cvad": {"online": "In Progress", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "634182", "name": "Michelle Wang", "costCentre": "HITH", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "Completed - 18-Sep-2020", "otj": "Completed - 18-Sep-2020"}, "male-idc": {"online": "Completed - 31-Jul-2023", "practical": "Completed - 02-Aug-2023", "otj": "Completed - 02-Aug-2023"}, "cvad": {"online": "Completed - 10-Dec-2025", "practical": "Not Completed", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "648790", "name": "Minkyong Kim", "costCentre": "HITH", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "No record", "otj": "No record"}, "male-idc": {"online": "No record", "practical": "No record", "otj": "No record"}, "cvad": {"online": "In Progress", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "664156", "name": "Monica Heung", "costCentre": "District Nursing", "pin": null, "comps": {"ivc": {"online": "Completed - 13-May-2022", "practical": "Completed - 13-May-2022", "otj": "Not Completed"}, "male-idc": {"online": "Completed - 11-Feb-2025", "practical": "Completed - 12-Feb-2025", "otj": "No record"}, "cvad": {"online": "Completed - 20-Feb-2026", "practical": "Completed - 21-Mar-2025", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "621739", "name": "Pauline McCarthy", "costCentre": "District Nursing", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "No record", "otj": "No record"}, "male-idc": {"online": "No record", "practical": "No record", "otj": "No record"}, "cvad": {"online": "In Progress", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "130214", "name": "Peta Lunt", "costCentre": "District Nursing", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "No record", "otj": "No record"}, "male-idc": {"online": "Completed - 12-Jul-2022", "practical": "Completed - 13-Jul-2022", "otj": "Completed - 13-Jul-2022"}, "cvad": {"online": "In Progress", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "623411", "name": "Rachel Alta", "costCentre": "HITH", "pin": null, "comps": {"ivc": {"online": "Completed - 21-May-2021", "practical": "Completed - 21-May-2021", "otj": "Completed - 21-May-2021"}, "male-idc": {"online": "No record", "practical": "No record", "otj": "No record"}, "cvad": {"online": "No record", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "627833", "name": "Rodney Li", "costCentre": "District Nursing", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "Completed - 18-Sep-2020", "otj": "Completed - 18-Sep-2020"}, "male-idc": {"online": "Completed - 07-Jun-2024", "practical": "Completed - 19-Jul-2023", "otj": "Completed - 19-Jul-2023"}, "cvad": {"online": "No record", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "620644", "name": "Samantha Barhoun", "costCentre": "HITH", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "No record", "otj": "No record"}, "male-idc": {"online": "No record", "practical": "No record", "otj": "No record"}, "cvad": {"online": "No record", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "628211", "name": "Samantha Collins", "costCentre": "HITH", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "Not Completed", "otj": "No record"}, "male-idc": {"online": "No record", "practical": "No record", "otj": "No record"}, "cvad": {"online": "No record", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "5002017", "name": "Sarah Luong", "costCentre": "HITH", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "Completed - 10-Oct-2012", "otj": "Completed - 10-Oct-2012"}, "male-idc": {"online": "No record", "practical": "No record", "otj": "No record"}, "cvad": {"online": "No record", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "5005239", "name": "Simon Graser", "costCentre": "HITH", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "Completed - 10-Apr-2014", "otj": "Completed - 10-Apr-2014"}, "male-idc": {"online": "Completed - 02-Dec-2013", "practical": "Completed - 02-Dec-2013", "otj": "Completed - 02-Dec-2013"}, "cvad": {"online": "No record", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "623536", "name": "Simone Rai", "costCentre": "District Nursing", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "Completed - (date not recorded)", "otj": "Completed - 01-Jan-2020"}, "male-idc": {"online": "Completed - 23-Apr-2024", "practical": "In Progress", "otj": "No record"}, "cvad": {"online": "Not Completed", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "623495", "name": "Soyoung Son", "costCentre": "HITH", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "Completed - (date not recorded)", "otj": "Completed - 01-Jan-2020"}, "male-idc": {"online": "Completed - 03-Dec-2021", "practical": "Completed - 06-Dec-2021", "otj": "Completed - 06-Dec-2021"}, "cvad": {"online": "In Progress", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "648410", "name": "Sui Lam Luk (On Leave)", "costCentre": "HITH", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "No record", "otj": "No record"}, "male-idc": {"online": "No record", "practical": "No record", "otj": "No record"}, "cvad": {"online": "No record", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "95826", "name": "Suzanne Holbery", "costCentre": "District Nursing", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "No record", "otj": "No record"}, "male-idc": {"online": "Completed - 11-Jan-2024", "practical": "No record", "otj": "No record"}, "cvad": {"online": "Not Completed", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "674711", "name": "Tasha Lancaster", "costCentre": "District Nursing", "pin": null, "comps": {"ivc": {"online": "Not Completed", "practical": "No record", "otj": "No record"}, "male-idc": {"online": "Completed - 12-Jul-2026", "practical": "Not Completed", "otj": "No record"}, "cvad": {"online": "Completed - 22-Jul-2026", "practical": "Not Completed", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "81357", "name": "Thi Nguyen", "costCentre": "District Nursing", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "No record", "otj": "No record"}, "male-idc": {"online": "Completed - 23-Apr-2025", "practical": "Completed - 24-Apr-2025", "otj": "No record"}, "cvad": {"online": "In Progress", "practical": "Completed - 03-Mar-2025", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "5004660", "name": "Thu Hoang", "costCentre": "District Nursing", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "Completed - 19-Feb-2015", "otj": "Completed - 19-Feb-2015"}, "male-idc": {"online": "Completed - 02-Aug-2022", "practical": "Completed - 03-Aug-2022", "otj": "Completed - 03-Aug-2022"}, "cvad": {"online": "Completed - 08-Mar-2026", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "624637", "name": "Tony O Sullivan", "costCentre": "HITH", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "Completed - (date not recorded)", "otj": "Completed - 01-Jan-2020"}, "male-idc": {"online": "Completed - 25-Jun-2019", "practical": "Completed - 26-Jun-2019", "otj": "Completed - 26-Jun-2019"}, "cvad": {"online": "No record", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "109954", "name": "Trina Paevere", "costCentre": "District Nursing", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "Completed - 22-Mar-2012", "otj": "Completed - 22-Mar-2012"}, "male-idc": {"online": "No record", "practical": "In Progress", "otj": "No record"}, "cvad": {"online": "Not Completed", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "661050", "name": "Vincent Lam", "costCentre": "District Nursing", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "No record", "otj": "No record"}, "male-idc": {"online": "In Progress", "practical": "No record", "otj": "No record"}, "cvad": {"online": "In Progress", "practical": "Completed - 14-Jan-2026", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}, {"id": "5007560", "name": "Wendy McIntosh", "costCentre": "HITH", "pin": null, "comps": {"ivc": {"online": "No record", "practical": "Completed - 02-Feb-2016", "otj": "Completed - 02-Feb-2016"}, "male-idc": {"online": "Completed - 18-Sep-2017", "practical": "Completed - 18-Sep-2017", "otj": "Completed - 18-Sep-2017"}, "cvad": {"online": "No record", "practical": "No record", "flush-patency": "No record", "blood-sampling": "No record", "blood-cultures": "No record", "dressing-mgmt": "No record", "removal": "No record"}}}], "comps": [{"id": "ivc", "name": "IVC \u2014 Intravenous Cannulation", "components": [{"id": "online", "name": "IVC Online"}, {"id": "practical", "name": "IVC Practical Workshop"}, {"id": "otj", "name": "IVC OTJ"}]}, {"id": "male-idc", "name": "Male IDC", "components": [{"id": "online", "name": "Male IDC Online"}, {"id": "practical", "name": "Male IDC Practical Workshop"}, {"id": "otj", "name": "Male IDC OTJ"}]}, {"id": "cvad", "name": "CVAD \u2014 Central Venous Access Device", "components": [{"id": "online", "name": "CVAD Online"}, {"id": "practical", "name": "CVAD Practical Workshop"}, {"id": "flush-patency", "name": "Flushing & Patency (OTJ)"}, {"id": "blood-sampling", "name": "Blood Sampling Collection (OTJ)"}, {"id": "blood-cultures", "name": "Blood Cultures (OTJ)"}, {"id": "dressing-mgmt", "name": "Dressing Management (OTJ)"}, {"id": "removal", "name": "CVAD Removal (OTJ)"}]}], "adminHash": "d1c816318bee04b33ba82d920981f4f332fa736fd4958a440858debb11c01830", "version": 0}
+</script>
+<div id="app"><div class="ldscr"><div class="spin dk"></div><p>Loading…</p></div></div>
+<script>
+
+// ═══════════════════════════════════════════
+//  DATA LAYER
+// ═══════════════════════════════════════════
+const LS_KEY = 'cct_v2';
+const SES_KEY = 'cct_ses';
+
+function getSeed() {
+  try { return JSON.parse(document.getElementById('data-seed').textContent); }
+  catch(e) { return {staff:[],comps:[],adminHash:'',version:0}; }
+}
+function loadData() {
+  const seed = getSeed();
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (!raw) { localStorage.setItem(LS_KEY, JSON.stringify(seed)); return seed; }
+    const local = JSON.parse(raw);
+    if ((seed.version||0) > (local.version||0)) {
+      localStorage.setItem(LS_KEY, JSON.stringify(seed)); return seed;
+    }
+    return local;
+  } catch(e) { return seed; }
+}
+function persist() { localStorage.setItem(LS_KEY, JSON.stringify(APP.data)); }
+function getSession() { try { return JSON.parse(sessionStorage.getItem(SES_KEY)); } catch(e) { return null; } }
+function setSession(s) { sessionStorage.setItem(SES_KEY, JSON.stringify(s)); }
+function clearSession() { sessionStorage.removeItem(SES_KEY); }
+
+const APP = { data: null, session: null };
+
+// ═══════════════════════════════════════════
+//  UTILITIES
+// ═══════════════════════════════════════════
+async function sha256(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+function slugify(s) {
+  return s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') || 'item';
+}
+function uniqueSlug(base, existing) {
+  let s = slugify(base), n = 2;
+  while (existing.includes(s)) s = slugify(base) + '-' + n++;
+  return s;
+}
+function genPin() {
+  const used = APP.data.staff.map(s => s.pin).filter(Boolean);
+  let p, t = 0;
+  do { p = String(Math.floor(100000 + Math.random()*900000)); t++; } while (used.includes(p) && t < 60);
+  return p;
+}
+function fmtDate(v) {
+  if (!v) return '';
+  const mo = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const d = new Date(v); if (isNaN(d)) return v;
+  return String(d.getDate()).padStart(2,'0') + '-' + mo[d.getMonth()] + '-' + d.getFullYear();
+}
+function toComp(dateStr) {
+  return dateStr ? 'Completed - ' + fmtDate(dateStr) : 'Completed - (date not recorded)';
+}
+function parseType(s) {
+  if (!s || s === 'No record') return 'nr';
+  if (s.startsWith('Completed')) return 'done';
+  if (s === 'In Progress') return 'ip';
+  return 'nc';
+}
+function parseDateVal(s) {
+  if (!s || !s.startsWith('Completed - ')) return '';
+  const rest = s.slice(12);
+  const m = rest.match(/^(\d{2})-([A-Za-z]{3})-(\d{4})$/);
+  if (!m) return '';
+  const mo = {Jan:'01',Feb:'02',Mar:'03',Apr:'04',May:'05',Jun:'06',Jul:'07',Aug:'08',Sep:'09',Oct:'10',Nov:'11',Dec:'12'};
+  return m[3] + '-' + (mo[m[2]]||'01') + '-' + m[1];
+}
+const isCmp = s => typeof s === 'string' && s.startsWith('Completed');
+function compIsDone(staff, catId) {
+  const cat = APP.data.comps.find(c => c.id === catId); if (!cat) return false;
+  const sc = (staff.comps && staff.comps[catId]) || {};
+  return cat.components.every(comp => isCmp(sc[comp.id]));
+}
+function pct(n,d) { return d ? Math.round(n/d*100) : 0; }
+function pfClass(p) { return p>=75?'g':p>=40?'m':'r'; }
+function scClass(p) { return p>=75?'ok':p>=40?'warn':'bad'; }
+
+function statusBadge(s) {
+  const t = parseType(s);
+  if (t === 'done') return '<span class="badge b-ok">\u2713 ' + (s.startsWith('Completed - ') ? s.slice(12) : 'Completed') + '</span>';
+  if (t === 'ip')   return '<span class="badge b-ip">\u27f3 In Progress</span>';
+  if (t === 'nc')   return '<span class="badge b-nc">\u2717 Not Completed</span>';
+  return '<span class="badge b-nr">\u2014 No record</span>';
+}
+function overallBadge(done) {
+  return done ? '<span class="badge b-ok">\u2713 Completed</span>' : '<span class="badge b-nc">Incomplete</span>';
+}
+
+function toast(msg, dur) {
+  dur = dur || 3200;
+  const t = document.createElement('div');
+  t.className = 'toast'; t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(function() { t.remove(); }, dur);
+}
+function el(id) { return document.getElementById(id); }
+function set(id, html) { const e = el(id); if (e) e.innerHTML = html; }
+function closeModal() { const m = el('_modal'); if (m) m.remove(); EBUF = null; }
+
+const HDR_SVG = '<svg width="28" height="28" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="30" fill="rgba(255,255,255,.12)" stroke="rgba(255,255,255,.3)" stroke-width="2"/><path d="M32 14v36M14 32h36" stroke="white" stroke-width="5.5" stroke-linecap="round"/></svg>';
+const HDR_HTML = '<div class="hdr"><div class="hdr-brand">' + HDR_SVG + '<div><div class="hdr-title">Competency Tracker</div><div class="hdr-sub">HITH &amp; District Nursing \u00b7 SVHM</div></div></div><div class="hdr-right" id="hdr-right"></div></div>';
+
+// ═══════════════════════════════════════════
+//  VIEWS
+// ═══════════════════════════════════════════
+function showLanding() {
+  document.getElementById('app').innerHTML = '<div class="land">' + HDR_SVG.replace('width="28" height="28"','width="60" height="60"').replace('margin:0','margin-bottom:16px') +
+    '<h1>Clinical Competency Tracker</h1>' +
+    '<p class="lsub">HITH &amp; District Nursing &middot; St Vincent\'s Hospital Melbourne</p>' +
+    '<div class="lcards">' +
+    '<div class="lcard" onclick="showAdminLogin()"><div class="icon">\uD83D\uDD10</div><h3>Admin</h3><p>Manage staff, competencies and issue access PINs</p></div>' +
+    '<div class="lcard" onclick="showUserLogin()"><div class="icon">\uD83D\uDC64</div><h3>Staff Login</h3><p>View your competency progress with your 6-digit PIN</p></div>' +
+    '</div><p class="lfooter">Standalone &middot; No internet connection required &middot; SVHM @ Home Acute Directorate</p></div>';
+}
+
+function showAdminLogin() {
+  document.getElementById('app').innerHTML =
+    '<div class="lgn-bg"><div class="lgn">' +
+    '<h2>Admin Access</h2><p class="desc">Enter your administrator password</p>' +
+    '<div class="fg"><label>Password</label>' +
+    '<input type="password" id="adm-pw" placeholder="Password" onkeydown="if(event.key===\'Enter\')doAdminLogin()">' +
+    '<div class="errmsg" id="adm-err">Incorrect password.</div></div>' +
+    '<button class="btn btn-primary" style="width:100%;margin-bottom:12px" onclick="doAdminLogin()">Sign In \u2192</button>' +
+    '<div style="text-align:center"><button class="back-lnk" onclick="showLanding()">\u2190 Back</button></div>' +
+    '</div></div>';
+  setTimeout(function() { var e = el('adm-pw'); if (e) e.focus(); }, 50);
+}
+
+function showUserLogin() {
+  document.getElementById('app').innerHTML =
+    '<div class="lgn-bg"><div class="lgn">' +
+    '<h2>Staff Login</h2><p class="desc">Enter your 6-digit PIN (issued by your Clinical Educator)</p>' +
+    '<div class="fg"><label>Your PIN</label>' +
+    '<input type="text" class="pin-inp" id="usr-pin" maxlength="6" placeholder="\u00b7\u00b7\u00b7\u00b7\u00b7\u00b7" inputmode="numeric" pattern="[0-9]*" oninput="this.value=this.value.replace(/[^0-9]/g,\'\')" onkeydown="if(event.key===\'Enter\')doUserLogin()">' +
+    '<div class="errmsg" id="pin-err">PIN not recognised. Please check with your Clinical Educator.</div></div>' +
+    '<button class="btn btn-primary" style="width:100%;margin-bottom:12px" onclick="doUserLogin()">View My Progress \u2192</button>' +
+    '<div style="text-align:center"><button class="back-lnk" onclick="showLanding()">\u2190 Back</button></div>' +
+    '</div></div>';
+  setTimeout(function() { var e = el('usr-pin'); if (e) e.focus(); }, 50);
+}
+
+// ═══════════════════════════════════════════
+//  AUTH
+// ═══════════════════════════════════════════
+async function doAdminLogin() {
+  var pw = el('adm-pw').value, err = el('adm-err');
+  err.classList.remove('show');
+  if (!pw) return;
+  var hash = await sha256(pw);
+  if (hash === APP.data.adminHash) {
+    APP.session = {role:'admin'}; setSession(APP.session); showAdmin();
+  } else { err.classList.add('show'); }
+}
+function doUserLogin() {
+  var pin = el('usr-pin').value, err = el('pin-err');
+  err.classList.remove('show');
+  if (pin.length !== 6) return;
+  var staff = APP.data.staff.find(function(s) { return s.pin === pin; });
+  if (staff) {
+    APP.session = {role:'staff', staffId: staff.id}; setSession(APP.session); showUser();
+  } else { err.classList.add('show'); }
+}
+function signOut() { clearSession(); APP.session = null; showLanding(); }
+
+// ═══════════════════════════════════════════
+//  ADMIN SHELL
+// ═══════════════════════════════════════════
+var ATAB = 'overview';
+var AFLTR = {q:'', cc:''};
+
+function showAdmin() {
+  document.getElementById('app').innerHTML =
+    '<div class="adm">' + HDR_HTML +
+    '<div class="adm-body">' +
+    '<div class="tabs">' +
+    '<button class="tab act" id="tab-ov" onclick="switchTab(\'overview\')">&#128202; Overview</button>' +
+    '<button class="tab" id="tab-st" onclick="switchTab(\'staff\')">&#128101; Staff</button>' +
+    '<button class="tab" id="tab-cm" onclick="switchTab(\'comps\')">&#128203; Competencies</button>' +
+    '<button class="tab" id="tab-sx" onclick="switchTab(\'settings\')">&#9881; Settings</button>' +
+    '</div>' +
+    '<div id="tab-body"></div>' +
+    '</div></div>';
+  set('hdr-right', '<button class="btn btn-ghost btn-sm" onclick="signOut()">Sign Out</button>');
+  switchTab(ATAB);
+}
+
+function switchTab(t) {
+  ATAB = t;
+  var map = {overview:'ov', staff:'st', comps:'cm', settings:'sx'};
+  Object.keys(map).forEach(function(k) {
+    var e = el('tab-' + map[k]);
+    if (e) e.classList.toggle('act', k === t);
+  });
+  if (t === 'overview') renderOverview();
+  else if (t === 'staff') renderStaff();
+  else if (t === 'comps') renderComps();
+  else renderSettings();
+}
+
+// ═══════════════════════════════════════════
+//  OVERVIEW TAB
+// ═══════════════════════════════════════════
+function renderOverview() {
+  var D = APP.data, n = D.staff.length;
+  var pinN = D.staff.filter(function(s) { return s.pin; }).length;
+  var centres = [...new Set(D.staff.map(function(s) { return s.costCentre; }))].sort();
+
+  function catDone(catId) {
+    return D.staff.filter(function(s) { return compIsDone(s, catId); }).length;
+  }
+
+  var statCards = D.comps.map(function(cat) {
+    var done = catDone(cat.id), p = pct(done, n);
+    var label = cat.name.split('\u2014')[0].trim();
+    return '<div class="sc ' + scClass(p) + '">' +
+      '<div class="sl">' + label + '</div>' +
+      '<div class="sv">' + done + '</div>' +
+      '<div class="ss">' + p + '% of all staff completed</div>' +
+      '<div class="pbar"><div class="pfill ' + pfClass(p) + '" style="width:' + p + '%"></div></div>' +
+      '</div>';
+  }).join('');
+
+  var ccTH = D.comps.map(function(c) {
+    return '<th style="text-align:center">' + c.name.split('\u2014')[0].trim() + '</th>';
+  }).join('');
+  var ccRows = centres.map(function(cc) {
+    var sub = D.staff.filter(function(s) { return s.costCentre === cc; }), sn = sub.length;
+    var cells = D.comps.map(function(cat) {
+      var p = pct(sub.filter(function(s) { return compIsDone(s, cat.id); }).length, sn);
+      return '<td style="text-align:center"><span class="badge ' + (p===100?'b-ok':p>0?'b-ip':'b-nr') + '">' + p + '%</span></td>';
+    }).join('');
+    return '<tr><td><strong>' + cc + '</strong><br><small class="txt-muted">' + sn + ' staff</small></td>' + cells + '</tr>';
+  }).join('');
+
+  var subCards = D.comps.map(function(cat) {
+    var rows = cat.components.map(function(comp) {
+      var done = D.staff.filter(function(s) { return isCmp((s.comps[cat.id]||{})[comp.id]); }).length;
+      var p = pct(done, n);
+      return '<div class="ov-row"><div class="ov-row-top"><span class="ov-lbl">' + comp.name + '</span><span class="ov-pct">' + done + '/' + n + ' (' + p + '%)</span></div>' +
+        '<div class="pbar"><div class="pfill ' + pfClass(p) + '" style="width:' + p + '%"></div></div></div>';
+    }).join('');
+    return '<div class="ov-card"><div class="ov-title">' + cat.name + '</div>' + rows + '</div>';
+  }).join('');
+
+  set('tab-body',
+    '<div class="stats"><div class="sc"><div class="sl">Total Staff</div><div class="sv">' + n + '</div><div class="ss">' + pinN + ' PINs issued &middot; ' + centres.length + ' cost centres</div></div>' + statCards + '</div>' +
+    '<div class="ov-grid">' + subCards + '</div>' +
+    '<div class="tbl-wrap"><div class="tbl-hdr"><span class="tbl-hdr-title">Completion by Cost Centre</span></div>' +
+    '<div class="tbl-scroll"><table><thead><tr><th>Cost Centre</th>' + ccTH + '</tr></thead><tbody>' + ccRows + '</tbody></table></div></div>'
+  );
+}
+
+// ═══════════════════════════════════════════
+//  STAFF TAB
+// ═══════════════════════════════════════════
+function renderStaff() {
+  var D = APP.data;
+  var centres = [...new Set(D.staff.map(function(s) { return s.costCentre; }))].sort();
+  var filtered = D.staff.filter(function(s) {
+    var q = AFLTR.q.toLowerCase();
+    if (q && !s.name.toLowerCase().includes(q) && !s.id.includes(q)) return false;
+    if (AFLTR.cc && s.costCentre !== AFLTR.cc) return false;
+    return true;
+  }).sort(function(a,b) { return a.name.localeCompare(b.name); });
+
+  var ccOpts = centres.map(function(c) {
+    return '<option value="' + c + '"' + (AFLTR.cc===c?' selected':'') + '>' + c + '</option>';
+  }).join('');
+  var compTH = D.comps.map(function(c) {
+    return '<th style="text-align:center">' + c.name.split('\u2014')[0].trim() + '</th>';
+  }).join('');
+
+  var rows = filtered.map(function(s) {
+    var cells = D.comps.map(function(cat) {
+      var done = compIsDone(s, cat.id);
+      return '<td style="text-align:center"><span class="badge ' + (done?'b-ok':'b-nc') + '">' + (done?'\u2713':'\u2717') + '</span></td>';
+    }).join('');
+    var pb = s.pin ? '<span class="badge b-pin">\uD83D\uDCCC ' + s.pin + '</span>' : '<span class="badge b-nopin">No PIN</span>';
+    return '<tr class="rc" onclick="openStaffModal(\'' + s.id + '\')">' +
+      '<td><strong>' + s.name + '</strong><br><small class="txt-muted">' + s.id + '</small></td>' +
+      '<td><span class="chip-cc">' + s.costCentre + '</span></td>' +
+      cells + '<td>' + pb + '</td></tr>';
+  }).join('') || '<tr><td colspan="20" style="text-align:center;padding:32px;color:var(--muted)">No staff match your filters.</td></tr>';
+
+  set('tab-body',
+    '<div class="toolbar">' +
+    '<input type="search" class="srch" placeholder="Search name or worker ID\u2026" value="' + AFLTR.q + '" oninput="AFLTR.q=this.value;renderStaff()">' +
+    '<select class="fsel" onchange="AFLTR.cc=this.value;renderStaff()"><option value="">All Cost Centres</option>' + ccOpts + '</select>' +
+    '<button class="btn btn-primary" onclick="openAddStaff()">+ Add Staff Member</button>' +
+    '</div>' +
+    '<div class="tbl-wrap"><div class="tbl-scroll"><table>' +
+    '<thead><tr><th>Name / ID</th><th>Cost Centre</th>' + compTH + '<th>PIN</th></tr></thead>' +
+    '<tbody>' + rows + '</tbody></table></div></div>' +
+    '<p style="font-size:11px;color:var(--muted);margin-top:7px">Showing ' + filtered.length + ' of ' + D.staff.length + ' staff &middot; click a row to manage</p>'
+  );
+}
+
+// ═══════════════════════════════════════════
+//  STAFF MODAL  (edit / PIN / competencies)
+// ═══════════════════════════════════════════
+var EBUF = null;
+
+function openStaffModal(id) {
+  var s = APP.data.staff.find(function(x) { return x.id === id; });
+  if (!s) return;
+  EBUF = JSON.parse(JSON.stringify(s));
+  renderStaffModal();
+}
+
+function renderStaffModal() {
+  var s = EBUF, D = APP.data;
+  var today = new Date().toISOString().split('T')[0];
+  var centres = [...new Set(D.staff.map(function(x) { return x.costCentre; }))].sort();
+  var ccList = centres.map(function(c) { return '<option value="' + c + '">' + c + '</option>'; }).join('');
+
+  function statusSel(catId, compId, val) {
+    var t = parseType(val), dv = parseDateVal(val);
+    var k = catId + '__' + compId;
+    var dHide = t !== 'done' ? ' style="display:none"' : '';
+    return '<select class="esel" onchange="onESel(this,\'' + catId + '\',\'' + compId + '\')">' +
+      '<option value="nr"' + (t==='nr'?' selected':'') + '>No record</option>' +
+      '<option value="ip"' + (t==='ip'?' selected':'') + '>In Progress</option>' +
+      '<option value="nc"' + (t==='nc'?' selected':'') + '>Not Completed</option>' +
+      '<option value="done"' + (t==='done'?' selected':'') + '>Completed</option>' +
+      '</select>' +
+      '<input type="date" class="edate" id="ed-' + k + '" value="' + (dv||today) + '"' + dHide +
+      ' onchange="onEDate(this,\'' + catId + '\',\'' + compId + '\')">';
+  }
+
+  var compSecs = D.comps.map(function(cat) {
+    var done = compIsDone(s, cat.id);
+    var items = cat.components.map(function(comp) {
+      var val = ((s.comps[cat.id]||{})[comp.id]) || 'No record';
+      return '<div class="citem"><span class="citem-lbl">' + comp.name + '</span>' +
+        '<div class="citem-r">' + statusSel(cat.id, comp.id, val) + '</div></div>';
+    }).join('');
+    return '<div class="csec">' +
+      '<div class="chead"><span class="ctitle">' + cat.name + '</span><div id="ov-' + cat.id + '">' + overallBadge(done) + '</div></div>' +
+      '<div class="citems">' + items + '</div></div>';
+  }).join('');
+
+  var pinSec = s.pin
+    ? '<div class="pin-box"><div class="pin-lbl">Active PIN</div><div class="pin-num">' + s.pin + '</div>' +
+      '<div class="pin-acts"><button class="btn btn-ghost btn-sm" onclick="pinRegen()">\u27f3 Regenerate</button>' +
+      '<button class="btn btn-danger btn-sm" onclick="pinRevoke()">\u2715 Revoke</button></div></div>'
+    : '<div class="ibox ibox-warn"><strong>No PIN assigned</strong>Staff cannot access the login until a PIN is issued.</div>' +
+      '<button class="btn btn-primary" onclick="pinIssue()">\uD83D\uDCCC Issue PIN</button>';
+
+  closeModal();
+  var ov = document.createElement('div');
+  ov.className = 'overlay'; ov.id = '_modal';
+  ov.addEventListener('click', function(e) { if (e.target === ov) closeModal(); });
+  ov.innerHTML = '<div class="modal">' +
+    '<div class="mhdr"><div><div class="mtitle">' + s.name + '</div><div class="msub">ID: ' + s.id + '</div></div>' +
+    '<button class="mclose" onclick="closeModal()">\u2715</button></div>' +
+    '<div class="mbody">' +
+    '<div class="sechd">Basic Info</div>' +
+    '<div class="fg"><label>Full Name</label><input id="ef-name" value="' + s.name.replace(/"/g,'&quot;') + '"></div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">' +
+    '<div class="fg"><label>Worker ID</label><input id="ef-id" value="' + s.id + '"></div>' +
+    '<div class="fg"><label>Cost Centre</label>' +
+    '<input id="ef-cc" list="ef-cc-list" value="' + s.costCentre.replace(/"/g,'&quot;') + '">' +
+    '<datalist id="ef-cc-list">' + ccList + '</datalist></div></div>' +
+    '<div class="divider"></div>' +
+    '<div class="sechd">PIN Management</div>' + pinSec +
+    '<div class="divider"></div>' +
+    '<div class="sechd">Competency Status</div>' +
+    '<p style="font-size:12px;color:var(--muted);margin-bottom:13px">Update components below. Overall status recalculates automatically on save.</p>' +
+    compSecs +
+    '</div>' +
+    '<div class="mfoot"><div class="mfoot-l"><button class="btn btn-danger btn-sm" onclick="deleteStaff(\'' + s.id + '\')">\uD83D\uDDD1 Remove</button></div>' +
+    '<button class="btn btn-outline" onclick="closeModal()">Cancel</button>' +
+    '<button class="btn btn-primary" onclick="saveStaff()">\uD83D\uDCBE Save Changes</button></div>' +
+    '</div>';
+  document.body.appendChild(ov);
+}
+
+function onESel(sel, catId, compId) {
+  var v = sel.value, k = catId + '__' + compId, dIn = el('ed-' + k);
+  if (!EBUF.comps[catId]) EBUF.comps[catId] = {};
+  if (v === 'done') {
+    if (dIn) dIn.style.display = '';
+    EBUF.comps[catId][compId] = toComp(dIn ? dIn.value : '');
+  } else {
+    if (dIn) dIn.style.display = 'none';
+    EBUF.comps[catId][compId] = v==='ip' ? 'In Progress' : v==='nc' ? 'Not Completed' : 'No record';
+  }
+  refreshOvBadges();
+}
+function onEDate(inp, catId, compId) {
+  if (!EBUF.comps[catId]) EBUF.comps[catId] = {};
+  EBUF.comps[catId][compId] = toComp(inp.value);
+}
+function refreshOvBadges() {
+  APP.data.comps.forEach(function(cat) {
+    var e = el('ov-' + cat.id); if (!e) return;
+    e.innerHTML = overallBadge(compIsDone(EBUF, cat.id));
+  });
+}
+
+function saveStaff() {
+  var origId = EBUF.id;
+  var name = el('ef-name').value.trim();
+  var cc   = el('ef-cc').value.trim();
+  var newId = el('ef-id').value.trim() || origId;
+  if (!name || !cc) { toast('Name and cost centre are required.'); return; }
+  if (newId !== origId && APP.data.staff.find(function(s) { return s.id === newId; })) {
+    toast('That Worker ID already exists.'); return;
+  }
+  EBUF.name = name; EBUF.costCentre = cc; EBUF.id = newId;
+  var i = APP.data.staff.findIndex(function(s) { return s.id === origId; });
+  if (i >= 0) APP.data.staff[i] = JSON.parse(JSON.stringify(EBUF));
+  persist(); closeModal(); toast('Changes saved for ' + name.split(' ')[0]);
+  if (ATAB === 'staff') renderStaff(); else renderOverview();
+}
+
+function deleteStaff(id) {
+  var s = APP.data.staff.find(function(x) { return x.id === id; }); if (!s) return;
+  if (!confirm('Permanently remove ' + s.name + '? This cannot be undone.')) return;
+  APP.data.staff = APP.data.staff.filter(function(x) { return x.id !== id; });
+  persist(); closeModal(); toast(s.name.split(' ')[0] + ' removed'); renderStaff();
+}
+
+function pinIssue() {
+  EBUF.pin = genPin();
+  var i = APP.data.staff.findIndex(function(s) { return s.id === EBUF.id; });
+  if (i >= 0) APP.data.staff[i].pin = EBUF.pin;
+  persist(); renderStaffModal(); toast('PIN ' + EBUF.pin + ' issued');
+  if (ATAB === 'staff') renderStaff();
+}
+function pinRegen() {
+  EBUF.pin = genPin();
+  var i = APP.data.staff.findIndex(function(s) { return s.id === EBUF.id; });
+  if (i >= 0) APP.data.staff[i].pin = EBUF.pin;
+  persist(); renderStaffModal(); toast('New PIN: ' + EBUF.pin);
+  if (ATAB === 'staff') renderStaff();
+}
+function pinRevoke() {
+  if (!confirm('Revoke ' + EBUF.name.split(' ')[0] + '\'s PIN?')) return;
+  EBUF.pin = null;
+  var i = APP.data.staff.findIndex(function(s) { return s.id === EBUF.id; });
+  if (i >= 0) APP.data.staff[i].pin = null;
+  persist(); renderStaffModal(); toast('PIN revoked');
+  if (ATAB === 'staff') renderStaff();
+}
+
+// ─── ADD STAFF ───
+function openAddStaff() {
+  var centres = [...new Set(APP.data.staff.map(function(s) { return s.costCentre; }))].sort();
+  var ccList = centres.map(function(c) { return '<option value="' + c + '">' + c + '</option>'; }).join('');
+  closeModal();
+  var ov = document.createElement('div');
+  ov.className = 'overlay'; ov.id = '_modal';
+  ov.addEventListener('click', function(e) { if (e.target === ov) closeModal(); });
+  ov.innerHTML = '<div class="modal sm">' +
+    '<div class="mhdr"><div class="mtitle">Add Staff Member</div><button class="mclose" onclick="closeModal()">\u2715</button></div>' +
+    '<div class="mbody">' +
+    '<div class="fg"><label>Full Name *</label><input id="ns-name" placeholder="e.g. Jane Smith"></div>' +
+    '<div class="fg"><label>Cost Centre *</label>' +
+    '<input id="ns-cc" list="ns-cc-list" placeholder="e.g. HITH">' +
+    '<datalist id="ns-cc-list">' + ccList + '</datalist></div>' +
+    '<div class="fg"><label>Worker ID (leave blank to auto-generate)</label><input id="ns-id" placeholder="optional"></div>' +
+    '<div class="ibox ibox-info"><strong>Next step</strong>After adding, click the row to issue a PIN so staff can access the login.</div>' +
+    '</div>' +
+    '<div class="mfoot"><button class="btn btn-outline" onclick="closeModal()">Cancel</button>' +
+    '<button class="btn btn-primary" onclick="doAddStaff()">Add Staff Member</button></div>' +
+    '</div>';
+  document.body.appendChild(ov);
+  setTimeout(function() { var e = el('ns-name'); if (e) e.focus(); }, 50);
+}
+
+function doAddStaff() {
+  var name = el('ns-name').value.trim();
+  var cc   = el('ns-cc').value.trim();
+  var id   = el('ns-id').value.trim() || 's_' + Date.now();
+  if (!name || !cc) { toast('Name and cost centre are required.'); return; }
+  if (APP.data.staff.find(function(s) { return s.id === id; })) { toast('That Worker ID already exists.'); return; }
+  var comps = {};
+  APP.data.comps.forEach(function(cat) {
+    comps[cat.id] = {};
+    cat.components.forEach(function(comp) { comps[cat.id][comp.id] = 'No record'; });
+  });
+  APP.data.staff.push({id:id, name:name, costCentre:cc, pin:null, comps:comps});
+  persist(); closeModal(); toast(name.split(' ')[0] + ' added'); renderStaff();
+}
+
+// ═══════════════════════════════════════════
+//  COMPETENCIES TAB
+// ═══════════════════════════════════════════
+function renderComps() {
+  var D = APP.data;
+  var cats = D.comps.map(function(cat, ci) {
+    var compRows = cat.components.map(function(comp, cpi) {
+      return '<div class="comp-row">' +
+        '<span class="comp-row-name">' + comp.name + '</span>' +
+        '<div class="comp-row-acts">' +
+        '<button class="btn btn-outline btn-xs" onclick="editCompName(' + ci + ',' + cpi + ')">\u270e Rename</button>' +
+        '<button class="btn btn-danger btn-xs" onclick="removeComp(' + ci + ',' + cpi + ')">\u2715 Remove</button>' +
+        '</div></div>';
+    }).join('');
+    return '<div class="comp-cat">' +
+      '<div class="comp-cat-hdr">' +
+      '<div><span class="comp-cat-name">' + cat.name + '</span>' +
+      '<span class="badge b-nr" style="margin-left:8px">' + cat.components.length + ' component' + (cat.components.length!==1?'s':'') + '</span></div>' +
+      '<div style="display:flex;gap:6px;flex-wrap:wrap">' +
+      '<button class="btn btn-outline btn-sm" onclick="editCatName(' + ci + ')">\u270e Rename</button>' +
+      '<button class="btn btn-primary btn-sm" onclick="addComp(' + ci + ')">+ Add Component</button>' +
+      '<button class="btn btn-danger btn-sm" onclick="removeCat(' + ci + ')">\uD83D\uDDD1 Remove Category</button>' +
+      '</div></div>' +
+      '<div class="comp-comps">' +
+      (compRows || '<p style="font-size:12px;color:var(--muted);padding:4px 0">No components yet \u2014 add one above.</p>') +
+      '</div></div>';
+  }).join('');
+
+  set('tab-body',
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px">' +
+    '<div><strong style="font-size:14px">Competency Categories</strong>' +
+    '<p style="font-size:12px;color:var(--muted);margin-top:2px">Structural changes apply to all staff records immediately. Export &amp; re-upload after editing.</p></div>' +
+    '<button class="btn btn-primary" onclick="addCat()">+ Add Category</button></div>' +
+    (cats || '<div class="ibox ibox-warn"><strong>No categories defined.</strong>Add a category to get started.</div>')
+  );
+}
+
+function addCat() {
+  var name = prompt('New competency category name:'); if (!name || !name.trim()) return;
+  var n = name.trim();
+  var ids = APP.data.comps.map(function(c) { return c.id; });
+  var id = uniqueSlug(n, ids);
+  APP.data.comps.push({id:id, name:n, components:[]});
+  APP.data.staff.forEach(function(s) { if (!s.comps) s.comps={}; s.comps[id]={}; });
+  persist(); toast('"' + n + '" added'); renderComps();
+}
+function editCatName(ci) {
+  var cat = APP.data.comps[ci]; if (!cat) return;
+  var name = prompt('Rename category:', cat.name); if (!name || !name.trim()) return;
+  APP.data.comps[ci].name = name.trim(); persist(); renderComps();
+}
+function removeCat(ci) {
+  var cat = APP.data.comps[ci]; if (!cat) return;
+  if (!confirm('Remove "' + cat.name + '" and all associated staff data? This cannot be undone.')) return;
+  APP.data.comps.splice(ci, 1);
+  APP.data.staff.forEach(function(s) { if (s.comps) delete s.comps[cat.id]; });
+  persist(); toast('"' + cat.name + '" removed'); renderComps();
+}
+function addComp(ci) {
+  var cat = APP.data.comps[ci]; if (!cat) return;
+  var name = prompt('New component name for "' + cat.name + '":'); if (!name || !name.trim()) return;
+  var n = name.trim();
+  var ids = cat.components.map(function(c) { return c.id; });
+  var id = uniqueSlug(n, ids);
+  APP.data.comps[ci].components.push({id:id, name:n});
+  APP.data.staff.forEach(function(s) { if (!s.comps) s.comps={}; if (!s.comps[cat.id]) s.comps[cat.id]={}; s.comps[cat.id][id]='No record'; });
+  persist(); toast('"' + n + '" added'); renderComps();
+}
+function editCompName(ci, cpi) {
+  var comp = (APP.data.comps[ci]||{components:[]}).components[cpi]; if (!comp) return;
+  var name = prompt('Rename component:', comp.name); if (!name || !name.trim()) return;
+  APP.data.comps[ci].components[cpi].name = name.trim(); persist(); renderComps();
+}
+function removeComp(ci, cpi) {
+  var cat = APP.data.comps[ci]; if (!cat) return;
+  var comp = cat.components[cpi]; if (!comp) return;
+  if (!confirm('Remove "' + comp.name + '" from all staff records?')) return;
+  APP.data.comps[ci].components.splice(cpi, 1);
+  APP.data.staff.forEach(function(s) { if (s.comps && s.comps[cat.id]) delete s.comps[cat.id][comp.id]; });
+  persist(); toast('"' + comp.name + '" removed'); renderComps();
+}
+
+// ═══════════════════════════════════════════
+//  SETTINGS TAB
+// ═══════════════════════════════════════════
+function renderSettings() {
+  var D = APP.data;
+  var lastEx = localStorage.getItem('cct_last_export');
+  var exNote = lastEx ? 'Last exported: ' + new Date(parseInt(lastEx)).toLocaleString() : 'Not yet exported this session';
+  set('tab-body',
+    '<div class="setting-box">' +
+    '<div class="setting-title">\uD83D\uDCE4 Export &amp; Publish to SharePoint</div>' +
+    '<div class="setting-sub">Download an updated copy of this file with all current data baked in. Upload it to SharePoint (or your Teams tab) to publish changes to staff. Staff see the updated data on their next page load.</div>' +
+    '<div class="ibox ibox-info">' +
+    '<strong>Workflow</strong>' +
+    '1. Make all changes here (staff, competencies, PINs).<br>' +
+    '2. Click <strong>Export Updated File</strong> below.<br>' +
+    '3. Upload the downloaded .html file to SharePoint, replacing the previous version.<br>' +
+    '4. Staff who open the page will now see your latest data.' +
+    '</div>' +
+    '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">' +
+    '<button class="btn btn-navy" onclick="doExport()">\u2b07 Export Updated File</button>' +
+    '<span style="font-size:12px;color:var(--muted)">' + exNote + '</span></div>' +
+    '</div>' +
+
+    '<div class="setting-box">' +
+    '<div class="setting-title">\uD83D\uDD11 Change Admin Password</div>' +
+    '<div class="setting-sub">Default password is <code>HITH2026</code> &mdash; change this before distributing the file to staff. Password is SHA-256 hashed before storage.</div>' +
+    '<div class="fg"><label>Current Password</label><input type="password" id="pw-cur" placeholder="Current password"></div>' +
+    '<div class="fg"><label>New Password (min 8 characters)</label><input type="password" id="pw-new" placeholder="New password"></div>' +
+    '<div class="fg"><label>Confirm New Password</label><input type="password" id="pw-con" placeholder="Repeat new password"></div>' +
+    '<p class="errmsg" id="pw-err"></p>' +
+    '<button class="btn btn-primary" onclick="doChangePw()">Update Password</button>' +
+    '</div>' +
+
+    '<div class="setting-box">' +
+    '<div class="setting-title">\u2139 App Info</div>' +
+    '<p style="font-size:12px;color:var(--muted);line-height:1.7">' +
+    'Staff records: <strong>' + D.staff.length + '</strong> &middot; ' +
+    'Competency categories: <strong>' + D.comps.length + '</strong> &middot; ' +
+    'PINs issued: <strong>' + D.staff.filter(function(s){return s.pin;}).length + '</strong><br>' +
+    'Data source: SVHM learning systems, extracted Aug 2026<br>' +
+    'This file is fully self-contained &mdash; no internet connection required for core functions.' +
+    '</p></div>'
+  );
+}
+
+async function doExport() {
+  var D = APP.data;
+  var exportData = {staff:D.staff, comps:D.comps, adminHash:D.adminHash, version:Date.now()};
+  var newJson = JSON.stringify(exportData);
+  try {
+    var r = await fetch(window.location.href, {cache:'no-cache'});
+    if (!r.ok) throw new Error('fetch failed');
+    var src = await r.text();
+    src = src.replace(/(<script[^>]*id="data-seed"[^>]*>)[\s\S]*?(<\/script>)/, '$1\n' + newJson + '\n$2');
+    localStorage.setItem('cct_last_export', Date.now().toString());
+    var blob = new Blob([src], {type:'text/html;charset=utf-8'});
+    var url = URL.createObjectURL(blob);
+    var a = Object.assign(document.createElement('a'), {
+      href: url,
+      download: 'competency-tracker-' + new Date().toISOString().slice(0,10) + '.html'
+    });
+    a.click(); URL.revokeObjectURL(url);
+    toast('Downloaded! Upload to SharePoint to publish changes.', 4000);
+    renderSettings();
+  } catch(e) {
+    toast('Auto-export requires the file to be served from a web server (SharePoint). For local testing, see browser console.', 6000);
+    console.log('=== EXPORT DATA (paste between <script id="data-seed"> tags) ===');
+    console.log(newJson);
+  }
+}
+
+async function doChangePw() {
+  var cur = el('pw-cur').value, nw = el('pw-new').value, cn = el('pw-con').value;
+  var err = el('pw-err');
+  err.style.display = 'none';
+  if (nw !== cn || nw.length < 8) {
+    err.textContent = 'Passwords must match and be at least 8 characters.'; err.style.display = 'block'; return;
+  }
+  var curHash = await sha256(cur);
+  if (curHash !== APP.data.adminHash) {
+    err.textContent = 'Incorrect current password.'; err.style.display = 'block'; return;
+  }
+  APP.data.adminHash = await sha256(nw);
+  persist();
+  el('pw-cur').value = el('pw-new').value = el('pw-con').value = '';
+  toast('Password updated. Export the file to persist this change permanently.');
+}
+
+// ═══════════════════════════════════════════
+//  USER VIEW
+// ═══════════════════════════════════════════
+function showUser() {
+  var sid = APP.session && APP.session.staffId;
+  var s = APP.data.staff.find(function(x) { return x.id === sid; });
+  if (!s) { showUserLogin(); return; }
+  var D = APP.data;
+
+  var chips = D.comps.map(function(cat) {
+    var done = compIsDone(s, cat.id);
+    var lbl = cat.name.split('\u2014')[0].trim();
+    return '<span class="badge ' + (done?'b-ok':'b-nc') + '">' + (done?'\u2713 ':'') + lbl + '</span>';
+  }).join('');
+
+  var cards = D.comps.map(function(cat) {
+    var done = compIsDone(s, cat.id);
+    var rows = cat.components.map(function(comp) {
+      var val = ((s.comps[cat.id]||{})[comp.id]) || 'No record';
+      return '<div class="urow"><span class="urow-lbl">' + comp.name + '</span>' + statusBadge(val) + '</div>';
+    }).join('');
+    return '<div class="ucard"><div class="uchead"><span class="uctitle">' + cat.name + '</span>' + overallBadge(done) + '</div>' + rows + '</div>';
+  }).join('');
+
+  document.getElementById('app').innerHTML =
+    '<div style="min-height:100vh;display:flex;flex-direction:column">' + HDR_HTML +
+    '<div style="flex:1;overflow-y:auto"><div class="uview">' +
+    '<div class="uhdr"><div class="uname">' + s.name + '</div>' +
+    '<div class="umeta">' + s.costCentre + ' &middot; ID: ' + s.id + '</div>' +
+    '<div class="u-chips">' + chips + '</div></div>' +
+    cards +
+    '<p style="font-size:11px;color:var(--muted);text-align:center;margin-top:8px;margin-bottom:24px">' +
+    'Data sourced from SVHM learning systems &middot; Extracted Aug 2026<br>' +
+    'Contact your Clinical Educator for any discrepancies.</p>' +
+    '</div></div></div>';
+  set('hdr-right', '<button class="btn btn-ghost btn-sm" onclick="signOut()">Sign Out</button>');
+}
+
+// ═══════════════════════════════════════════
+//  BOOT
+// ═══════════════════════════════════════════
+function boot() {
+  APP.data = loadData();
+  APP.session = getSession();
+  if (APP.session) {
+    if (APP.session.role === 'admin') showAdmin();
+    else showUser();
+  } else {
+    showLanding();
+  }
+}
+window.addEventListener('DOMContentLoaded', boot);
+
+</script>
+</body>
+</html>
