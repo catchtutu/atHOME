@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#1b5e20">
+<title>Cricket Umpire Reporter</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --g:#1b5e20;--g2:#2e7d32;--gl:#e8f5e9;--gp:#f1f8f2;
+  --cream:#fdfaf0;--gold:#f9a825;--blue:#1565c0;--blue-l:#e3f2fd;
+  --red:#b71c1c;--red-l:#ffebee;
+  --text:#1a2e1a;--tm:#4a5e4a;--tl:#7a8e7a;
+  --bdr:#c3d9c3;--bdr2:#90a890;--inp:#f6fbf6;
+  --danger:#c62828;--danger-l:#ffcdd2;
+  --sh:0 1px 5px rgba(0,50,0,.10);--shm:0 2px 14px rgba(0,50,0,.13);--shl:0 4px 28px rgba(0,50,0,.17);
+  --r:10px;--rs:6px;--tr:.18s ease
+}
+html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--cream);color:var(--text);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+
+/* Screens */
+.screen{display:none;min-height:100vh;flex-direction:column}
+.screen.active{display:flex}
+
+/* Header */
+.hdr{background:var(--g);color:#fff;padding:12px 14px;padding-top:calc(12px + env(safe-area-inset-top,0px));display:flex;align-items:center;gap:8px;position:sticky;top:0;z-index:100;box-shadow:var(--shm)}
+.hdr h1{font-size:1.05rem;font-weight:700;flex:1}
+.badge{font-size:.68rem;font-weight:800;padding:2px 9px;border-radius:20px;text-transform:uppercase;letter-spacing:.04em;flex-shrink:0}
+.bu{background:var(--gold);color:#333}.ba{background:var(--gold);color:#7a3a00}
+.hbtn{background:none;border:none;color:rgba(255,255,255,.9);font-size:1.1rem;cursor:pointer;padding:4px 6px;line-height:1}
+.hbtn.ml{margin-left:auto}
+.sync{font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:20px;border:1px solid rgba(255,255,255,.3);color:#fff;white-space:nowrap;display:flex;align-items:center;gap:4px}
+.sync .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;background:#90a890}
+.sync.on .dot{background:#69f0ae}
+.sync.off .dot{background:#ff5252}
+
+/* Content */
+.sc{flex:1;padding:15px;overflow-y:auto;max-width:660px;width:100%;margin:0 auto}
+.sc.w{max-width:940px}
+
+/* Login */
+#s-login{background:linear-gradient(155deg,var(--g) 0%,#0a3d0a 100%);justify-content:center;align-items:center}
+.lcard{background:#fff;border-radius:18px;padding:28px 22px;width:100%;max-width:360px;box-shadow:var(--shl);margin:14px}
+.llogo{text-align:center;margin-bottom:20px}
+.lball{font-size:2.8rem;display:block;margin-bottom:6px}
+.llogo h2{color:var(--g);font-size:1.2rem;font-weight:800}
+.llogo p{color:var(--tl);font-size:.82rem;margin-top:2px}
+.roles{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.rbtn{padding:9px 6px;border:2px solid var(--bdr);border-radius:var(--r);background:#fff;cursor:pointer;text-align:center;font-size:.83rem;font-weight:700;color:var(--tm);transition:all var(--tr)}
+.rbtn.on{border-color:var(--g);background:var(--gl);color:var(--g)}
+.rbtn span{display:block;font-size:1.4rem;margin-bottom:3px}
+
+/* Forms */
+.fg{margin-bottom:13px}
+.fl{display:block;font-size:.74rem;font-weight:700;color:var(--tm);margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em}
+.fl .opt{font-weight:400;color:var(--tl);text-transform:none;letter-spacing:0}
+.fi{width:100%;padding:9px 11px;border:1.5px solid var(--bdr);border-radius:var(--rs);background:var(--inp);font-size:.95rem;color:var(--text);transition:border-color var(--tr);-webkit-appearance:none;appearance:none}
+.fi:focus{outline:none;border-color:var(--g2);background:#fff}
+textarea.fi{resize:vertical;min-height:96px}
+select.fi{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%234a5e4a'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
+.pin{text-align:center;font-size:1.4rem;font-weight:700;letter-spacing:.25em}
+.cc{text-align:right;font-size:.72rem;color:var(--tl);margin-top:3px}
+.cc.w{color:#e65100}.cc.o{color:var(--danger)}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 18px;border:none;border-radius:var(--rs);font-size:.91rem;font-weight:700;cursor:pointer;transition:all var(--tr);text-decoration:none;white-space:nowrap;-webkit-tap-highlight-color:transparent}
+.bp{background:var(--g);color:#fff}.bp:active{background:var(--g2)}
+.bs{background:var(--gl);color:var(--g);border:1.5px solid var(--bdr)}
+.bg{background:none;color:var(--tm);border:1.5px solid var(--bdr)}
+.bgold{background:var(--gold);color:#333}
+.bdn{background:var(--danger-l);color:var(--danger);border:1.5px solid #f4b4b4}
+.bfull{width:100%}.bsm{padding:5px 10px;font-size:.8rem}.blg{padding:13px 22px;font-size:.97rem}
+
+/* Cards */
+.card{background:#fff;border-radius:var(--r);border:1px solid var(--bdr);box-shadow:var(--sh);margin-bottom:12px;overflow:hidden}
+.ch{background:var(--gp);padding:9px 13px;font-weight:700;font-size:.87rem;color:var(--g);border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:7px}
+.cb{padding:13px}
+.st{font-size:.72rem;font-weight:800;color:var(--tl);text-transform:uppercase;letter-spacing:.08em;padding:7px 0 5px;border-bottom:1px solid var(--bdr);margin-bottom:12px;margin-top:4px}
+
+/* Pickers */
+.picker{display:flex;flex-direction:column;align-items:center;user-select:none;-webkit-user-select:none}
+.pb{width:38px;height:27px;border:1px solid var(--bdr);background:var(--gp);color:var(--g);border-radius:4px;cursor:pointer;font-size:.76rem;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent}
+.pb:active{background:var(--bdr)}
+.pd{border:1.5px solid var(--bdr2);border-radius:6px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:1.22rem;font-weight:800;font-variant-numeric:tabular-nums;color:var(--g);margin:2px 0;cursor:ns-resize;touch-action:none;height:42px}
+.psep{font-size:1.1rem;font-weight:700;color:var(--tm);padding:0 2px;align-self:center;margin-top:10px}
+.punit{font-size:.67rem;color:var(--tl);text-align:center;margin-top:2px}
+.pgr{display:flex;align-items:center;gap:4px}
+
+/* Innings */
+.iblock{background:var(--gp);border:1px solid var(--bdr);border-radius:var(--r);padding:11px;margin-bottom:9px}
+.ititle{font-weight:700;font-size:.87rem;color:var(--g);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.tsw{position:relative;width:42px;height:23px;flex-shrink:0;display:inline-block}
+.tsw input{opacity:0;width:0;height:0;position:absolute}
+.tsl{position:absolute;inset:0;background:var(--bdr);border-radius:23px;cursor:pointer;transition:background var(--tr)}
+.tsl::before{content:'';position:absolute;width:17px;height:17px;left:3px;top:3px;background:#fff;border-radius:50%;transition:transform var(--tr);box-shadow:0 1px 3px rgba(0,0,0,.2)}
+input:checked+.tsl{background:var(--g2)}
+input:checked+.tsl::before{transform:translateX(19px)}
+.trow{display:flex;align-items:flex-end;gap:8px;flex-wrap:wrap}
+
+/* Toast */
+#toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none}
+.tk{background:#1a2e1a;color:#fff;padding:9px 18px;border-radius:24px;font-size:.87rem;font-weight:600;box-shadow:var(--shl);white-space:nowrap;animation:ti .25s ease,to .25s ease 2.2s forwards}
+.tk.ok{background:var(--g)}.tk.er{background:var(--danger)}
+@keyframes ti{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes to{from{opacity:1}to{opacity:0}}
+
+/* Home grid */
+.hgrid{display:grid;gap:10px}
+.hc{background:#fff;border:1px solid var(--bdr);border-radius:var(--r);padding:14px;cursor:pointer;display:flex;align-items:center;gap:12px;box-shadow:var(--sh);transition:border-color var(--tr),box-shadow var(--tr)}
+.hc:active{border-color:var(--g2);box-shadow:var(--shm)}
+.hc .ico{width:44px;height:44px;background:var(--gl);border-radius:var(--rs);display:flex;align-items:center;justify-content:center;font-size:1.35rem;flex-shrink:0}
+.hc .inf h3{font-size:.93rem;font-weight:700}
+.hc .inf p{font-size:.79rem;color:var(--tl);margin-top:2px}
+
+/* Report list */
+.ri{background:#fff;border:1px solid var(--bdr);border-radius:var(--r);padding:11px 13px;margin-bottom:8px;cursor:pointer}
+.ri:active{background:var(--gp)}
+.rih{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.rit{font-weight:700;font-size:.92rem}
+.rim{font-size:.77rem;color:var(--tl);margin-top:3px}
+.sbg{font-size:.68rem;font-weight:800;padding:2px 8px;border-radius:20px;text-transform:uppercase;flex-shrink:0}
+.sd{background:#fff8e1;color:#7a5c00}.ss{background:var(--gl);color:var(--g)}
+
+/* Table */
+.dt{width:100%;border-collapse:collapse;font-size:.87rem}
+.dt th{background:var(--gp);color:var(--g);font-weight:700;font-size:.74rem;text-transform:uppercase;letter-spacing:.04em;padding:7px 9px;text-align:left;border-bottom:2px solid var(--bdr)}
+.dt td{padding:8px 9px;border-bottom:1px solid var(--bdr);color:var(--text);vertical-align:middle}
+.dt tr:last-child td{border-bottom:none}
+
+/* Stats */
+.sgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:14px}
+.sbox{background:var(--gp);border:1px solid var(--bdr);border-radius:var(--rs);padding:9px;text-align:center}
+.slb{font-size:.69rem;color:var(--tl);text-transform:uppercase;letter-spacing:.04em;font-weight:700}
+.sva{font-size:1.3rem;font-weight:800;color:var(--g);margin-top:1px}
+
+/* Team panels */
+.tp{padding:10px 12px;border-radius:8px;border:1px solid var(--bdr)}
+.ta{background:var(--blue-l);border-color:#90caf9}
+.tb{background:var(--red-l);border-color:#ef9a9a}
+.ta .tl{font-weight:800;color:var(--blue);font-size:.79rem;margin-bottom:4px}
+.tb .tl{font-weight:800;color:var(--red);font-size:.79rem;margin-bottom:4px}
+.tsco{font-size:1.18rem;font-weight:800;margin-top:5px}
+.ta .tsco{color:var(--blue)}.tb .tsco{color:var(--red)}
+
+/* Presets */
+.presets{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:9px}
+.pbtn{background:var(--gp);border:1px solid var(--bdr);border-radius:20px;padding:4px 11px;font-size:.77rem;cursor:pointer;color:var(--tm)}
+.pbtn:active{background:var(--gl)}
+
+/* Report text */
+.rpre{background:var(--gp);border:1px solid var(--bdr);border-radius:var(--r);padding:13px;font-family:'Courier New',monospace;font-size:.79rem;line-height:1.75;white-space:pre-wrap;word-break:break-word;max-height:55vh;overflow-y:auto}
+
+/* Footer */
+.fftr{padding:10px 14px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));background:#fff;border-top:1px solid var(--bdr);display:flex;gap:8px;position:sticky;bottom:0;z-index:50}
+
+/* Misc */
+.wbanner{background:var(--g);color:#fff;padding:12px 14px;border-radius:var(--r);margin-bottom:14px}
+.wbanner h3{font-size:.97rem;font-weight:700}
+.wbanner p{font-size:.79rem;opacity:.85;margin-top:2px}
+.wb{background:#fff3e0;border:1px solid #ffcc80;border-radius:var(--rs);padding:10px 12px;font-size:.83rem;color:#6d3a00;margin-bottom:12px}
+.ib{background:var(--blue-l);border:1px solid #90caf9;border-radius:var(--rs);padding:10px 12px;font-size:.83rem;color:#0d2e6e;margin-bottom:12px}
+.sb{background:var(--gl);border:1px solid var(--bdr2);border-radius:var(--rs);padding:10px 12px;font-size:.83rem;color:var(--g);margin-bottom:12px}
+.empty{text-align:center;padding:32px 16px;color:var(--tl)}
+.empty .ei{font-size:2.2rem;display:block;margin-bottom:8px}
+.flex{display:flex;align-items:center;gap:8px}
+.g2c{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mt2{margin-top:10px}.mt3{margin-top:14px}.mt4{margin-top:18px}
+.mb2{margin-bottom:10px}.tsm{font-size:.83rem}.tmu{color:var(--tl)}.tb2{font-weight:700}
+.dvd{height:1px;background:var(--bdr);margin:13px 0}
+code{background:#eee;padding:1px 5px;border-radius:3px;font-size:.8rem}
+pre.rules{background:#1a2e1a;color:#69f0ae;padding:12px;border-radius:8px;font-size:.76rem;line-height:1.6;overflow-x:auto}
+@media(min-width:480px){.sc{padding:18px}}
+</style>
+</head>
+<body>
+
+<div id="toast"></div>
+
+<!-- LOGIN -->
+<div class="screen" id="s-login">
+  <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:14px">
+    <div class="lcard">
+      <div class="llogo">
+        <span class="lball">🏏</span>
+        <h2>Umpire Reporter</h2>
+        <p>Cricket Match Run Down</p>
+      </div>
+      <div class="fg">
+        <label class="fl">Login As</label>
+        <div class="roles">
+          <button class="rbtn on" id="r-user" onclick="selRole('user')"><span>🧑‍⚖️</span>Umpire</button>
+          <button class="rbtn" id="r-admin" onclick="selRole('admin')"><span>👔</span>Chief Umpire</button>
+        </div>
+      </div>
+      <div class="fg">
+        <label class="fl">Access PIN</label>
+        <input type="password" inputmode="numeric" id="pin-inp" class="fi pin" placeholder="••••" maxlength="8" autocomplete="off">
+      </div>
+      <button class="btn bp bfull blg" id="login-btn" type="button">Sign In</button>
+      <p style="text-align:center;font-size:.82rem;color:var(--tl);margin-top:10px" id="pin-hint">
+        Default Umpire PIN: <strong>1234</strong>
+      </p>
+    </div>
+  </div>
+  <div style="text-align:center;padding:10px 10px 16px;color:rgba(255,255,255,.4);font-size:.74rem">
+    Works offline · Cloud sync via Firebase (optional)
+  </div>
+</div>
+
+<!-- USER HOME -->
+<div class="screen" id="s-uhome">
+  <div class="hdr">
+    <h1>🏏 Umpire Reporter</h1>
+    <span class="badge bu">Umpire</span>
+    <div class="sync ml" id="sync-u"><span class="dot"></span><span id="sync-ul">Local</span></div>
+    <button class="hbtn" onclick="logout()" style="margin-left:6px" title="Sign out">⎋</button>
+  </div>
+  <div class="sc">
+    <div class="wbanner">
+      <h3 id="u-day">Match Day</h3>
+      <p id="u-date"></p>
+    </div>
+    <div class="hgrid">
+      <div class="hc" onclick="startNew()"><div class="ico">📋</div><div class="inf"><h3>New Match Report</h3><p>Submit a match run down</p></div></div>
+      <div class="hc" onclick="goMyRpts()"><div class="ico">📁</div><div class="inf"><h3>My Reports</h3><p id="rpt-count">View submitted reports</p></div></div>
+    </div>
+    <div class="flex mt4" style="justify-content:space-between;align-items:center;margin-bottom:4px">
+      <div class="st" style="border:none;margin:0;padding:0">Recent Reports</div>
+      <button class="btn bg bsm" onclick="refreshUserData()">🔄 Refresh</button>
+    </div>
+    <div id="recent-list"></div>
+  </div>
+</div>
+
+<!-- REPORT FORM -->
+<div class="screen" id="s-form">
+  <div class="hdr">
+    <button class="hbtn" onclick="confirmBack()">◀</button>
+    <h1>Match Report</h1>
+    <button class="btn bsm bgold" style="margin-left:auto" onclick="saveDraft()">💾 Draft</button>
+  </div>
+  <div class="sc" id="form-body"></div>
+  <div class="fftr">
+    <button class="btn bg" onclick="clipReport()">📋 Copy</button>
+    <button class="btn bp" style="flex:1" onclick="submitReport()">Submit Report →</button>
+  </div>
+</div>
+
+<!-- MY REPORTS -->
+<div class="screen" id="s-myreports">
+  <div class="hdr">
+    <button class="hbtn" onclick="go('s-uhome')">◀</button>
+    <h1>My Reports</h1>
+  </div>
+  <div class="sc"><div id="my-list"></div></div>
+</div>
+
+<!-- REPORT VIEW (user) -->
+<div class="screen" id="s-rview">
+  <div class="hdr">
+    <button class="hbtn" onclick="go('s-myreports')">◀</button>
+    <h1>Report Detail</h1>
+  </div>
+  <div class="sc"><div id="rview-content"></div></div>
+</div>
+
+<!-- ADMIN HOME -->
+<div class="screen" id="s-admin">
+  <div class="hdr">
+    <h1>⚖️ Chief Umpire</h1>
+    <span class="badge ba" style="background:var(--gold);color:#7a3a00">Admin</span>
+    <div class="sync ml" id="sync-a"><span class="dot"></span><span id="sync-al">Local</span></div>
+    <button class="hbtn" onclick="logout()" style="margin-left:6px" title="Sign out">⎋</button>
+  </div>
+  <div class="sc w">
+    <div class="sgrid" id="admin-stats"></div>
+    <div class="hgrid">
+      <div class="hc" onclick="goAdminRpts()"><div class="ico">📊</div><div class="inf"><h3>Match Reports</h3><p>View all submitted reports</p></div></div>
+      <div class="hc" onclick="goAdminUmpires()"><div class="ico">🧑‍⚖️</div><div class="inf"><h3>Manage Umpires</h3><p>Add, edit, remove umpires</p></div></div>
+      <div class="hc" onclick="goAdminTeams()"><div class="ico">🏟️</div><div class="inf"><h3>Manage Teams</h3><p>Add, edit, remove teams</p></div></div>
+      <div class="hc" onclick="go('s-settings')"><div class="ico">⚙️</div><div class="inf"><h3>Settings &amp; Firebase</h3><p>PINs, cloud sync, export</p></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN REPORTS -->
+<div class="screen" id="s-arpts">
+  <div class="hdr">
+    <button class="hbtn" onclick="leaveAdminRpts()">◀</button>
+    <h1>All Match Reports</h1>
+    <button class="btn bsm" onclick="exportData()" style="margin-left:auto;background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3)">⬇ Export</button>
+  </div>
+  <div class="sc w">
+    <div id="live-tag" class="sb" style="display:none">🔴 Live — updates automatically</div>
+    <div id="arpt-list"></div>
+  </div>
+</div>
+
+<!-- ADMIN REPORT DETAIL -->
+<div class="screen" id="s-ardetail">
+  <div class="hdr">
+    <button class="hbtn" onclick="go('s-arpts')">◀</button>
+    <h1>Report Detail</h1>
+    <button class="btn bsm" onclick="clipAdminRpt()" style="margin-left:auto;background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3)">📋 Copy</button>
+  </div>
+  <div class="sc"><div id="ardetail-content"></div></div>
+</div>
+
+<!-- ADMIN UMPIRES -->
+<div class="screen" id="s-aump">
+  <div class="hdr">
+    <button class="hbtn" onclick="go('s-admin')">◀</button>
+    <h1>Manage Umpires</h1>
+  </div>
+  <div class="sc">
+    <div class="card mb2">
+      <div class="ch">➕ Add Umpire</div>
+      <div class="cb">
+        <div class="flex" style="flex-wrap:wrap;gap:8px">
+          <input type="text" id="u-name" class="fi" placeholder="Full Name" style="flex:2;min-width:140px" maxlength="60">
+          <input type="text" id="u-num" class="fi" placeholder="Umpire No." style="flex:1;min-width:90px" maxlength="12">
+          <button class="btn bp" type="button" onclick="addUmpire()">Add</button>
+        </div>
+      </div>
+    </div>
+    <div class="card"><div class="ch">👥 Registered Umpires</div><div id="ump-tbl"></div></div>
+  </div>
+</div>
+
+<!-- ADMIN TEAMS -->
+<div class="screen" id="s-atms">
+  <div class="hdr">
+    <button class="hbtn" onclick="go('s-admin')">◀</button>
+    <h1>Manage Teams</h1>
+  </div>
+  <div class="sc">
+    <div class="card mb2">
+      <div class="ch">➕ Add Team</div>
+      <div class="cb">
+        <div class="g2c mb2">
+          <div><label class="fl">Club Name</label><input type="text" id="t-club" class="fi" placeholder="e.g. Fitzroy CC" maxlength="50"></div>
+          <div><label class="fl">Age Group</label>
+            <select id="t-age" class="fi">
+              <option value="">Select…</option>
+              <option>Open</option><option>Senior</option><option>Masters</option>
+              <option>Women's</option><option>Girls</option>
+              <option>U8</option><option>U10</option><option>U12</option>
+              <option>U14</option><option>U16</option><option>U18</option><option>U21</option>
+            </select>
+          </div>
+        </div>
+        <div class="flex" style="flex-wrap:wrap;gap:8px;align-items:flex-end">
+          <div style="flex:1;min-width:120px">
+            <label class="fl">Description <span class="opt">(10 chars)</span></label>
+            <input type="text" id="t-desc" class="fi" placeholder="e.g. Div 1A" maxlength="10">
+          </div>
+          <button class="btn bp" type="button" onclick="addTeam()">Add Team</button>
+        </div>
+      </div>
+    </div>
+    <div class="card"><div class="ch">🏟️ Registered Teams</div><div id="tms-tbl"></div></div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="screen" id="s-settings">
+  <div class="hdr">
+    <button class="hbtn" onclick="go('s-admin')">◀</button>
+    <h1>Settings &amp; Firebase</h1>
+  </div>
+  <div class="sc">
+    <!-- Firebase -->
+    <div class="card mb2">
+      <div class="ch">🔗 Firebase Cloud Sync</div>
+      <div class="cb">
+        <div id="fb-status" class="ib mb2">Not configured — app running in local mode.</div>
+        <details>
+          <summary style="cursor:pointer;font-size:.85rem;font-weight:700;color:var(--g);margin-bottom:10px">▶ Connect to Firebase (click to expand)</summary>
+          <div style="margin-top:10px">
+            <div class="wb mb2">
+              <strong>Steps:</strong> 1) console.firebase.google.com → New project &nbsp;
+              2) Build → Firestore Database → Create (test mode) &nbsp;
+              3) Project Settings → Your apps → Add web app → copy config object &nbsp;
+              4) Paste below
+            </div>
+            <div id="fb-err" class="wb" style="display:none"></div>
+            <div id="fb-ok" class="sb" style="display:none">✅ Connected!</div>
+            <label class="fl">Firebase Config JSON</label>
+            <textarea id="fb-cfg" class="fi" rows="5" placeholder='{ "apiKey":"...", "authDomain":"...", "projectId":"...", "storageBucket":"...", "messagingSenderId":"...", "appId":"..." }'></textarea>
+            <div class="flex mt2" style="flex-wrap:wrap;gap:8px">
+              <button class="btn bp" type="button" onclick="connectFirebase()">🔗 Connect</button>
+              <button class="btn bg bsm" type="button" onclick="disconnectFirebase()">Disconnect</button>
+            </div>
+          </div>
+        </details>
+        <pre class="rules mt3">// Firestore Rules (paste in Firebase console → Rules tab):
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} { allow read, write: if true; }
+  }
+}</pre>
+      </div>
+    </div>
+    <!-- PINs -->
+    <div class="card mb2">
+      <div class="ch">🔑 Change PINs</div>
+      <div class="cb">
+        <div class="fg"><label class="fl">Umpire (User) PIN</label><input type="text" inputmode="numeric" id="s-upin" class="fi" placeholder="New PIN" maxlength="8"></div>
+        <div class="fg"><label class="fl">Chief Umpire (Admin) PIN</label><input type="text" inputmode="numeric" id="s-apin" class="fi" placeholder="New PIN" maxlength="8"></div>
+        <button class="btn bp" type="button" onclick="savePins()">Save PINs</button>
+      </div>
+    </div>
+    <!-- Data -->
+    <div class="card">
+      <div class="ch">🗂️ Data Management</div>
+      <div class="cb">
+        <div class="flex" style="flex-wrap:wrap;gap:8px;margin-bottom:10px">
+          <button class="btn bs" type="button" onclick="exportData()">⬇ Export All Data</button>
+          <button class="btn bs" type="button" onclick="toggleImport()">⬆ Import / Merge</button>
+          <button class="btn bdn bsm" type="button" onclick="clearAllRpts()">🗑 Clear Reports</button>
+        </div>
+        <p class="tsm tmu">Export saves all umpires, teams and reports as JSON for backup or cross-device sharing.</p>
+        <div id="import-area" style="display:none;margin-top:12px">
+          <label class="fl">Paste exported JSON:</label>
+          <textarea id="import-json" class="fi" rows="4"></textarea>
+          <button class="btn bp mt2" type="button" onclick="doImport()">Merge &amp; Import</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+// STORAGE — pure synchronous localStorage, never fails
+// ═══════════════════════════════════════════════════
+var _P = 'cr_';
+function lsGet(k) { try { return JSON.parse(localStorage.getItem(_P+k)); } catch(e) { return null; } }
+function lsSet(k,v) { try { localStorage.setItem(_P+k,JSON.stringify(v)); } catch(e) {} }
+
+function getSettings()   { return lsGet('cfg') || {userPin:'1234',adminPin:'9999'}; }
+function setSettings(v)  { lsSet('cfg',v); }
+function getReports()    { return lsGet('rpts') || []; }
+function setReports(v)   { lsSet('rpts',v); }
+function getReport(id)   { var r=getReports(); for(var i=0;i<r.length;i++){if(r[i].id===id)return r[i];} return null; }
+function upsertReport(r) { var a=getReports(),i=a.findIndex(function(x){return x.id===r.id;}); if(i>=0)a[i]=r;else a.push(r); setReports(a); }
+function deleteRpt(id)   { setReports(getReports().filter(function(r){return r.id!==id;})); }
+function getUmpires()    { return lsGet('ump') || []; }
+function setUmpires(v)   { lsSet('ump',v); }
+function getTeams()      { return lsGet('tms') || []; }
+function setTeams(v)     { lsSet('tms',v); }
+function getFbCfg()      { return lsGet('fb'); }
+function setFbCfg(v)     { lsSet('fb',v); }
+function clearFbCfg()    { localStorage.removeItem(_P+'fb'); }
+
+function uid() { return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+
+// ═══════════════════════════════════════════════════
+// FIREBASE — loaded on demand, never blocks page
+// ═══════════════════════════════════════════════════
+var _db = null;
+var _fbOk = false;
+var _fbLoading = false;
+var _aUnsub = null;
+var _aCache = [];
+var _aDetailId = null;
+
+function fbOK() { return _fbOk && _db !== null; }
+
+function loadFbSDK() {
+  return new Promise(function(resolve, reject) {
+    if (typeof firebase !== 'undefined') { resolve(); return; }
+    if (_fbLoading) {
+      var t = setInterval(function(){ if(typeof firebase!=='undefined'){clearInterval(t);resolve();} },100);
+      setTimeout(function(){clearInterval(t);reject(new Error('timeout'));},10000);
+      return;
+    }
+    _fbLoading = true;
+    function loadScript(url, next) {
+      var s = document.createElement('script');
+      s.src = url;
+      s.onload = next;
+      s.onerror = function(){ reject(new Error('Failed to load: '+url)); };
+      document.head.appendChild(s);
+    }
+    loadScript(
+      'https://cdnjs.cloudflare.com/ajax/libs/firebase/8.10.1/firebase-app.min.js',
+      function(){
+        loadScript(
+          'https://cdnjs.cloudflare.com/ajax/libs/firebase/8.10.1/firebase-firestore.min.js',
+          function(){ _fbLoading=false; resolve(); }
+        );
+      }
+    );
+  });
+}
+
+function initFb(cfg) {
+  return loadFbSDK().then(function() {
+    if (firebase.apps.length) { try{firebase.app().delete();}catch(e){} }
+    firebase.initializeApp(cfg);
+    _db = firebase.firestore();
+    return _db.enablePersistence({synchronizeTabs:true}).catch(function(){}).then(function(){
+      _fbOk = true;
+      return true;
+    });
+  }).catch(function(e) {
+    console.warn('Firebase init failed:', e);
+    _db = null; _fbOk = false;
+    return false;
+  });
+}
+
+// Firestore helpers — all return promises that never reject
+function fsGet(col) {
+  if (!fbOK()) return Promise.resolve([]);
+  return _db.collection(col).get().then(function(s){
+    return s.docs.map(function(d){return Object.assign({id:d.id},d.data());});
+  }).catch(function(){ return []; });
+}
+function fsSave(col,id,data) {
+  if (!fbOK()) return Promise.resolve();
+  return _db.collection(col).doc(id).set(data).catch(function(){});
+}
+function fsDel(col,id) {
+  if (!fbOK()) return Promise.resolve();
+  return _db.collection(col).doc(id).delete().catch(function(){});
+}
+function fsListen(col,cb) {
+  if (!fbOK()) { cb([]); return null; }
+  return _db.collection(col).onSnapshot(function(s){
+    cb(s.docs.map(function(d){return Object.assign({id:d.id},d.data());}));
+  }, function(){ cb([]); });
+}
+
+// ═══════════════════════════════════════════════════
+// UI HELPERS
+// ═══════════════════════════════════════════════════
+function go(id) {
+  var ss = document.querySelectorAll('.screen');
+  for (var i=0;i<ss.length;i++) ss[i].classList.remove('active');
+  var el = document.getElementById(id);
+  if (el) { el.classList.add('active'); var sc=el.querySelector('.sc'); if(sc)sc.scrollTop=0; }
+}
+
+function toast(msg,type) {
+  var tc = document.getElementById('toast');
+  if (!tc) return;
+  var el = document.createElement('div');
+  el.className = 'tk'+(type?' '+type:'');
+  el.textContent = msg;
+  tc.appendChild(el);
+  setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);},2800);
+}
+
+function esc(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function setSyncUI(id,lid,on) {
+  var el=document.getElementById(id), lb=document.getElementById(lid);
+  if(el){el.className='sync ml'+(on?' on':'');}
+  if(lb)lb.textContent=on?'Synced':'Local';
+}
+
+function updateSync() {
+  var on = fbOK() && navigator.onLine;
+  setSyncUI('sync-u','sync-ul',on);
+  setSyncUI('sync-a','sync-al',on);
+  // Update settings screen status
+  var sb = document.getElementById('fb-status');
+  if (sb) {
+    if (fbOK()) { sb.className='sb mb2'; sb.textContent='✅ Firebase connected — data syncing in real time.'; }
+    else { sb.className='ib mb2'; sb.textContent='Not configured — app running in local mode.'; }
+  }
+}
+
+function logout() {
+  if (_aUnsub) { _aUnsub(); _aUnsub=null; }
+  var lt=document.getElementById('live-tag'); if(lt)lt.style.display='none';
+  go('s-login');
+}
+
+function confirmBack() {
+  if (confirm('Go back? Use Draft to save first.')) go('s-uhome');
+}
+
+// ═══════════════════════════════════════════════════
+// LOGIN — 100% synchronous, reads only from localStorage
+// ═══════════════════════════════════════════════════
+var _role = 'user';
+
+function selRole(r) {
+  _role = r;
+  var u=document.getElementById('r-user'), a=document.getElementById('r-admin');
+  if(u) { u.className='rbtn'+(r==='user'?' on':''); }
+  if(a) { a.className='rbtn'+(r==='admin'?' on':''); }
+  var h=document.getElementById('pin-hint');
+  if(h) h.innerHTML = r==='user'
+    ? 'Default Umpire PIN: <strong>1234</strong>'
+    : 'Default Chief Umpire PIN: <strong>9999</strong>';
+}
+
+function doLogin() {
+  var inp = document.getElementById('pin-inp');
+  if (!inp) return;
+  var pin = inp.value.trim();
+  if (!pin) { inp.focus(); return; }
+  inp.value = '';
+  var cfg = getSettings();
+  if (_role==='user' && pin===cfg.userPin) {
+    loadUserHome();
+  } else if (_role==='admin' && pin===cfg.adminPin) {
+    loadAdminHome();
+  } else {
+    toast('Incorrect PIN','er');
+    inp.focus();
+  }
+}
+
+// ═══════════════════════════════════════════════════
+// USER HOME — synchronous, Firebase refresh in background
+// ═══════════════════════════════════════════════════
+var _draft = null;
+var _pks = {};
+var _cUmp = [];
+var _cTms = [];
+
+function loadUserHome() {
+  var now = new Date();
+  var d=document.getElementById('u-day'), dt=document.getElementById('u-date');
+  if(d) d.textContent = now.toLocaleDateString('en-AU',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  if(dt) dt.textContent = 'Match Day Dashboard';
+
+  _cUmp = getUmpires();
+  _cTms = getTeams();
+
+  var rpts = getReports();
+  var c=document.getElementById('rpt-count');
+  if(c) c.textContent = rpts.length+' report'+(rpts.length!==1?'s':'')+' on file';
+
+  var recent = rpts.slice().reverse().slice(0,4);
+  var el = document.getElementById('recent-list');
+  if(el) el.innerHTML = recent.length
+    ? recent.map(function(r){return rptItem(r,'u');}).join('')
+    : '<div class="empty"><span class="ei">📝</span><p>No reports yet.</p></div>';
+
+  go('s-uhome');
+  updateSync();
+
+  // Background Firebase refresh — non-blocking
+  if (fbOK()) {
+    fsGet('umpires').then(function(u){ if(u.length){_cUmp=u;setUmpires(u);} });
+    fsGet('teams').then(function(t){ if(t.length){_cTms=t;setTeams(t);} });
+  }
+}
+
+function refreshUserData() {
+  toast('Refreshing…');
+  if (fbOK()) {
+    Promise.all([fsGet('umpires'),fsGet('teams')]).then(function(res){
+      if(res[0].length){_cUmp=res[0];setUmpires(res[0]);}
+      if(res[1].length){_cTms=res[1];setTeams(res[1]);}
+      loadUserHome(); toast('Refreshed','ok');
+    }).catch(function(){ loadUserHome(); toast('Using cached data',''); });
+  } else { loadUserHome(); toast('Offline — using local data',''); }
+}
+
+function rptItem(r,view) {
+  var tA=r.teamA&&r.teamA.club?r.teamA.club:'—';
+  var tB=r.teamB&&r.teamB.club?r.teamB.club:'—';
+  var dt=r.matchDate||'—';
+  var badge=r.status==='submitted'?'<span class="sbg ss">Submitted</span>':'<span class="sbg sd">Draft</span>';
+  var fn=view==='a'?'viewAdminRpt':'viewRpt';
+  return '<div class="ri" onclick="'+fn+'(\''+r.id+'\')">'
+    +'<div class="rih"><div>'
+    +'<div class="rit">'+esc(tA)+' <span class="tmu">vs</span> '+esc(tB)+'</div>'
+    +'<div class="rim">'+esc(dt)+' · '+esc(r.umpireName||'Unknown umpire')+'</div>'
+    +'</div>'+badge+'</div></div>';
+}
+
+function goMyRpts() {
+  var rpts=getReports().slice().reverse();
+  var el=document.getElementById('my-list');
+  if(el) el.innerHTML=rpts.length
+    ?rpts.map(function(r){return rptItem(r,'u');}).join('')
+    :'<div class="empty"><span class="ei">📁</span><p>No reports yet.</p></div>';
+  go('s-myreports');
+}
+
+function viewRpt(id) {
+  var r=getReport(id); if(!r) return;
+  var el=document.getElementById('rview-content');
+  if(el) el.innerHTML='<div class="card mb2"><div class="ch">📋 Report Summary'
+    +' <span class="sbg '+(r.status==='submitted'?'ss':'sd')+'" style="margin-left:auto">'+r.status+'</span></div>'
+    +'<div class="cb">'+renderRptHTML(r)+'</div></div>'
+    +'<div class="flex" style="flex-wrap:wrap;gap:8px">'
+    +'<button class="btn bg" onclick="clipById(\''+id+'\')">📋 Copy</button>'
+    +'<button class="btn bs" onclick="editRpt(\''+id+'\')">✏️ Edit</button></div>'
+    +'<div class="st mt3">Full Text (for email / paste)</div>'
+    +'<pre class="rpre">'+esc(fmtText(r))+'</pre>';
+  go('s-rview');
+}
+
+// ═══════════════════════════════════════════════════
+// REPORT FORM
+// ═══════════════════════════════════════════════════
+var PRESETS = [
+  'There were no incidents to report related to this match.',
+  'The match was played in a fair and sporting manner by both teams.',
+  'Weather conditions affected play — please add details.',
+  'A player was issued a formal warning — please add details.',
+  'A dispute arose during play — please add details.',
+  'A player was removed from the field — please add details.'
+];
+
+function startNew() {
+  _draft = {
+    id:uid(), createdAt:new Date().toISOString(), status:'draft',
+    matchDate:new Date().toISOString().slice(0,10),
+    innings:[{enabled:true},{enabled:false},{enabled:false}]
+  };
+  buildForm(); go('s-form');
+}
+
+function editRpt(id) {
+  var r=getReport(id); if(!r) return;
+  _draft = JSON.parse(JSON.stringify(r));
+  if(!_draft.innings)_draft.innings=[{enabled:true},{enabled:false},{enabled:false}];
+  buildForm(); go('s-form');
+}
+
+function buildForm() {
+  _pks = {};
+  var r = _draft;
+  var umpires = _cUmp.length?_cUmp:getUmpires();
+  var teams = _cTms.length?_cTms:getTeams();
+  var noU=!umpires.length, noT=!teams.length;
+
+  var uOpts = noU
+    ? '<option value="">⚠ No umpires — Admin must register them</option>'
+    : '<option value="">— Select Your Name —</option>'
+      + umpires.map(function(u){
+          return '<option value="'+esc(u.id)+'"'+(r.umpireId===u.id?' selected':'')+'>#'+esc(u.number)+' '+esc(u.name)+'</option>';
+        }).join('');
+
+  function tOpts(sel) {
+    return noT
+      ? '<option value="">⚠ No teams — Admin must register them</option>'
+      : '<option value="">— Select Team —</option>'
+        + teams.map(function(t){
+            var lbl=esc(t.club)+' · '+esc(t.ageGroup)+(t.description?' · '+esc(t.description):'');
+            return '<option value="'+esc(t.id)+'"'+(r[sel+'Id']===t.id?' selected':'')+'>'+lbl+'</option>';
+          }).join('');
+  }
+
+  var wc=(r.matchOutline||'').split(/\s+/).filter(Boolean).length;
+
+  var html = (noU||noT?'<div class="wb">⚠ '+(noU?'No umpires':'No teams')+' registered yet. Ask Chief Umpire to add them in Admin mode, then tap Refresh.</div>':'')
+    +'<div class="fg"><label class="fl">Match Date</label><input type="date" id="f-dt" class="fi" value="'+esc(r.matchDate||'')+'"></div>'
+    +'<div class="st">Umpire Details</div>'
+    +'<div class="fg"><label class="fl">Your Name &amp; Number</label><select id="f-ump" class="fi">'+uOpts+'</select></div>'
+    +'<div class="fg"><label class="fl">Co-Umpire <span class="opt">(optional)</span></label>'
+    +'<input type="text" id="f-coup" class="fi" placeholder="Name of co-umpire if applicable" value="'+esc(r.coUmpire||'')+'" maxlength="60"></div>'
+    +'<div class="st">Team A</div>'
+    +'<div class="fg"><label class="fl">Select Team A</label><select id="f-tA" class="fi">'+tOpts('teamA')+'</select></div>'
+    +'<div class="g2c">'
+    +'<div class="fg"><label class="fl">Captain <span class="opt">(40 chars)</span></label>'
+    +'<input type="text" id="f-capA" class="fi" placeholder="Captain\'s name" value="'+esc(r.captainA||'')+'" maxlength="40" oninput="doCC(\'f-capA\',\'cc-capA\',40)">'
+    +'<div class="cc" id="cc-capA">'+(r.captainA||'').length+'/40</div></div>'
+    +'<div class="fg"><label class="fl">Coach <span class="opt">(40 chars)</span></label>'
+    +'<input type="text" id="f-coaA" class="fi" placeholder="Coach\'s name" value="'+esc(r.coachA||'')+'" maxlength="40" oninput="doCC(\'f-coaA\',\'cc-coaA\',40)">'
+    +'<div class="cc" id="cc-coaA">'+(r.coachA||'').length+'/40</div></div></div>'
+    +'<div class="st">Team B</div>'
+    +'<div class="fg"><label class="fl">Select Team B</label><select id="f-tB" class="fi">'+tOpts('teamB')+'</select></div>'
+    +'<div class="g2c">'
+    +'<div class="fg"><label class="fl">Captain <span class="opt">(40 chars)</span></label>'
+    +'<input type="text" id="f-capB" class="fi" placeholder="Captain\'s name" value="'+esc(r.captainB||'')+'" maxlength="40" oninput="doCC(\'f-capB\',\'cc-capB\',40)">'
+    +'<div class="cc" id="cc-capB">'+(r.captainB||'').length+'/40</div></div>'
+    +'<div class="fg"><label class="fl">Coach <span class="opt">(40 chars)</span></label>'
+    +'<input type="text" id="f-coaB" class="fi" placeholder="Coach\'s name" value="'+esc(r.coachB||'')+'" maxlength="40" oninput="doCC(\'f-coaB\',\'cc-coaB\',40)">'
+    +'<div class="cc" id="cc-coaB">'+(r.coachB||'').length+'/40</div></div></div>'
+    +'<div class="st">Innings</div>'
+    +buildInnHTML(0,r.innings[0]||{},false)
+    +buildInnHTML(1,r.innings[1]||{},true)
+    +buildInnHTML(2,r.innings[2]||{},true)
+    +'<div class="st">Scores &amp; Overs</div>'
+    +'<div class="g2c" style="gap:14px">'
+    +'<div><div style="font-weight:800;font-size:.84rem;color:var(--blue);margin-bottom:10px">TEAM A</div>'
+    +'<label class="fl">Runs</label><div id="pk-rA"></div>'
+    +'<label class="fl mt2">Wickets</label><div id="pk-wA"></div>'
+    +'<label class="fl mt2">Overs</label><div id="pk-oA"></div></div>'
+    +'<div><div style="font-weight:800;font-size:.84rem;color:var(--red);margin-bottom:10px">TEAM B</div>'
+    +'<label class="fl">Runs</label><div id="pk-rB"></div>'
+    +'<label class="fl mt2">Wickets</label><div id="pk-wB"></div>'
+    +'<label class="fl mt2">Overs</label><div id="pk-oB"></div></div></div>'
+    +'<div class="st mt3">Match Outline</div>'
+    +'<div class="fg"><label class="fl">Quick-add statements</label>'
+    +'<div class="presets">'
+    +PRESETS.map(function(p,i){
+        return '<button type="button" class="pbtn" onclick="addPreset('+i+')">'+esc(p.length>52?p.slice(0,50)+'…':p)+'</button>';
+      }).join('')
+    +'</div>'
+    +'<textarea id="f-out" class="fi" rows="7" placeholder="Describe the match or use quick-add above. Max 400 words." maxlength="3200" oninput="doWC(this,\'wc-out\',400)">'+esc(r.matchOutline||'')+'</textarea>'
+    +'<div class="cc" id="wc-out">'+wc+'/400 words</div></div>';
+
+  document.getElementById('form-body').innerHTML = html;
+  mountPickers(r);
+}
+
+function buildInnHTML(i,data,optional) {
+  var lbl=['1st Innings','2nd Innings','3rd Innings'][i];
+  var enabled=!optional||!!data.enabled;
+  return '<div class="iblock" id="ib-'+i+'">'
+    +'<div class="ititle"><span>🏏</span>'+lbl
+    +(optional?'<div class="flex" style="margin-left:auto;gap:6px">'
+      +'<label class="tsw"><input type="checkbox" id="it-'+i+'" '+(enabled?'checked':'')+' onchange="togInn('+i+',this.checked)"><span class="tsl"></span></label>'
+      +'<span class="tsm tmu" id="itl-'+i+'">'+(enabled?'Included':'Not played')+'</span></div>':'')
+    +'</div>'
+    +'<div id="ic-'+i+'"'+(optional&&!enabled?' style="display:none"':'')+'>'
+    +'<div class="trow">'
+    +'<div><div class="fl">Start Time</div><div id="pk-s'+i+'" class="pgr"></div></div>'
+    +'<div style="margin-top:20px;color:var(--tl);font-size:.85rem">→</div>'
+    +'<div><div class="fl">End Time</div><div id="pk-e'+i+'" class="pgr"></div></div>'
+    +'</div></div></div>';
+}
+
+function togInn(i,on) {
+  var c=document.getElementById('ic-'+i),l=document.getElementById('itl-'+i);
+  if(c)c.style.display=on?'':'none';
+  if(l)l.textContent=on?'Included':'Not played';
+}
+
+// ═══════════════════════════════════════════════════
+// PICKERS
+// ═══════════════════════════════════════════════════
+function mountPickers(r) {
+  var H=[],M=[],RN=[],OV=[],WK=[];
+  for(var i=0;i<24;i++)H.push(i);
+  for(var i=0;i<60;i++)M.push(i);
+  for(var i=0;i<=600;i++)RN.push(i);
+  for(var i=0;i<=100;i++)OV.push(i);
+  for(var i=0;i<=10;i++)WK.push(i);
+  var sc=r.scores||{};
+
+  for(var i=0;i<3;i++){
+    var inn=r.innings[i]||{};
+    var sEl=document.getElementById('pk-s'+i),eEl=document.getElementById('pk-e'+i);
+    if(!sEl||!eEl)continue;
+    _pks['sH'+i]=mkPk(H,inn.startH!=null?inn.startH:9,'hr');
+    _pks['sM'+i]=mkPk(M,inn.startM!=null?inn.startM:0,'min');
+    _pks['eH'+i]=mkPk(H,inn.endH!=null?inn.endH:17,'hr');
+    _pks['eM'+i]=mkPk(M,inn.endM!=null?inn.endM:0,'min');
+    sEl.appendChild(_pks['sH'+i]);
+    var sep1=document.createElement('span');sep1.className='psep';sep1.textContent=':';sEl.appendChild(sep1);
+    sEl.appendChild(_pks['sM'+i]);
+    eEl.appendChild(_pks['eH'+i]);
+    var sep2=document.createElement('span');sep2.className='psep';sep2.textContent=':';eEl.appendChild(sep2);
+    eEl.appendChild(_pks['eM'+i]);
+  }
+
+  var pmap=[['pk-rA','rA',RN,sc.runsA,3],['pk-wA','wA',WK,sc.wicketsA,2],['pk-oA','oA',OV,sc.oversA,2],
+            ['pk-rB','rB',RN,sc.runsB,3],['pk-wB','wB',WK,sc.wicketsB,2],['pk-oB','oB',OV,sc.oversB,2]];
+  for(var j=0;j<pmap.length;j++){
+    var m=pmap[j];
+    var el=document.getElementById(m[0]);
+    if(el){_pks[m[1]]=mkPk(m[2],m[3]!=null?m[3]:0,null,m[4]);el.appendChild(_pks[m[1]]);}
+  }
+}
+
+function mkPk(vals,init,unit,pad) {
+  if(pad===undefined)pad=2;
+  var idx=0;
+  for(var i=0;i<vals.length;i++){if(vals[i]===init){idx=i;break;}}
+  var wrap=document.createElement('div');wrap.className='picker';
+  var bU=document.createElement('button');bU.type='button';bU.className='pb';bU.textContent='▲';
+  var disp=document.createElement('div');disp.className='pd';disp.style.width=(pad*13+24)+'px';
+  var bD=document.createElement('button');bD.type='button';bD.className='pb';bD.textContent='▼';
+  wrap.appendChild(bU);wrap.appendChild(disp);wrap.appendChild(bD);
+  if(unit){var u=document.createElement('div');u.className='punit';u.textContent=unit;wrap.appendChild(u);}
+
+  function upd(){disp.textContent=String(vals[idx]).padStart(pad,'0');}
+  function step(d){idx=(idx+d+vals.length)%vals.length;upd();}
+  bU.onclick=function(){step(-1);};
+  bD.onclick=function(){step(1);};
+
+  var hold;
+  function sh(d){step(d);var ct=0;hold=setInterval(function(){ct++;var m=ct<15?1:ct<35?5:20;for(var i=0;i<m;i++)step(d);},80);}
+  function ch(){clearInterval(hold);}
+  bU.addEventListener('mousedown',function(){sh(-1);});
+  bD.addEventListener('mousedown',function(){sh(1);});
+  bU.addEventListener('touchstart',function(e){e.preventDefault();sh(-1);},{passive:false});
+  bD.addEventListener('touchstart',function(e){e.preventDefault();sh(1);},{passive:false});
+  document.addEventListener('mouseup',ch);
+  document.addEventListener('touchend',ch);
+
+  var ty=0;
+  disp.addEventListener('touchstart',function(e){ty=e.touches[0].clientY;},{passive:true});
+  disp.addEventListener('touchend',function(e){var d=ty-e.changedTouches[0].clientY;if(Math.abs(d)>14)step(d>0?1:-1);});
+  disp.addEventListener('wheel',function(e){e.preventDefault();step(e.deltaY>0?1:-1);},{passive:false});
+
+  upd();
+  wrap.getValue=function(){return vals[idx];};
+  return wrap;
+}
+
+function doCC(inp,cnt,max){var el=document.getElementById(inp),ct=document.getElementById(cnt);if(!el||!ct)return;var n=el.value.length;ct.textContent=n+'/'+max;ct.className='cc'+(n>=max?' o':n>max*.85?' w':'');}
+function doWC(el,cnt,max){var ct=document.getElementById(cnt);if(!ct)return;var n=el.value.split(/\s+/).filter(Boolean).length;ct.textContent=n+'/'+max+' words';ct.className='cc'+(n>=max?' o':n>max*.85?' w':'');}
+function addPreset(i){var ta=document.getElementById('f-out');if(!ta)return;var p=PRESETS[i];if(ta.value&&!ta.value.endsWith(' '))ta.value+=' ';ta.value+=p;ta.focus();doWC(ta,'wc-out',400);}
+
+// ═══════════════════════════════════════════════════
+// COLLECT FORM
+// ═══════════════════════════════════════════════════
+function collectForm() {
+  var umpires=_cUmp.length?_cUmp:getUmpires();
+  var teams=_cTms.length?_cTms:getTeams();
+  var uId=val('f-ump'), tAId=val('f-tA'), tBId=val('f-tB');
+  var u=find(umpires,uId), tA=find(teams,tAId), tB=find(teams,tBId);
+  var innings=[];
+  for(var i=0;i<3;i++){
+    var tog=document.getElementById('it-'+i);
+    var on=i===0||(tog&&tog.checked);
+    if(!on){innings.push({enabled:false});continue;}
+    innings.push({enabled:true,
+      startH:_pks['sH'+i]?_pks['sH'+i].getValue():9,
+      startM:_pks['sM'+i]?_pks['sM'+i].getValue():0,
+      endH:_pks['eH'+i]?_pks['eH'+i].getValue():17,
+      endM:_pks['eM'+i]?_pks['eM'+i].getValue():0});
+  }
+  return Object.assign({},_draft,{
+    matchDate:val('f-dt')||_draft.matchDate,
+    umpireId:uId, umpireName:u?'#'+u.number+' '+u.name:'',
+    coUmpire:val('f-coup'),
+    teamAId:tAId, teamA:tA||null,
+    teamBId:tBId, teamB:tB||null,
+    captainA:val('f-capA'), coachA:val('f-coaA'),
+    captainB:val('f-capB'), coachB:val('f-coaB'),
+    innings:innings,
+    scores:{
+      runsA:pk('rA'),wicketsA:pk('wA'),oversA:pk('oA'),
+      runsB:pk('rB'),wicketsB:pk('wB'),oversB:pk('oB')
+    },
+    matchOutline:val('f-out'),
+    updatedAt:new Date().toISOString()
+  });
+}
+function val(id){var e=document.getElementById(id);return e?e.value.trim():'';}
+function find(arr,id){for(var i=0;i<arr.length;i++){if(arr[i].id===id)return arr[i];}return null;}
+function pk(k){return _pks[k]?_pks[k].getValue():0;}
+
+function saveDraft(){var r=collectForm();r.status='draft';upsertReport(r);_draft=r;toast('Draft saved','ok');}
+
+function submitReport(){
+  var r=collectForm();
+  if(!r.umpireId){toast('Please select your umpire name','er');return;}
+  if(!r.teamAId||!r.teamBId){toast('Please select both teams','er');return;}
+  r.status='submitted';r.submittedAt=new Date().toISOString();
+  upsertReport(r);
+  if(fbOK()){
+    fsSave('reports',r.id,r).then(function(){toast('Report submitted & synced ✓','ok');}).catch(function(){toast('Saved locally — will sync when online','ok');});
+  } else { toast('Report saved ✓','ok'); }
+  loadUserHome();
+}
+
+function clipReport(){var r=collectForm();if(r.status!=='submitted'){r.status='draft';upsertReport(r);_draft=r;}doCopy(fmtText(r));}
+function clipById(id){var r=getReport(id);if(r)doCopy(fmtText(r));}
+function clipAdminRpt(){var r=find(_aCache,_aDetailId)||getReport(_aDetailId);if(r)doCopy(fmtText(r));}
+
+function doCopy(txt){
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(function(){toast('Copied ✓','ok');}).catch(function(){fbCopy(txt);});
+  } else {fbCopy(txt);}
+}
+function fbCopy(txt){var ta=document.createElement('textarea');ta.value=txt;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');toast('Copied ✓','ok');}catch(e){toast('Copy failed','er');}ta.remove();}
+
+// ═══════════════════════════════════════════════════
+// FORMAT REPORT
+// ═══════════════════════════════════════════════════
+function ft(h,m){return h==null?'—':String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');}
+function tStr(t){return t?[t.club,t.ageGroup,t.description].filter(Boolean).join(' · '):'—';}
+
+function fmtText(r){
+  var sc=r.scores||{};
+  var L=['═══════════════════════════════════════════════',
+    '       CRICKET MATCH UMPIRE RUN DOWN REPORT    ',
+    '═══════════════════════════════════════════════',
+    'Date:         '+(r.matchDate||'—'),
+    'Umpire:       '+(r.umpireName||'—')];
+  if(r.coUmpire)L.push('Co-Umpire:    '+r.coUmpire);
+  L.push('','── TEAM A ──────────────────────────────────────',
+    'Team:         '+tStr(r.teamA),'Captain:      '+(r.captainA||'—'),
+    'Coach:        '+(r.coachA||'—'),
+    'Score:        '+(sc.runsA||0)+'/'+(sc.wicketsA||0)+' from '+(sc.oversA||0)+' overs',
+    '','── TEAM B ──────────────────────────────────────',
+    'Team:         '+tStr(r.teamB),'Captain:      '+(r.captainB||'—'),
+    'Coach:        '+(r.coachB||'—'),
+    'Score:        '+(sc.runsB||0)+'/'+(sc.wicketsB||0)+' from '+(sc.oversB||0)+' overs','');
+  var inn=r.innings||[];
+  var played=inn.filter(function(x){return x&&x.enabled!==false;});
+  if(played.length){
+    L.push('── INNINGS TIMES ───────────────────────────────');
+    for(var i=0;i<inn.length;i++){if(inn[i]&&inn[i].enabled!==false)L.push(['1st','2nd','3rd'][i]+' Innings:  Start '+ft(inn[i].startH,inn[i].startM)+'  →  End '+ft(inn[i].endH,inn[i].endM));}
+    L.push('');
+  }
+  if(r.matchOutline){L.push('── MATCH OUTLINE ───────────────────────────────',r.matchOutline,'');}
+  L.push('────────────────────────────────────────────────','Status:  '+(r.status==='submitted'?'Submitted':'Draft'));
+  if(r.submittedAt)L.push('Filed:   '+new Date(r.submittedAt).toLocaleString('en-AU'));
+  L.push('Ref ID:  '+r.id);
+  return L.join('\n');
+}
+
+function renderRptHTML(r){
+  var sc=r.scores||{};
+  var inn=r.innings||[];
+  var html='<div class="sgrid mb2">'
+    +'<div class="sbox"><div class="slb">Date</div><div class="sva" style="font-size:.92rem">'+esc(r.matchDate||'—')+'</div></div>'
+    +'<div class="sbox"><div class="slb">Umpire</div><div class="sva" style="font-size:.82rem">'+esc(r.umpireName||'—')+'</div></div>'
+    +(r.coUmpire?'<div class="sbox"><div class="slb">Co-Umpire</div><div class="sva" style="font-size:.79rem">'+esc(r.coUmpire)+'</div></div>':'')
+    +'</div>'
+    +'<div class="g2c mb2">'
+    +'<div class="tp ta"><div class="tl">TEAM A</div><div class="tb2 tsm">'+esc(tStr(r.teamA))+'</div>'
+    +'<div class="tsm tmu">Captain: '+esc(r.captainA||'—')+'</div><div class="tsm tmu">Coach: '+esc(r.coachA||'—')+'</div>'
+    +'<div class="tsco">'+(sc.runsA||0)+'/'+(sc.wicketsA||0)+' <span style="font-size:.75rem;font-weight:400;color:var(--tl)">off '+(sc.oversA||0)+' ov</span></div></div>'
+    +'<div class="tp tb"><div class="tl">TEAM B</div><div class="tb2 tsm">'+esc(tStr(r.teamB))+'</div>'
+    +'<div class="tsm tmu">Captain: '+esc(r.captainB||'—')+'</div><div class="tsm tmu">Coach: '+esc(r.coachB||'—')+'</div>'
+    +'<div class="tsco">'+(sc.runsB||0)+'/'+(sc.wicketsB||0)+' <span style="font-size:.75rem;font-weight:400;color:var(--tl)">off '+(sc.oversB||0)+' ov</span></div></div></div>';
+  var played=inn.filter(function(x){return x&&x.enabled!==false;});
+  if(played.length){
+    html+='<div class="mb2"><div class="st">Innings Times</div>';
+    for(var i=0;i<inn.length;i++){if(inn[i]&&inn[i].enabled!==false)html+='<div class="flex" style="gap:14px;font-size:.85rem;padding:4px 0;border-bottom:1px solid var(--bdr)"><strong>'+['1st','2nd','3rd'][i]+' Innings</strong><span>Start: '+ft(inn[i].startH,inn[i].startM)+'</span><span>End: '+ft(inn[i].endH,inn[i].endM)+'</span></div>';}
+    html+='</div>';
+  }
+  if(r.matchOutline)html+='<div><div class="st">Match Outline</div><p class="tsm" style="line-height:1.65">'+esc(r.matchOutline)+'</p></div>';
+  return html;
+}
+
+// ═══════════════════════════════════════════════════
+// ADMIN
+// ═══════════════════════════════════════════════════
+function loadAdminHome(){
+  var rpts=getReports(),sub=rpts.filter(function(r){return r.status==='submitted';});
+  var today=new Date().toISOString().slice(0,10);
+  var tn=sub.filter(function(r){return r.matchDate===today||(r.submittedAt&&r.submittedAt.slice(0,10)===today);}).length;
+  var el=document.getElementById('admin-stats');
+  if(el)el.innerHTML='<div class="sbox"><div class="slb">Today\'s Reports</div><div class="sva">'+tn+'</div></div>'
+    +'<div class="sbox"><div class="slb">Total Submitted</div><div class="sva">'+sub.length+'</div></div>'
+    +'<div class="sbox"><div class="slb">Umpires</div><div class="sva">'+getUmpires().length+'</div></div>';
+  go('s-admin');updateSync();
+  // Refresh from Firebase in background
+  if(fbOK()){
+    fsGet('umpires').then(function(u){if(u.length){setUmpires(u);} });
+    fsGet('teams').then(function(t){if(t.length){setTeams(t);} });
+    fsGet('config').then(function(c){if(c.length){var s=find(c,'app');if(s)setSettings(s);} });
+  }
+}
+
+function goAdminRpts(){
+  document.getElementById('arpt-list').innerHTML='<div class="empty"><span class="ei">⏳</span><p>Loading…</p></div>';
+  go('s-arpts');
+  if(_aUnsub){_aUnsub();_aUnsub=null;}
+  if(fbOK()){
+    document.getElementById('live-tag').style.display='block';
+    _aUnsub=fsListen('reports',function(rpts){
+      _aCache=rpts.slice().sort(function(a,b){return (b.submittedAt||b.createdAt||'').localeCompare(a.submittedAt||a.createdAt||'');});
+      renderAdminRptList();
+    });
+  } else {
+    document.getElementById('live-tag').style.display='none';
+    _aCache=getReports().slice().reverse();
+    renderAdminRptList();
+  }
+}
+
+function leaveAdminRpts(){if(_aUnsub){_aUnsub();_aUnsub=null;}document.getElementById('live-tag').style.display='none';go('s-admin');}
+
+function renderAdminRptList(){
+  var el=document.getElementById('arpt-list');
+  if(!el)return;
+  el.innerHTML=_aCache.length?_aCache.map(function(r){return rptItem(r,'a');}).join('')
+    :'<div class="empty"><span class="ei">📊</span><p>No reports submitted yet.</p></div>';
+}
+
+function viewAdminRpt(id){
+  _aDetailId=id;
+  var r=find(_aCache,id)||getReport(id);if(!r)return;
+  var el=document.getElementById('ardetail-content');
+  if(el)el.innerHTML='<div class="card mb2"><div class="ch" style="justify-content:space-between">'
+    +'<span>📋 '+esc(r.matchDate||'—')+'</span>'
+    +'<span class="sbg '+(r.status==='submitted'?'ss':'sd')+'">'+r.status+'</span></div>'
+    +'<div class="cb">'+renderRptHTML(r)+'</div></div>'
+    +'<div class="st">Full Text Report</div>'
+    +'<pre class="rpre">'+esc(fmtText(r))+'</pre>'
+    +'<div class="flex mt3" style="flex-wrap:wrap;gap:8px">'
+    +'<button class="btn bg" onclick="clipAdminRpt()">📋 Copy</button>'
+    +'<button class="btn bdn bsm" onclick="delAdminRpt(\''+id+'\')">🗑 Delete</button></div>';
+  go('s-ardetail');
+}
+
+function delAdminRpt(id){
+  if(!confirm('Permanently delete this report?'))return;
+  deleteRpt(id);
+  if(fbOK())fsDel('reports',id);
+  toast('Report deleted');
+  goAdminRpts();
+}
+
+// Admin Umpires
+function goAdminUmpires(){renderUmpires();go('s-aump');}
+function renderUmpires(){
+  var list=getUmpires();
+  var el=document.getElementById('ump-tbl');if(!el)return;
+  if(!list.length){el.innerHTML='<div class="empty"><span class="ei">🧑‍⚖️</span><p>No umpires yet.</p></div>';return;}
+  el.innerHTML='<table class="dt"><thead><tr><th>#</th><th>Name</th><th>Umpire No.</th><th></th></tr></thead><tbody>'
+    +list.map(function(u,i){return '<tr><td>'+(i+1)+'</td><td>'+esc(u.name)+'</td><td>'+esc(u.number)+'</td>'
+      +'<td style="text-align:right"><button class="btn bdn bsm" onclick="removeUmpire(\''+u.id+'\')">Remove</button></td></tr>';}).join('')
+    +'</tbody></table>';
+}
+function addUmpire(){
+  var n=val('u-name'),m=val('u-num');
+  if(!n||!m){toast('Enter name and number','er');return;}
+  var u={id:uid(),name:n,number:m,createdAt:new Date().toISOString()};
+  var list=getUmpires();list.push(u);setUmpires(list);
+  document.getElementById('u-name').value='';document.getElementById('u-num').value='';
+  if(fbOK())fsSave('umpires',u.id,u);
+  renderUmpires();toast('Umpire added','ok');
+}
+function removeUmpire(id){
+  if(!confirm('Remove this umpire?'))return;
+  setUmpires(getUmpires().filter(function(u){return u.id!==id;}));
+  if(fbOK())fsDel('umpires',id);
+  renderUmpires();toast('Umpire removed');
+}
+
+// Admin Teams
+function goAdminTeams(){renderTeams();go('s-atms');}
+function renderTeams(){
+  var list=getTeams();
+  var el=document.getElementById('tms-tbl');if(!el)return;
+  if(!list.length){el.innerHTML='<div class="empty"><span class="ei">🏟️</span><p>No teams yet.</p></div>';return;}
+  el.innerHTML='<table class="dt"><thead><tr><th>Club</th><th>Age Group</th><th>Desc.</th><th></th></tr></thead><tbody>'
+    +list.map(function(t){return '<tr><td>'+esc(t.club)+'</td><td>'+esc(t.ageGroup)+'</td><td>'+esc(t.description||'')+'</td>'
+      +'<td style="text-align:right"><button class="btn bdn bsm" onclick="removeTeam(\''+t.id+'\')">Remove</button></td></tr>';}).join('')
+    +'</tbody></table>';
+}
+function addTeam(){
+  var c=val('t-club'),a=document.getElementById('t-age').value,d=val('t-desc').slice(0,10);
+  if(!c||!a){toast('Enter club name and age group','er');return;}
+  var t={id:uid(),club:c,ageGroup:a,description:d,createdAt:new Date().toISOString()};
+  var list=getTeams();list.push(t);setTeams(list);
+  document.getElementById('t-club').value='';document.getElementById('t-age').value='';document.getElementById('t-desc').value='';
+  if(fbOK())fsSave('teams',t.id,t);
+  renderTeams();toast('Team added','ok');
+}
+function removeTeam(id){
+  if(!confirm('Remove this team?'))return;
+  setTeams(getTeams().filter(function(t){return t.id!==id;}));
+  if(fbOK())fsDel('teams',id);
+  renderTeams();toast('Team removed');
+}
+
+// Settings
+function savePins(){
+  var u=val('s-upin'),a=val('s-apin');
+  if(!u&&!a){toast('Enter at least one PIN','er');return;}
+  var cfg=getSettings();
+  if(u)cfg.userPin=u;if(a)cfg.adminPin=a;
+  setSettings(cfg);
+  if(fbOK())fsSave('config','app',cfg);
+  document.getElementById('s-upin').value='';document.getElementById('s-apin').value='';
+  toast('PINs updated','ok');
+}
+
+function connectFirebase(){
+  var raw=document.getElementById('fb-cfg').value.trim();
+  var errEl=document.getElementById('fb-err'),okEl=document.getElementById('fb-ok');
+  errEl.style.display='none';okEl.style.display='none';
+  raw=raw.replace(/^[^{]*/,'').replace(/[^}]*$/,''); // extract {...}
+  var cfg;
+  try{cfg=JSON.parse(raw);}catch(e){errEl.textContent='Invalid JSON. Paste just the { } config object.';errEl.style.display='block';return;}
+  if(!cfg.projectId||!cfg.apiKey){errEl.textContent='Config missing apiKey or projectId.';errEl.style.display='block';return;}
+  toast('Connecting to Firebase…');
+  initFb(cfg).then(function(ok){
+    if(ok){setFbCfg(cfg);okEl.style.display='block';updateSync();toast('Firebase connected ✓','ok');}
+    else{errEl.textContent='Connection failed. Check config and ensure Firestore is enabled.';errEl.style.display='block';}
+  });
+}
+
+function disconnectFirebase(){
+  if(!confirm('Disconnect Firebase?'))return;
+  clearFbCfg();_db=null;_fbOk=false;
+  updateSync();toast('Disconnected — using local mode');
+}
+
+function toggleImport(){var el=document.getElementById('import-area');el.style.display=el.style.display==='none'?'':'none';}
+
+function exportData(){
+  var data={umpires:getUmpires(),teams:getTeams(),reports:getReports(),exportedAt:new Date().toISOString()};
+  var blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');a.href=url;a.download='umpire-reports-'+new Date().toISOString().slice(0,10)+'.json';a.click();
+  URL.revokeObjectURL(url);toast('Exported','ok');
+}
+
+function doImport(){
+  try{
+    var d=JSON.parse(document.getElementById('import-json').value.trim());
+    if(Array.isArray(d.umpires))setUmpires(d.umpires);
+    if(Array.isArray(d.teams))setTeams(d.teams);
+    var n=0;
+    if(Array.isArray(d.reports)){
+      var ex=getReports(),exIds={};
+      ex.forEach(function(r){exIds[r.id]=1;});
+      d.reports.forEach(function(r){if(!exIds[r.id]){ex.push(r);n++;}});
+      setReports(ex);
+      if(fbOK())d.reports.forEach(function(r){fsSave('reports',r.id,r);});
+    }
+    document.getElementById('import-json').value='';
+    document.getElementById('import-area').style.display='none';
+    toast('Imported — '+n+' new report(s)','ok');
+  }catch(e){toast('Invalid JSON','er');}
+}
+
+function clearAllRpts(){
+  if(!confirm('Delete ALL reports permanently?'))return;
+  setReports([]);toast('Reports cleared');
+}
+
+// ═══════════════════════════════════════════════════
+// INIT — runs immediately, no external dependencies
+// ═══════════════════════════════════════════════════
+(function init() {
+  // Show login screen immediately
+  go('s-login');
+
+  // Wire up login button and Enter key
+  var loginBtn = document.getElementById('login-btn');
+  var pinInp   = document.getElementById('pin-inp');
+  if (loginBtn) loginBtn.onclick = doLogin;
+  if (pinInp)   pinInp.onkeydown = function(e){ if(e.key==='Enter') doLogin(); };
+
+  // First-run hint
+  if (!getUmpires().length && !getTeams().length) {
+    var h = document.getElementById('pin-hint');
+    if (h) h.innerHTML = 'First time? Admin: <strong>9999</strong> &nbsp;·&nbsp; Umpire: <strong>1234</strong>';
+  }
+
+  // Online/offline status
+  window.addEventListener('online',  function(){ updateSync(); toast('Back online','ok'); });
+  window.addEventListener('offline', function(){ updateSync(); toast('Gone offline — working from cache'); });
+
+  // Try Firebase in background if previously configured — never blocks init
+  var fbCfg = getFbCfg();
+  if (fbCfg) {
+    initFb(fbCfg)
+      .then(function(ok){ updateSync(); if(!ok) console.warn('Firebase unavailable — local mode'); })
+      .catch(function(){ updateSync(); });
+  }
+})();
+</script>
+</body>
+</html>
