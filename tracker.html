@@ -617,13 +617,14 @@ function renderSettings(){
   set('tab-body',
     // ── GitHub Pages Publishing ──
     '<div class="setting-box">'+
-    '<div class="setting-title">&#x1F419; GitHub Pages — Publish</div>'+
-    '<div class="setting-sub">One-click publish directly to your GitHub repository. Changes go live in ~30 seconds. Your token is saved to this browser only and never included in the exported file.</div>'+
+    '<div class="setting-title">&#x1F419; GitHub Pages \u2014 Publish</div>'+
+    '<div class="setting-sub">Push the updated file directly to your GitHub repository. Changes go live on GitHub Pages in ~30 seconds. Your token stays in this browser only and is never baked into the exported file.</div>'+
     '<div class="ibox ibox-info"><strong>One-time setup</strong>'+
-    '1. Create a free GitHub account and a new public repository.<br>'+
-    '2. Go to repo <strong>Settings \u2192 Pages</strong> \u2192 Deploy from <code>main</code> branch, <code>/ (root)</code>.<br>'+
-    '3. Go to <strong>github.com/settings/tokens</strong> \u2192 Generate new token (fine-grained) \u2192 Contents: Read &amp; Write for this repo.<br>'+
-    '4. Fill in the fields below and click Save, then Publish.</div>'+
+    '1. Create a free GitHub account and a <strong>public</strong> repository.<br>'+
+    '2. Repo \u2192 <strong>Settings \u2192 Pages</strong> \u2192 Source: Deploy from branch \u2192 <code>main</code>, <code>/ (root)</code>.<br>'+
+    '3. Upload <code>index.html</code> manually once (drag &amp; drop via the repo page) so the file exists.<br>'+
+    '4. <strong>github.com/settings/tokens</strong> \u2192 Fine-grained token \u2192 select your repo \u2192 <em>Contents: Read and Write</em>.<br>'+
+    '5. Paste the token below, Save, then Test Connection before publishing.</div>'+
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">'+
     '<div class="fg"><label>GitHub Username</label><input id="gh-own" value="'+(ghc.owner||'')+'" placeholder="your-username"></div>'+
     '<div class="fg"><label>Repository Name</label><input id="gh-rep" value="'+(ghc.repo||'')+'" placeholder="hith-tracker"></div>'+
@@ -632,11 +633,20 @@ function renderSettings(){
     '<div class="fg"><label>File Path in Repo</label><input id="gh-pth" value="'+(ghc.path||'index.html')+'" placeholder="index.html"></div>'+
     '<div class="fg"><label>Personal Access Token</label><input type="password" id="gh-tok" value="'+(ghc.token||'')+'" placeholder="github_pat_\u2026"></div>'+
     '</div>'+
-    '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px">'+
+    '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">'+
     '<button class="btn btn-outline btn-sm" id="gh-save">Save Config</button>'+
+    '<button class="btn btn-outline btn-sm" id="gh-test">\uD83D\uDD0D Test Connection</button>'+
     '<button class="btn btn-gh" id="gh-pub">&#x1F419; Publish to GitHub Now</button>'+
     '</div>'+
     '<div id="gh-status"></div>'+
+    '<div class="divider"></div>'+
+    '<div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:6px">If publishing keeps failing \u2014 upload manually (no token needed)</div>'+
+    '<p style="font-size:12px;color:var(--muted);margin-bottom:10px">Export the file below, then drag it into your GitHub repository\u2019s upload page.</p>'+
+    '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">'+
+    '<button class="btn btn-outline btn-sm" id="gh-dl">\u2b07 1. Export File</button>'+
+    '<button class="btn btn-outline btn-sm" id="gh-open">\uD83D\uDD17 2. Open GitHub Upload Page</button>'+
+    '<div id="gh-dl-area"></div>'+
+    '</div>'+
     '</div>'+
 
     // ── Staff Access URL ──
@@ -701,7 +711,23 @@ function renderSettings(){
 
   // Attach listeners
   el('gh-save').addEventListener('click',saveGhSettings);
+  el('gh-test').addEventListener('click',testGitHub);
   el('gh-pub').addEventListener('click',publishToGitHub);
+  el('gh-dl').addEventListener('click',function(){
+    var src;try{src=buildExportHtml();}catch(e){toast('Build failed: '+e.message,4000);return;}
+    var fname='index.html';
+    var area=el('gh-dl-area');
+    var blob=new Blob([src],{type:'text/html;charset=utf-8'});
+    var burl=URL.createObjectURL(blob);
+    if(area)area.innerHTML='<a href="'+burl+'" download="'+fname+'" class="btn btn-primary btn-sm">\u2b07 Save '+fname+'</a>';
+    toast('Click the green Save button to download.',3000);
+  });
+  el('gh-open').addEventListener('click',function(){
+    var cfg=loadGhCfg();
+    var owner=(cfg.owner||'').trim(),repo=(cfg.repo||'').trim();
+    if(!owner||!repo){toast('Fill in GitHub Username and Repository Name first.',4000);return;}
+    window.open('https://github.com/'+owner+'/'+repo+'/upload/main','_blank','noopener');
+  });
   if(el('btn-cu'))el('btn-cu').addEventListener('click',copyShareUrl);
   if(el('btn-pp'))el('btn-pp').addEventListener('click',function(){window.print();});
   el('btn-csv').addEventListener('click',exportCSV);
@@ -731,43 +757,188 @@ function renameDept(oldName){
 
 // ── GitHub Publishing ──
 function saveGhSettings(){
-  var cfg={owner:(el('gh-own').value||'').trim(),repo:(el('gh-rep').value||'').trim(),path:(el('gh-pth').value||'index.html').trim(),token:(el('gh-tok').value||'').trim()};
-  saveGhCfg(cfg);toast('GitHub config saved to this browser.');
+  var cfg={
+    owner:(el('gh-own').value||'').trim(),
+    repo:(el('gh-rep').value||'').trim(),
+    path:(el('gh-pth').value||'index.html').trim(),
+    token:(el('gh-tok').value||'').trim()
+  };
+  saveGhCfg(cfg);toast('GitHub config saved.');
 }
+
+function _ghHeaders(token){
+  return{
+    'Authorization':'Bearer '+token,
+    'Accept':'application/vnd.github+json',
+    'X-GitHub-Api-Version':'2022-11-28',
+    'Content-Type':'application/json'
+  };
+}
+
+function renderDiag(steps,statusEl){
+  if(!statusEl)return;
+  var rows=steps.map(function(s){
+    var ok=s.ok,warn=s.warn;
+    var cls=ok?'b-ok':warn?'b-ip':'b-nc';
+    var icon=ok?'\u2713':warn?'\u26a0':'\u2717';
+    return'<div style="display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:1px solid var(--bdr)">'+
+      '<span class="badge '+cls+'" style="flex-shrink:0;margin-top:1px">'+icon+'</span>'+
+      '<div><div style="font-size:12px;font-weight:700">'+s.label+'</div>'+
+      (s.detail?'<div style="font-size:11px;color:var(--muted);margin-top:2px;white-space:pre-wrap">'+s.detail+'</div>':'')+
+      '</div></div>';
+  }).join('');
+  var allOk=steps.every(function(s){return s.ok||s.warn;});
+  var anyFail=steps.some(function(s){return!s.ok&&!s.warn;});
+  statusEl.innerHTML=
+    '<div style="background:var(--gray-bg);border:1.5px solid var(--bdr);border-radius:var(--r);padding:12px 14px;margin-bottom:10px">'+
+    '<div style="font-size:12px;font-weight:800;color:var(--navy);margin-bottom:8px">Connection Diagnostic</div>'+
+    rows+'</div>'+
+    (allOk&&!anyFail?'<div class="ibox ibox-ok"><strong>All checks passed \u2014 ready to publish.</strong></div>':'');
+}
+
+async function testGitHub(){
+  saveGhSettings();
+  var cfg=loadGhCfg();
+  var status=el('gh-status');
+  if(!cfg.token){if(status)status.innerHTML='<div class="ibox ibox-warn"><strong>Enter a token first.</strong></div>';return;}
+  if(status)status.innerHTML='<div class="ibox ibox-info"><strong>Running diagnostics\u2026</strong></div>';
+  var steps=[],hdrs=_ghHeaders(cfg.token);
+
+  // ① Token validity
+  try{
+    var r1=await fetch('https://api.github.com/user',{headers:hdrs});
+    if(r1.ok){
+      var u=await r1.json();
+      steps.push({ok:true,label:'Token valid',detail:'Authenticated as @'+u.login});
+    }else{
+      var e1=await r1.json();
+      var hint=r1.status===401?'The token is invalid or expired. Generate a new one at github.com/settings/tokens.':
+               r1.status===403?'Token exists but is blocked. Check it hasn\u2019t been revoked.':'HTTP '+r1.status;
+      steps.push({ok:false,label:'Token rejected (HTTP '+r1.status+')',detail:(e1.message||'')+'\n\u2192 '+hint});
+      renderDiag(steps,status);return;
+    }
+  }catch(netErr){
+    steps.push({ok:false,label:'Cannot reach api.github.com',
+      detail:'Network error: '+netErr.message+'\n\u2192 Check your internet connection. Corporate firewalls sometimes block api.github.com \u2014 if so, use the manual upload option below.'});
+    renderDiag(steps,status);return;
+  }
+
+  // ② Repo existence & access
+  if(!cfg.owner||!cfg.repo){
+    steps.push({ok:false,label:'Repo not configured',detail:'Fill in GitHub Username and Repository Name, then Save Config.'});
+    renderDiag(steps,status);return;
+  }
+  try{
+    var r2=await fetch('https://api.github.com/repos/'+cfg.owner+'/'+cfg.repo,{headers:hdrs});
+    if(r2.ok){
+      var repo=await r2.json();
+      var branch=repo.default_branch;
+      steps.push({ok:true,label:'Repository found',
+        detail:repo.full_name+(repo.private?' (private)':' (public)')+' \u2014 default branch: '+branch});
+      if(branch!=='main'){
+        steps.push({ok:false,warn:true,label:'Default branch is \u201c'+branch+'\u201d, not \u201cmain\u201d',
+          detail:'GitHub Pages and the publish function both assume \u201cmain\u201d. Either rename your branch to \u201cmain\u201d (Repo \u2192 Settings \u2192 Branches) or contact support.'});
+      }
+    }else if(r2.status===404){
+      steps.push({ok:false,label:'Repository not found (404)',
+        detail:'Username: \u201c'+cfg.owner+'\u201d  Repo: \u201c'+cfg.repo+'\u201d\n\u2192 Check spelling exactly \u2014 both are case-sensitive.\n\u2192 If the repo is private, the token must have access to it.'});
+      renderDiag(steps,status);return;
+    }else{
+      var e2=await r2.json();
+      steps.push({ok:false,label:'Repo access error (HTTP '+r2.status+')',detail:e2.message||'Unexpected error'});
+      renderDiag(steps,status);return;
+    }
+  }catch(e){steps.push({ok:false,label:'Repo fetch error',detail:e.message});renderDiag(steps,status);return;}
+
+  // ③ File read / write permission
+  var fileUrl='https://api.github.com/repos/'+cfg.owner+'/'+cfg.repo+'/contents/'+(cfg.path||'index.html');
+  try{
+    var r3=await fetch(fileUrl,{headers:hdrs});
+    if(r3.ok){
+      steps.push({ok:true,label:'File found \u2014 ready to update',
+        detail:(cfg.path||'index.html')+' exists. Publish will overwrite it.'});
+    }else if(r3.status===404){
+      steps.push({ok:true,label:'File not in repo yet \u2014 will be created on first Publish',
+        detail:(cfg.path||'index.html')+' doesn\u2019t exist yet. First Publish will create it.\n\u2192 Note: upload the file manually at least once first so GitHub Pages has something to serve while you set up.'});
+    }else if(r3.status===403){
+      var e3=await r3.json();
+      steps.push({ok:false,label:'Permission denied reading file (403)',
+        detail:(e3.message||'')+'\n\u2192 Your token can see the repo but cannot read its contents.\n\u2192 For fine-grained tokens: in your token settings, set \u201cContents\u201d to \u201cRead and Write\u201d (not just \u201cRead\u201d).\n\u2192 For classic tokens: ensure the \u201crepo\u201d scope is ticked.'});
+    }else{
+      var e3b=await r3.json();
+      steps.push({ok:false,label:'File read error (HTTP '+r3.status+')',detail:e3b.message||''});
+    }
+  }catch(e){steps.push({ok:false,label:'File access error',detail:e.message});}
+
+  renderDiag(steps,status);
+}
+
 async function publishToGitHub(){
   saveGhSettings();
   var cfg=loadGhCfg();
   var status=el('gh-status');
-  if(!cfg.owner||!cfg.repo||!cfg.token){toast('Please fill in all GitHub fields and save first.',4000);return;}
-  if(status)status.innerHTML='<div class="ibox ibox-info"><strong>Publishing\u2026</strong>Building and uploading to GitHub.</div>';
-  var src;
-  try{src=buildExportHtml();}catch(ex){toast('Build failed: '+ex.message,5000);return;}
-  var b64=utf8ToB64(src);
-  var apiUrl='https://api.github.com/repos/'+cfg.owner+'/'+cfg.repo+'/contents/'+cfg.path;
-  var headers={'Authorization':'Bearer '+cfg.token,'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','Content-Type':'application/json'};
-  // Get current SHA (needed to update existing file)
-  var sha=null;
-  try{
-    var gr=await fetch(apiUrl,{headers:headers});
-    if(gr.ok){var gd=await gr.json();sha=gd.sha;}
-    else if(gr.status!==404){var ge=await gr.json();throw new Error(ge.message||'GET failed: '+gr.status);}
-  }catch(e){
-    if(status)status.innerHTML='<div class="ibox ibox-warn"><strong>Could not connect to GitHub</strong>'+e.message+'</div>';
+  if(!cfg.owner||!cfg.repo||!cfg.token){
+    if(status)status.innerHTML='<div class="ibox ibox-warn"><strong>Incomplete config</strong>Fill in all fields and Save Config. Run Test Connection to diagnose issues.</div>';
     return;
   }
+  if(status)status.innerHTML='<div class="ibox ibox-info" id="pub-prog"><strong>Publishing\u2026</strong>Building file and uploading to GitHub.</div>';
+  var src;
+  try{src=buildExportHtml();}catch(ex){
+    if(status)status.innerHTML='<div class="ibox ibox-warn"><strong>Build failed</strong>'+ex.message+'</div>';return;
+  }
+  var b64=utf8ToB64(src);
+  var hdrs=_ghHeaders(cfg.token);
+  var apiUrl='https://api.github.com/repos/'+cfg.owner+'/'+cfg.repo+'/contents/'+(cfg.path||'index.html');
+
+  // Get current SHA (required to update an existing file)
+  var sha=null;
+  try{
+    var gr=await fetch(apiUrl,{headers:hdrs});
+    if(gr.ok){sha=(await gr.json()).sha;}
+    else if(gr.status===401||gr.status===403){
+      var ge=await gr.json();
+      if(status)status.innerHTML='<div class="ibox ibox-warn"><strong>Auth failed (HTTP '+gr.status+')</strong>'+(ge.message||'')+
+        '<br><br>\u2192 Run <strong>Test Connection</strong> above for a detailed diagnosis.<br>'+
+        '\u2192 Or use the <strong>Upload Manually</strong> option below.</div>';
+      return;
+    }else if(gr.status!==404){
+      var ge2=await gr.json();
+      if(status)status.innerHTML='<div class="ibox ibox-warn"><strong>Error reading file (HTTP '+gr.status+')</strong>'+(ge2.message||'')+'</div>';
+      return;
+    }
+    // 404 is fine — file will be created
+  }catch(netErr){
+    if(status)status.innerHTML='<div class="ibox ibox-warn"><strong>Network error</strong>'+netErr.message+
+      '<br><br>\u2192 Cannot reach api.github.com. Check your connection.<br>\u2192 If on a corporate network, use the <strong>Upload Manually</strong> option below.</div>';
+    return;
+  }
+
+  // PUT the updated file
   var body={message:'Update competency tracker \u2014 '+new Date().toISOString().slice(0,10),content:b64};
   if(sha)body.sha=sha;
   try{
-    var pr=await fetch(apiUrl,{method:'PUT',headers:headers,body:JSON.stringify(body)});
-    if(!pr.ok){var pe=await pr.json();throw new Error(pe.message||'PUT failed: '+pr.status);}
-    var pagesUrl='https://'+cfg.owner+'.github.io/'+cfg.repo+'/';
-    if(cfg.path!=='index.html')pagesUrl+=cfg.path;
-    _lsSet('cct_last_export',Date.now().toString());
-    if(status)status.innerHTML='<div class="ibox ibox-ok"><strong>\u2713 Published successfully</strong>'+
-      'Your site will update at <a href="'+pagesUrl+'" target="_blank" rel="noopener" style="color:#166534;font-weight:600">'+pagesUrl+'</a> within ~30 seconds.</div>';
-    toast('\u2713 Published to GitHub Pages!',4000);
+    var pr=await fetch(apiUrl,{method:'PUT',headers:hdrs,body:JSON.stringify(body)});
+    if(pr.ok){
+      var pagesUrl='https://'+cfg.owner+'.github.io/'+cfg.repo+'/'+(cfg.path!=='index.html'?cfg.path:'');
+      _lsSet('cct_last_export',Date.now().toString());
+      if(status)status.innerHTML=
+        '<div class="ibox ibox-ok"><strong>\u2713 Published successfully</strong>'+
+        'Your site will update at <a href="'+pagesUrl+'" target="_blank" rel="noopener" style="color:#166534;font-weight:600">'+pagesUrl+'</a> within ~30 seconds.</div>';
+      toast('\u2713 Published to GitHub Pages!',4000);
+    }else{
+      var pe=await pr.json();
+      var hint='';
+      if(pr.status===403)hint='\n\u2192 Token lacks write permission. For fine-grained tokens: set Contents to \u201cRead and Write\u201d.';
+      if(pr.status===409)hint='\n\u2192 Conflict: the file changed on GitHub between reading and writing. Try again.';
+      if(pr.status===422)hint='\n\u2192 The SHA did not match \u2014 someone else may have updated the file. Try again.';
+      if(status)status.innerHTML=
+        '<div class="ibox ibox-warn"><strong>Publish failed (HTTP '+pr.status+')</strong>'+(pe.message||'')+hint+
+        '<br><br>\u2192 Run <strong>Test Connection</strong> for a step-by-step diagnosis.<br>'+
+        '\u2192 Or use <strong>Upload Manually</strong> below as a reliable fallback.</div>';
+      console.error('GitHub PUT failed:',pr.status,pe);
+    }
   }catch(e){
-    if(status)status.innerHTML='<div class="ibox ibox-warn"><strong>Publish failed</strong>'+e.message+'<br><small>Check your token has Contents: Write permission for this repo.</small></div>';
+    if(status)status.innerHTML='<div class="ibox ibox-warn"><strong>Upload error</strong>'+e.message+'</div>';
     console.error('GitHub publish error:',e);
   }
 }
