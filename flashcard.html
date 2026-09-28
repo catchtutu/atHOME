@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AusRN Clinical Flashcards & Study Hub (HITH & Ward Level)</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      user-select: none;
+    }
+    
+    /* 3D Flip Card Container Styling */
+    .perspective-1000 {
+      perspective: 1000px;
+    }
+    
+    .transform-style-3d {
+      transform-style: preserve-3d;
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .backface-hidden {
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    
+    .rotate-y-180 {
+      transform: rotateY(180deg);
+    }
+
+    /* Custom scrollbar for card content */
+    .custom-scroll::-webkit-scrollbar {
+      width: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.05);
+      border-radius: 4px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: rgba(100, 116, 139, 0.4);
+      border-radius: 4px;
+    }
+    .dark .custom-scroll::-webkit-scrollbar-thumb {
+      background: rgba(217, 119, 6, 0.5);
+    }
+  </style>
+</head>
+<body class="h-full flex flex-col text-slate-800 bg-slate-900 selection:bg-amber-500 selection:text-white">
+
+  <!-- Top Navigation Header -->
+  <header class="bg-slate-950 border-b border-slate-800 text-white sticky top-0 z-50 shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="bg-gradient-to-tr from-amber-500 to-amber-600 p-2 rounded-xl shadow-md text-slate-950">
+          <i data-lucide="stethoscope" class="w-6 h-6 stroke-[2.5]"></i>
+        </div>
+        <div>
+          <h1 class="font-bold text-lg leading-tight tracking-tight text-slate-100 flex items-center gap-2">
+            AusRN <span class="bg-amber-500/20 text-amber-400 text-xs px-2 py-0.5 rounded-md border border-amber-500/30 font-semibold">HITH & Ward RN</span>
+          </h1>
+          <p class="text-xs text-slate-400 hidden sm:block">3rd Year BN Clinical Companion • Ambulatory & Sub-Acute Scope</p>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="flex space-x-1 bg-slate-900 p-1 rounded-xl border border-slate-800">
+        <button id="nav-cards" onclick="switchTab('cards')" class="px-3 sm:px-4 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 bg-amber-500 text-slate-950 shadow">
+          <i data-lucide="layers" class="w-4 h-4"></i> <span class="hidden sm:inline">Flashcards</span>
+        </button>
+        <button id="nav-scenarios" onclick="switchTab('scenarios')" class="px-3 sm:px-4 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 text-slate-300 hover:text-white">
+          <i data-lucide="file-text" class="w-4 h-4"></i> <span class="hidden sm:inline">HITH Scenarios</span>
+        </button>
+        <button id="nav-ref" onclick="switchTab('ref')" class="px-3 sm:px-4 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 text-slate-300 hover:text-white">
+          <i data-lucide="book-open" class="w-4 h-4"></i> <span class="hidden sm:inline">AU Ref Hub</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 flex flex-col overflow-x-hidden">
+    
+    <!-- FLASHCARD VIEW SECTION -->
+    <section id="view-cards" class="flex-1 flex flex-col gap-4">
+      
+      <!-- Filter Bar & Topic Selector -->
+      <div class="bg-slate-950 border border-slate-800 rounded-2xl p-3 sm:p-4 shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <div class="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 custom-scroll">
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-400 whitespace-nowrap mr-1">Topic:</span>
+          <select id="topic-select" onchange="filterTopic(this.value)" class="bg-slate-900 border border-slate-700 text-slate-200 text-xs sm:text-sm rounded-xl px-3 py-2 focus:ring-2 focus:ring-amber-500 outline-none font-medium">
+            <option value="ALL">All Clinical Topics (25 Cards)</option>
+            <option value="STEREO">High-Dose IV Methylprednisolone & Steroid Care</option>
+            <option value="HITH">HITH & Ambulatory Line Care (PICC/CADD)</option>
+            <option value="DIABETES">Diabetes & Glycaemic Control</option>
+            <option value="SEPSIS">Sepsis & Sub-Acute Deterioration</option>
+            <option value="ANAPHYLAXIS">Anaphylaxis & Hypersensitivity</option>
+            <option value="HEART">Heart Failure & Fluid Balance</option>
+            <option value="RENAL">Renal Function & Electrolyte Care</option>
+            <option value="SAFETY">Medication Safety & APINCH Safeguards</option>
+          </select>
+        </div>
+
+        <!-- Mastery / Confidence Stats -->
+        <div class="flex items-center justify-between md:justify-end gap-4 text-xs">
+          <div class="flex items-center gap-2 bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-800">
+            <span class="text-emerald-400 font-bold flex items-center gap-1"><i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i> Easy: <span id="stat-easy">0</span></span>
+            <span class="text-amber-400 font-bold flex items-center gap-1"><i data-lucide="help-circle" class="w-3.5 h-3.5"></i> Med: <span id="stat-medium">0</span></span>
+            <span class="text-rose-400 font-bold flex items-center gap-1"><i data-lucide="alert-circle" class="w-3.5 h-3.5"></i> Hard: <span id="stat-hard">0</span></span>
+          </div>
+          <button onclick="resetProgress()" class="text-slate-400 hover:text-amber-400 transition flex items-center gap-1 text-xs underline decoration-dashed">
+            <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> Reset
+          </button>
+        </div>
+      </div>
+
+      <!-- Card Container Header info -->
+      <div class="flex items-center justify-between text-xs sm:text-sm text-slate-400 px-1 font-medium">
+        <span id="card-counter" class="bg-slate-800 text-amber-400 px-3 py-1 rounded-full border border-slate-700">
+          Card 1 of 25
+        </span>
+        <div class="flex items-center gap-2">
+          <span class="text-slate-400 text-xs">Tap/Click card to flip</span>
+          <button id="btn-speak" onclick="toggleAudio()" class="p-1.5 rounded-lg bg-slate-800 text-slate-300 hover:text-amber-400 hover:bg-slate-700 transition" title="Listen to Card Rationale">
+            <i data-lucide="volume-2" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- THE 3D FLIP CARD CONTAINER -->
+      <div class="flex-1 min-h-[480px] sm:min-h-[520px] relative perspective-1000 my-1">
+        <div id="flashcard-inner" class="w-full h-full relative transform-style-3d cursor-pointer rounded-3xl shadow-2xl transition-all duration-500" onclick="flipCard()">
+          
+          <!-- FRONT SIDE (Light Theme - Ward/HITH Context Question) -->
+          <div class="absolute inset-0 w-full h-full backface-hidden rounded-3xl bg-slate-50 border-2 border-slate-200 p-6 sm:p-8 flex flex-col justify-between shadow-xl overflow-hidden">
+            <div class="flex justify-between items-start border-b border-slate-200 pb-3">
+              <div>
+                <span id="card-front-category" class="inline-block px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-300">
+                  CATEGORY
+                </span>
+                <p id="card-front-tag" class="text-xs text-slate-500 font-semibold mt-1">Scope: HITH / Ward RN</p>
+              </div>
+              <div class="text-slate-400 hover:text-amber-600 transition">
+                <i data-lucide="rotate-3d" class="w-6 h-6"></i>
+              </div>
+            </div>
+
+            <!-- Card Front Core Question -->
+            <div class="my-auto py-4 overflow-y-auto custom-scroll max-h-[320px]">
+              <h2 id="card-front-title" class="text-xl sm:text-2xl font-bold text-slate-900 mb-3 leading-snug">
+                Card Title Loading...
+              </h2>
+              <div id="card-front-scenario" class="text-sm sm:text-base text-slate-700 leading-relaxed font-medium bg-slate-100 p-4 rounded-xl border border-slate-200">
+                Clinical scenario prompt text...
+              </div>
+            </div>
+
+            <!-- Front Footer -->
+            <div class="pt-3 border-t border-slate-200 flex justify-between items-center text-xs text-slate-500 font-medium">
+              <span><i data-lucide="mouse-pointer-click" class="w-3.5 h-3.5 inline mr-1"></i> Click anywhere to reveal ISBAR & Nursing Rationale</span>
+              <span id="card-confidence-badge" class="font-bold text-slate-400 uppercase">Unrated</span>
+            </div>
+          </div>
+
+          <!-- BACK SIDE (Dark Theme - ISBAR Script & Clinical Interventions) -->
+          <div class="absolute inset-0 w-full h-full backface-hidden rotate-y-180 rounded-3xl bg-slate-950 border-2 border-amber-500/40 p-5 sm:p-7 flex flex-col justify-between shadow-2xl overflow-hidden text-slate-200">
+            
+            <!-- Back Header -->
+            <div class="flex justify-between items-center border-b border-slate-800 pb-2.5">
+              <div class="flex items-center gap-2">
+                <span class="bg-amber-500 text-slate-950 px-2.5 py-0.5 rounded-md text-xs font-black tracking-wide">ISBAR & RATIONALE</span>
+                <span id="card-back-topic" class="text-xs text-amber-400 font-medium">Topic</span>
+              </div>
+              <button onclick="event.stopPropagation(); flipCard();" class="text-slate-400 hover:text-amber-400 text-xs flex items-center gap-1 bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-800">
+                <i data-lucide="corner-up-left" class="w-3.5 h-3.5"></i> Flip Front
+              </button>
+            </div>
+
+            <!-- Scrollable Content Section for Back -->
+            <div class="my-auto py-3 overflow-y-auto custom-scroll max-h-[360px] space-y-4 text-xs sm:text-sm">
+              
+              <!-- Spoken ISBAR Script Box -->
+              <div class="bg-slate-900/90 border border-amber-500/30 rounded-xl p-3.5 shadow-inner">
+                <div class="flex items-center gap-1.5 text-amber-400 font-bold mb-2 uppercase text-xs tracking-wider">
+                  <i data-lucide="phone-call" class="w-4 h-4"></i> ISBAR Clinical Escalation Script (Spoken Wording)
+                </div>
+                <div id="card-isbar-script" class="space-y-1.5 text-slate-300 font-mono text-[11px] sm:text-xs leading-relaxed bg-slate-950 p-3 rounded-lg border border-slate-800">
+                  <!-- Dynamic ISBAR breakdown populated by JS -->
+                </div>
+              </div>
+
+              <!-- Key Nursing Interventions & Rationale -->
+              <div class="bg-slate-900/60 rounded-xl p-3.5 border border-slate-800">
+                <div class="flex items-center gap-1.5 text-emerald-400 font-bold mb-2 uppercase text-xs tracking-wider">
+                  <i data-lucide="check-square" class="w-4 h-4"></i> RN Immediate Scope Interventions & Red Flags
+                </div>
+                <div id="card-rationale-text" class="text-slate-300 leading-relaxed font-normal space-y-2">
+                  <!-- Rationale text -->
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Back Footer / Self-Rating Buttons -->
+            <div class="pt-3 border-t border-slate-800 flex flex-col sm:flex-row justify-between items-center gap-2" onclick="event.stopPropagation();">
+              <span class="text-xs text-slate-400 font-medium">Rate your recall:</span>
+              <div class="flex gap-2 w-full sm:w-auto">
+                <button onclick="rateCard('hard')" class="flex-1 sm:flex-none px-3 py-1.5 bg-rose-950/80 hover:bg-rose-900 text-rose-200 border border-rose-700/50 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1">
+                  <i data-lucide="frown" class="w-3.5 h-3.5"></i> Hard
+                </button>
+                <button onclick="rateCard('medium')" class="flex-1 sm:flex-none px-3 py-1.5 bg-amber-950/80 hover:bg-amber-900 text-amber-200 border border-amber-700/50 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1">
+                  <i data-lucide="meh" class="w-3.5 h-3.5"></i> Medium
+                </button>
+                <button onclick="rateCard('easy')" class="flex-1 sm:flex-none px-3 py-1.5 bg-emerald-950/80 hover:bg-emerald-900 text-emerald-200 border border-emerald-700/50 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1">
+                  <i data-lucide="smile" class="w-3.5 h-3.5"></i> Easy
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Controls & Navigation Bar -->
+      <div class="flex items-center justify-between gap-3 pt-2">
+        <button onclick="prevCard()" class="px-5 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-2xl font-bold text-sm transition flex items-center gap-2 shadow border border-slate-700">
+          <i data-lucide="arrow-left" class="w-4 h-4"></i> Previous
+        </button>
+        <button onclick="flipCard()" class="px-5 py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 rounded-2xl font-bold text-sm transition flex items-center gap-2 shadow-lg shadow-amber-500/10">
+          <i data-lucide="rotate-cw" class="w-4 h-4"></i> Flip Card
+        </button>
+        <button onclick="nextCard()" class="px-5 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-2xl font-bold text-sm transition flex items-center gap-2 shadow border border-slate-700">
+          Next <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+    </section>
+
+    <!-- SCENARIOS VIEW SECTION -->
+    <section id="view-scenarios" class="hidden flex-1 flex-col gap-4">
+      <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-xl">
+        <div class="max-w-3xl">
+          <span class="bg-amber-500/20 text-amber-400 border border-amber-500/30 text-xs font-bold px-3 py-1 rounded-full uppercase">Interactive HITH & Ward Scenarios</span>
+          <h2 class="text-2xl font-bold text-slate-100 mt-2">Clinical Decision & Escalation Practice</h2>
+          <p class="text-sm text-slate-400 mt-1">Select the correct nursing intervention or spoken ISBAR formulation for real-world ambulatory and ward emergencies.</p>
+        </div>
+
+        <div id="scenario-container" class="mt-6 bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-5">
+          <!-- Populated dynamically by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- AUSTRALIAN CLINICAL REFERENCE HUB SECTION -->
+    <section id="view-ref" class="hidden flex-1 flex-col gap-6">
+      <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-xl">
+        <h2 class="text-2xl font-bold text-slate-100 flex items-center gap-2">
+          <i data-lucide="book-open" class="text-amber-500"></i> Australian Clinical Reference & Practice Quick-Guide
+        </h2>
+        <p class="text-sm text-slate-400 mt-1">Standard normal reference intervals, MET call escalation limits, and HITH high-risk medication guidelines.</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+          
+          <!-- Normal Lab Values (AU Standard Units) -->
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+            <h3 class="font-bold text-amber-400 text-sm uppercase flex items-center gap-1.5 border-b border-slate-800 pb-2">
+              <i data-lucide="activity" class="w-4 h-4"></i> Pathology Normal Ranges (AU)
+            </h3>
+            <ul class="text-xs text-slate-300 mt-3 space-y-2">
+              <li class="flex justify-between border-b border-slate-800/50 pb-1"><span>Fasting Blood Glucose:</span> <span class="font-mono text-amber-300">4.0 - 7.0 mmol/L</span></li>
+              <li class="flex justify-between border-b border-slate-800/50 pb-1"><span>Random Glucose:</span> <span class="font-mono text-amber-300">4.0 - 11.0 mmol/L</span></li>
+              <li class="flex justify-between border-b border-slate-800/50 pb-1"><span>Potassium (K+):</span> <span class="font-mono text-amber-300">3.5 - 5.2 mmol/L</span></li>
+              <li class="flex justify-between border-b border-slate-800/50 pb-1"><span>Sodium (Na+):</span> <span class="font-mono text-amber-300">135 - 145 mmol/L</span></li>
+              <li class="flex justify-between border-b border-slate-800/50 pb-1"><span>eGFR (Renal):</span> <span class="font-mono text-amber-300">&gt; 90 mL/min/1.73m²</span></li>
+              <li class="flex justify-between border-b border-slate-800/50 pb-1"><span>Creatinine:</span> <span class="font-mono text-amber-300">60 - 110 µmol/L</span></li>
+              <li class="flex justify-between border-b border-slate-800/50 pb-1"><span>Magnesium (Mg2+):</span> <span class="font-mono text-amber-300">0.7 - 1.0 mmol/L</span></li>
+              <li class="flex justify-between border-b border-slate-800/50 pb-1"><span>Hb (Female/Male):</span> <span class="font-mono text-amber-300">115-165 / 130-185 g/L</span></li>
+            </ul>
+          </div>
+
+          <!-- Australian MET / Deterioration Triggers -->
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+            <h3 class="font-bold text-rose-400 text-sm uppercase flex items-center gap-1.5 border-b border-slate-800 pb-2">
+              <i data-lucide="alert-triangle" class="w-4 h-4"></i> MET / HITH Escalation Limits
+            </h3>
+            <ul class="text-xs text-slate-300 mt-3 space-y-2">
+              <li class="flex justify-between border-b border-slate-800/50 pb-1"><span>Respiratory Rate:</span> <span class="font-mono text-rose-300">&lt; 8 or &gt; 25 bpm</span></li>
+              <li class="flex justify-between border-b border-slate-800/50 pb-1"><span>SpO2 (Room Air):</span> <span class="font-mono text-rose-300">&lt; 92% (&lt;88% COPD)</span></li>
+              <li class="flex justify-between border-b border-slate-800/50 pb-1"><span>Systolic BP:</span> <span class="font-mono text-rose-300">&lt; 90 mmHg or &gt; 180 mmHg</span></li>
+              <li class="flex justify-between border-b border-slate-800/50 pb-1"><span>Heart Rate:</span> <span class="font-mono text-rose-300">&lt; 40 or &gt; 120 bpm</span></li>
+              <li class="flex justify-between border-b border-slate-800/50 pb-1"><span>Temperature:</span> <span class="font-mono text-rose-300">&lt; 35.5°C or &gt; 38.5°C</span></li>
+              <li class="flex justify-between border-b border-slate-800/50 pb-1"><span>GCS / Consciousness:</span> <span class="font-mono text-rose-300">Drop &gt; 2 points / New Confusion</span></li>
+              <li class="flex justify-between border-b border-slate-800/50 pb-1"><span>Urine Output:</span> <span class="font-mono text-rose-300">&lt; 0.5 mL/kg/hr for 2 consecutive hrs</span></li>
+            </ul>
+          </div>
+
+          <!-- APINCH High-Risk Safeguards in HITH -->
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+            <h3 class="font-bold text-emerald-400 text-sm uppercase flex items-center gap-1.5 border-b border-slate-800 pb-2">
+              <i data-lucide="shield-alert" class="w-4 h-4"></i> APINCH & HITH High Risk Care
+            </h3>
+            <div class="text-xs text-slate-300 mt-3 space-y-2">
+              <p><strong class="text-amber-400">A - Anti-infectives:</strong> Check therapeutic drug monitoring (Vancomycin trough, Gentamicin peak/trough) before HITH dose.</p>
+              <p><strong class="text-amber-400">P - Potassium / Electrolytes:</strong> Replace K+ and Mg2+ pre-methylprednisolone infusion.</p>
+              <p><strong class="text-amber-400">I - Insulin:</strong> Pre-meal BGLs for all steroid-treated patients; sliding scale active.</p>
+              <p><strong class="text-amber-400">N - Narcotics/Sedatives:</strong> Opioid risk assessment prior to discharge to home care.</p>
+              <p><strong class="text-amber-400">C - Chemotherapy / Steroids:</strong> High-dose IV Steroid blood tracking protocol mandatory.</p>
+              <p><strong class="text-amber-400">H - Heparin / Anticoagulants:</strong> Monitoring anti-Xa / INR in outpatient Deep Vein Thrombosis management.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    /* FLASHCARD DATABASE - 25 Cards Tailored for HITH & Ward Level Scope */
+    const cardData = [
+      // TOPIC 1: High-Dose IV Methylprednisolone & Steroid Care
+      {
+        id: 1,
+        topicKey: "STEREO",
+        topicName: "High-Dose Steroids",
+        category: "IV Methylprednisolone Pulse Therapy",
+        title: "Indications & Pre-Infusion Screening Baseline",
+        scenario: "A 34-year-old female with an acute Multiple Sclerosis relapse is admitted to HITH for 1,000 mg IV Methylprednisolone daily for 3 days. What mandatory blood tracking and clinical pre-screens must the RN complete prior to starting the infusion?",
+        isbar: {
+          i: "I am RN Sarah from HITH calling regarding 34yo MS patient Jane Doe.",
+          s: "I am conducting the pre-infusion screening prior to day 1 Methylprednisolone 1g IV pulse therapy.",
+          b: "Patient is admitted for 3-day HITH pulse therapy for acute optic neuritis flare.",
+          a: "Baseline BGL is 5.8, BP 118/74, ECG SR 72. Strongyloides serology and QuantiFERON-TB gold are negative. K+ is 3.4 mmol/L (borderline low).",
+          r: "I recommend ordering oral Potassium replacement (Span-K) to bring K+ above 4.0 mmol/L prior to starting pulse IV steroid therapy."
+        },
+        rationale: "<strong>RN Interventions:</strong><br>• <strong>Blood Tracking:</strong> mandatory baseline EUC (K+, Mg2+), baseline BGL, FBC, and infection screening (TB & Strongyloides in endemic zones to prevent fatal hyperinfection syndrome).<br>• <strong>Electrolyte Correction:</strong> High-dose corticosteroids drive potassium intracellularly, causing severe hypokalemia and cardiac arrhythmias. Maintain K+ &gt; 4.0 mmol/L.<br>• Ensure patent IV access and verify 1000mg diluted in 100-250mL 0.9% Saline over minimum 30-60 minutes."
+      },
+      {
+        id: 2,
+        topicKey: "STEREO",
+        topicName: "High-Dose Steroids",
+        category: "Steroid-Induced Complications",
+        title: "Steroid Psychosis, Hyperglycemia & Acute Escalation",
+        scenario: "During Day 2 of HITH IV Methylprednisolone (1000mg), the patient's family contacts the virtual care hub stating the patient is hyper-agitated, experiencing vivid visual hallucinations, and unable to sleep. BGL is 18.2 mmol/L. What is the RN's immediate response?",
+        isbar: {
+          i: "I am HITH RN calling regarding Jane Doe on Day 2 IV Methylprednisolone.",
+          s: "Patient has developed acute steroid-induced psychosis and severe hyperglycemia (BGL 18.2 mmol/L).",
+          b: "No prior psychiatric history; receiving 1g IV Methylprednisolone daily for MS flare.",
+          a: "Patient is acutely paranoid, hallucinating, HR 112 bpm, BP 155/92 mmHg, BGL 18.2, Ketones 0.2.",
+          r: "I recommend ceasing further home steroid doses, ordering sliding scale Actrapid insulin, and urgent medical evaluation for oral Olanzapine/Haloperidol and transfer to hospital if unmanageable at home."
+        },
+        rationale: "<strong>RN Interventions:</strong><br>• <strong>Steroid Psychosis:</strong> Occurs in up to 10% of high-dose pulse therapy. Reassure family, ensure patient safety, and withhold further doses until medical review.<br>• <strong>Glycaemic Management:</strong> High-dose steroids cause acute insulin resistance and gluconeogenesis. Administer prescribed supplemental insulin.<br>• <strong>Home Escalation:</strong> If patient presents a risk to self/others or family cannot cope at home, arrange acute transport to hospital/ED."
+      },
+      {
+        id: 3,
+        topicKey: "STEREO",
+        topicName: "High-Dose Steroids",
+        category: "Oral Tapering & Long-Term Nursing",
+        title: "Prednisone Oral Tapering & Adrenal Crisis Prevention",
+        scenario: "Following 3 days of IV Methylprednisolone, the patient is transitioned to an oral Prednisone 60mg tapering regimen over 4 weeks at home. What discharge education and safety red flags must the RN reinforce?",
+        isbar: {
+          i: "I am RN discharge coordinator communicating with the primary care GP and patient.",
+          s: "Patient Jane Doe completed 3-day IV steroid pulse and is commencing a 4-week oral Prednisone taper.",
+          b: "Adrenal axis is suppressed following high-dose pulse corticosteroids.",
+          a: "Patient understands breakfast administration with food and daily morning BGL monitoring.",
+          r: "Please confirm prescription for PPI gastric protection (e.g., Pantoprazole 40mg daily) and provide an emergency Steroid Card."
+        },
+        rationale: "<strong>RN Interventions:</strong><br>• <strong>Adrenal Crisis Risk:</strong> Never stop oral steroids abruptly; step-down tapering is vital to allow HPA-axis recovery.<br>• <strong>Administration:</strong> Take dose in the morning with food to reduce insomnia and gastric ulceration.<br>• <strong>Infection Monitoring:</strong> Steroids mask inflammatory signs (fever may be blunted). Instruct patient to report any rigors, dysuria, or wound changes immediately."
+      },
+
+      // TOPIC 2: HITH & Ambulatory Line Care
+      {
+        id: 4,
+        topicKey: "HITH",
+        topicName: "HITH & Line Care",
+        category: "PICC & Ambulatory CADD Pumps",
+        title: "PICC Line Occlusion & Resistance Troubleshooting",
+        scenario: "A HITH RN attends a home visit to administer IV Ceftriaxone via a single-lumen PICC line. The line resists flushing with 0.9% saline and the CADD pump triggers a high-pressure occlusion alarm. What is the step-by-step nursing management?",
+        isbar: {
+          i: "I am HITH RN John calling the Vascular Access Team / HMO.",
+          s: "Patient Mark Smith's right arm PICC line is sluggish and completely occluded to flushing.",
+          b: "PICC inserted 10 days ago for 6 weeks of home IV antibiotics for osteomyelitis.",
+          a: "No external kinking seen, clamp is open, insertion site is clean without swelling/redness. Syringe meets complete resistance.",
+          r: "I request an order for Alteplase (Cathflo 2mg/2mL) lock instillation per health service protocol to restore line lumen patency."
+        },
+        rationale: "<strong>RN Interventions:</strong><br>• <strong>Never Force Flush:</strong> Forcing a syringe against high resistance can rupture the catheter or dislodge a clot into pulmonary circulation.<br>• <strong>Troubleshoot:</strong> Check position of arm, remove dressing to inspect for external kinking, ensure clamps are open.<br>• <strong>Thrombolytic Lock:</strong> Instill Alteplase (Cathflo) 2mg using push-pull or stopcock vacuum technique if ordered; allow 30-120 mins dwell time."
+      },
+      {
+        id: 5,
+        topicKey: "HITH",
+        topicName: "HITH & Line Care",
+        category: "Infection & Line Complications",
+        title: "Suspected Line Sepsis in Ambulatory Care",
+        scenario: "A patient receiving continuous elastomeric infuser (Flucloxacillin) for HITH cellulitis management reports a temperature of 38.8°C at home, rigors, and tenderness at the PICC insertion site. What is the immediate nursing escalation?",
+        isbar: {
+          i: "I am HITH RN calling the HITH Medical Registrar.",
+          s: "Patient exhibits signs of systemic PICC line sepsis during home IV antibiotic therapy.",
+          b: "Receiving continuous IV Flucloxacillin 12g/24hr via elastomeric infuser for cellulitis.",
+          a: "Temp 38.8°C, HR 118 bpm, BP 98/60, PICC exit site has purulent exudate and erythema extending 3cm.",
+          r: "I recommend immediate hospital admission, peripheral and line blood cultures, ceasing home infuser, and arranging urgent medical review."
+        },
+        rationale: "<strong>RN Interventions:</strong><br>• <strong>Immediate Action:</strong> Cease HITH ambulatory infusion; do not flush the line as it may shower bacteria into bloodstream.<br>• <strong>Blood Cultures:</strong> Draw paired blood cultures (one set from PICC lumen, one set from peripheral vein) prior to starting broad-spectrum IV antibiotics.<br>• <strong>Escalation:</strong> Transport patient to hospital/ED for urgent assessment and catheter removal if line sepsis is confirmed."
+      },
+
+      // TOPIC 3: Diabetes & Glycaemic Control
+      {
+        id: 6,
+        topicKey: "DIABETES",
+        topicName: "Diabetes Care",
+        category: "Hypoglycemia Management",
+        title: "Severe Hypoglycemia in Ward / Home Care",
+        scenario: "A 68-year-old diabetic patient on the ward presents with diaphoresis, confusion, and tremor. Point-of-care BGL is 2.8 mmol/L. The patient is conscious but drowsy. How do you manage this acute episode?",
+        isbar: {
+          i: "I am Ward RN calling the treating HMO.",
+          s: "Patient Mr. David Brown has experienced a symptomatic hypoglycaemic event with BGL 2.8 mmol/L.",
+          b: "Type 2 Diabetic prescribed morning Isophane Insulin and Metformin.",
+          a: "Patient is conscious, confused, sweaty, HR 104, BP 130/80. BGL 2.8 mmol/L.",
+          r: "I have administered 15g fast-acting carbohydrate (150mL fruit juice). I request a review of his morning insulin dosage and repeat BGL order."
+        },
+        rationale: "<strong>RN Interventions:</strong><br>• <strong>Rule of 15:</strong> Give 15-20g quick-acting carbohydrate (e.g., 1/2 can soft drink, 150mL juice, or 4-5 jellybeans).<br>• <strong>Recheck:</strong> Wait 15 minutes and re-test BGL. If still &lt; 4.0 mmol/L, repeat fast-acting carbohydrate.<br>• <strong>Sustained Carb:</strong> Once BGL &gt; 4.0 mmol/L, give a long-acting carbohydrate snack (e.g., slice of bread, 2 biscuits, or next meal) to prevent recurrent hypoglycemia."
+      },
+      {
+        id: 7,
+        topicKey: "DIABETES",
+        topicName: "Diabetes Care",
+        category: "Hyperglycemia & DKA/HHS Screening",
+        title: "Steroid-Exacerbated Hyperglycemia",
+        scenario: "A sub-acute ward patient receiving IV Dexamethasone has a routine pre-dinner BGL of 21.4 mmol/L. The patient reports thirst and frequent urination. Blood Ketones are 0.4 mmol/L. What is the nursing plan?",
+        isbar: {
+          i: "I am Ward RN reporting to Medical Team.",
+          s: "Patient Mrs. Green has severe hyperglycemia (BGL 21.4 mmol/L) secondary to IV steroid therapy.",
+          b: "Admitted for COPD exacerbation; receiving Dexamethasone 8mg daily.",
+          a: "BGL 21.4 mmol/L, Blood Ketones 0.4 mmol/L (normal &lt;0.6), Vitals stable, non-drowsy.",
+          r: "I request administration of 6 units Actrapid short-acting insulin per supplemental sliding scale and re-check BGL in 2 hours."
+        },
+        rationale: "<strong>RN Interventions:</strong><br>• <strong>Ketone Assessment:</strong> Always check blood ketones when BGL &gt; 15.0 mmol/L to rule out Diabetic Ketoacidosis (DKA).<br>• <strong>Hydration:</strong> Encourage oral fluid intake (water) to maintain renal perfusion and clear glucose.<br>• <strong>Insulin Administration:</strong> Administer subcutaneous rapid/short-acting insulin as ordered; monitor for hypoglycemia 2-4 hours post-dose."
+      },
+
+      // TOPIC 4: Sepsis & Sub-Acute Deterioration
+      {
+        id: 8,
+        topicKey: "SEPSIS",
+        topicName: "Sepsis Management",
+        category: "Early Sepsis Identification",
+        title: "Sub-Acute Sepsis Escalation in HITH",
+        scenario: "During a HITH visit for leg wound care, you note the patient is lethargic, shivering, with HR 115 bpm, BP 92/54 mmHg, Temp 38.6°C, and RR 24 bpm. What are your immediate actions?",
+        isbar: {
+          i: "I am HITH RN calling 000 Ambulance / Medical Registrar.",
+          s: "Patient exhibit signs of severe sepsis and clinical deterioration at home.",
+          b: "Receiving home wound care for infected diabetic foot ulcer.",
+          a: "Temp 38.6°C, HR 115, RR 24, BP 92/54 (MAP 66), GCS 14 (new lethargy). Lactate on i-STAT is 3.1 mmol/L.",
+          r: "I am requesting emergency transport to acute ED for Sepsis Pathways initiation, IV broad-spectrum antibiotics, and fluid resuscitation."
+        },
+        rationale: "<strong>RN Interventions:</strong><br>• <strong>Recognize Sepsis Triggers:</strong> High HR (&gt;90), high RR (&gt;20), altered mental state, fever/hypothermia.<br>• <strong>Sepsis First Hour Pathway:</strong> Blood cultures x2, serum lactate, high-flow oxygen if hypoxic, rapid IV crystaloid fluid bolus (500mL-1000mL), IV antibiotics.<br>• <strong>HITH Transfer:</strong> Patient meets acute hospital readmission criteria; do not keep at home."
+      },
+      {
+        id: 9,
+        topicKey: "SEPSIS",
+        topicName: "Sepsis Management",
+        category: "Antibiotic Stewardship",
+        title: "First-Dose IV Antibiotic Time-to-Delivery",
+        scenario: "A patient in the ward is diagnosed with septic urinary tract infection. The doctor writes an order for IV Gentamicin and Ampicillin. What is the RN's target timeframe and pre-dose safety check?",
+        isbar: {
+          i: "I am Ward RN confirming antibiotic order with Ward Pharmacist/MO.",
+          s: "Seeking order verification for time-critical first dose IV Gentamicin in sepsis.",
+          b: "72yo male admitted with urosepsis; baseline Creatinine is 140 µmol/L (elevated).",
+          a: "Antibiotic order is complete. Blood cultures have been drawn.",
+          r: "I request confirmation of dose adjustment for renal clearance prior to administering within the 60-minute sepsis timeframe."
+        },
+        rationale: "<strong>RN Interventions:</strong><br>• <strong>Golden Hour:</strong> First dose of IV antibiotics in sepsis must be administered within 60 minutes of recognition.<br>• <strong>Blood Cultures First:</strong> Always draw blood cultures before starting antibiotics unless it causes significant delay (&gt;45 min).<br>• <strong>Therapeutic Drug Monitoring:</strong> aminoglycosides (Gentamicin) require baseline renal function (eGFR/Creatinine) and precise dosing times."
+      },
+
+      // TOPIC 5: Anaphylaxis & Hypersensitivity
+      {
+        id: 10,
+        topicKey: "ANAPHYLAXIS",
+        topicName: "Anaphylaxis Care",
+        category: "Acute Emergency Response",
+        title: "First-Line Treatment for Anaphylaxis in Ward/HITH",
+        scenario: "Five minutes after commencing an IV Ceftriaxone infusion in a sub-acute ward, the patient complains of throat tightness, diffiucult breathing, and widespread urticaria. BP drops to 82/45. What is the priority step?",
+        isbar: {
+          i: "I am Ward RN calling MET Call / Emergency Response (Code Blue).",
+          s: "Patient having acute grade-3 anaphylactic reaction to IV Ceftriaxone.",
+          b: "Infusion started 5 minutes ago for pneumonia.",
+          a: "Stridor, wheeze, diffuse hives, BP 82/45, HR 132 bpm.",
+          r: "I have stopped the infusion, called MET, and am administering IM Adrenaline 0.5mg into anterolateral thigh immediately."
+        },
+        rationale: "<strong>RN Interventions:</strong><br>• <strong>Cease Infusion & Call for Help:</strong> Stop offending agent immediately; maintain IV access with standard saline line.<br>• <strong>First-Line Drug:</strong> Administer <strong>IM Adrenaline 1:1,000 (0.5mg for adult)</strong> into outer mid-thigh. Do not delay for IV access.<br>• <strong>Positioning:</strong> Lay patient flat (or left lateral if pregnant/vomiting). Do not allow patient to sit or walk upright due to risk of fatal vena cava collapse."
+      },
+      {
+        id: 11,
+        topicKey: "ANAPHYLAXIS",
+        topicName: "Anaphylaxis Care",
+        category: "Biphasic Reactions & Follow-up",
+        title: "Post-Anaphylaxis Monitoring & Biphasic Risk",
+        scenario: "Following successful emergency IM Adrenaline administration for an anaphylactic drug reaction, the patient's symptoms resolve completely after 20 minutes. Can the patient be safely discharged home?",
+        isbar: {
+          i: "I am RN handing over post-anaphylaxis patient to acute observation unit.",
+          s: "Patient stable post IM Adrenaline x1 for cephalosporin anaphylaxis.",
+          b: "Full recovery noted; vitals normalized.",
+          a: "BP 122/78, HR 82, SpO2 98% on room air. No residual dyspnoea.",
+          r: "Maintain mandatory 4-6 hour minimum observation window to monitor for biphasic anaphylactic recurrence."
+        },
+        rationale: "<strong>RN Interventions:</strong><br>• <strong>Biphasic Hazard:</strong> Up to 20% of anaphylaxis cases experience a second phase reaction without re-exposure to the allergen, usually within 4-8 hours.<br>• <strong>Observation:</strong> Minimum 4 hours post-resolution observation required (up to 12 hours if severe or required &gt;1 dose adrenaline).<br>• <strong>Discharge Kit:</strong> Ensure prescription for EpiPen/Anapen, ASCIA Action Plan, and education on self-administration."
+      },
+
+      // TOPIC 6: Heart Failure & Fluid Balance
+      {
+        id: 12,
+        topicKey: "HEART",
+        topicName: "Heart Failure",
+        category: "Fluid Overload & Diuresis",
+        title: "Sub-Acute Congestive Heart Failure Escalation",
+        scenario: "A HITH heart failure patient has a daily weight increase of 2.8 kg over 48 hours, worsening orthopnoea (needs 3 pillows), and 2+ bilateral pitting pedal oedema. What is your clinical action plan?",
+        isbar: {
+          i: "I am HITH RN contacting Cardiology / HITH Medical Officer.",
+          s: "Patient Mr. Arthur Pendelton has acute fluid retention and worsening CCF symptoms at home.",
+          b: "Known ischemic cardiomyopathy, baseline weight 74.0kg.",
+          a: "Current weight 76.8kg (+2.8kg in 2 days), crackles in lower lung zones, BP 142/88, HR 88, SpO2 93% on room air.",
+          r: "I recommend increasing oral Furosemide from 40mg daily to 80mg daily for 3 days or converting to IV Furosemide 40mg via HITH visit."
+        },
+        rationale: "<strong>RN Interventions:</strong><br>• <strong>Daily Weight Monitoring:</strong> A weight gain of &gt;1.5kg in 24 hrs or &gt;2kg in a week indicates fluid retention, preceding overt dyspnoea.<br>• <strong>Diuretic Management:</strong> Administer morning doses of loop diuretics to prevent nocturnal diuresis.<br>• <strong>Electrolytes:</strong> Check baseline serum K+ and Creatinine, as aggressive diuresis can cause severe hypokalemia and prerenal AKI."
+      },
+      {
+        id: 13,
+        topicKey: "HEART",
+        topicName: "Heart Failure",
+        category: "IV Furosemide Administration",
+        title: "IV Bolus Furosemide Bolus Safety & Ototoxicity",
+        scenario: "You are preparing to give IV Furosemide 80mg bolus for acute fluid overload in a ward patient. What is the maximum injection speed to prevent complications?",
+        isbar: {
+          i: "I am Ward RN verifying medication order with senior nurse.",
+          s: "Administering IV Furosemide 80mg slow push.",
+          b: "Prescribed for pulmonary congestion.",
+          a: "Dose is 80mg undiluted (10mg/mL).",
+          r: "Administer slow IV push over at least 4 minutes (maximum rate 4mg/min) to avoid irreversible ototoxicity/deafness."
+        },
+        rationale: "<strong>RN Interventions:</strong><br>• <strong>Ototoxicity Prevention:</strong> High doses or rapid IV administration of loop diuretics (Furosemide) can cause transient or permanent tinnitus and hearing loss. Max rate: 4mg/min.<br>• <strong>Monitoring:</strong> Check blood pressure prior to bolus (hold if systolic BP &lt; 90 mmHg). Place urine bottle/commode nearby."
+      },
+
+      // TOPIC 7: Renal Function & Electrolyte Care
+      {
+        id: 14,
+        topicKey: "RENAL",
+        topicName: "Renal & Electrolytes",
+        category: "Acute Kidney Injury (AKI)",
+        title: "Recognizing & Escalating Oliguria in Ward/HITH",
+        scenario: "An elderly ward patient post-hip surgery has produced only 90 mL of urine over the last 4 hours (patient weight 70 kg). What is the fluid balance evaluation and priority step?",
+        isbar: {
+          i: "I am Ward RN calling the Surgical HMO.",
+          s: "Patient has developed acute oliguria (&lt;0.5 mL/kg/hr for 4 hours).",
+          b: "Day 2 post-op right hemiarthroplasty; 70kg weight.",
+          a: "Cumulative urine output over 4 hours is 90 mL (expected &gt;140 mL). Bladder scan shows 85 mL residual. BP 108/65, HR 92.",
+          r: "I request an order for a 500 mL 0.9% Normal Saline fluid challenge over 2 hours and urgent repeat EUC."
+        },
+        rationale: "<strong>RN Interventions:</strong><br>• <strong>Oliguria Threshold:</strong> Urine output &lt; 0.5 mL/kg/hour defines oliguria.<br>• <strong>Bladder Scan First:</strong> Rule out post-renal urinary retention or catheter blockage before assuming renal/prerenal failure.<br>• <strong>Prerenal Resuscitation:</strong> Most ward/HITH AKIs are prerenal (dehydration/hypovolemia); fluid bolus is first-line if non-oliguric CCF is absent."
+      },
+      {
+        id: 15,
+        topicKey: "RENAL",
+        topicName: "Renal & Electrolytes",
+        category: "Hyperkalemia Management",
+        title: "Emergency Management of Severe Hyperkalemia",
+        scenario: "A patient with Chronic Kidney Disease Stage 4 has a routine morning laboratory Serum Potassium result of 6.7 mmol/L. ECG shows tall peaked T-waves. What are the urgent nursing actions?",
+        isbar: {
+          i: "I am RN calling Medical Emergency Team (MET Call).",
+          s: "Patient has critical hyperkalemia (K+ 6.7 mmol/L) with active ECG changes (peaked T-waves).",
+          b: "CKD Stage 4 patient presenting with acute lethargy.",
+          a: "ECG confirms symmetrical peaked T-waves, HR 54 bpm, BP 105/62 mmHg.",
+          r: "I request immediate MET attendance for IV Calcium Gluconate (cardiac membrane stabilization), IV Actrapid Insulin + Hypertonic Glucose, and Resonium."
+        },
+        rationale: "<strong>RN Interventions:</strong><br>• <strong>ECG Warning Signs:</strong> Peaked T-waves, widened QRS, flattened P-waves indicate impending cardiac arrest.<br>• <strong>Triple Medical Treatment:</strong> 1. <em>Calcium Gluconate 10%</em> (protects heart muscle), 2. <em>Insulin 10U + 50mL 50% Glucose</em> (shifts K+ into cells), 3. <em>Resonium/Lokelma or Salbutamol nebulisers</em>.<br>• Re-check K+ every 1-2 hours."
+      },
+
+      // TOPIC 8: Medication Safety & APINCH Safeguards
+      {
+        id: 16,
+        topicKey: "SAFETY",
+        topicName: "Medication Safety",
+        category: "APINCH Safeguards",
+        title: "High-Risk Anticoagulation Checks (Warfarin/Heparin)",
+        scenario: "A HITH patient receiving subcutaneous Clexane (Enoxaparin) 120mg twice daily for PE treatment reports extensive new bruising across the abdomen and dark tarry stools (melaena). What is your management?",
+        isbar: {
+          i: "I am HITH RN calling the HITH Consultant.",
+          s: "Patient presents with active gastrointestinal bleeding while on therapeutic Enoxaparin.",
+          b: "Receiving therapeutic Clexane 120mg BD for sub-acute pulmonary embolism.",
+          a: "Patient reports melaena stool x2 today, dark bruising, BP 102/64 (baseline 128/80), HR 108 bpm. Hb on point-of-care is 88 g/L (down from 115).",
+          r: "I am withholding the evening Clexane dose, arranging immediate ED admission, blood group and crossmatch, and evaluation for Protamine Reversal."
+        },
+        rationale: "<strong>RN Interventions:</strong><br>• <strong>Withhold & Assess:</strong> Stop further anticoagulant doses immediately when active major bleeding occurs.<br>• <strong>Reversal Agent:</strong> Protamine Sulfate is the antidote for Low Molecular Weight Heparin (Enoxaparin).<br>• <strong>Pathology:</strong> Check FBC (Hemoglobin drop), Coagulation profile, anti-Xa levels."
+      },
+      {
+        id: 17,
+        topicKey: "SAFETY",
+        topicName: "Medication Safety",
+        category: "APINCH Safeguards",
+        title: "Opioid Toxicity & Naloxone Administration",
+        scenario: "A post-operative patient on a fentanyl PCA on the ward has a respiratory rate of 7 breaths per minute, pinpoint pupils, and is unarousable to physical touch (Pasero Sedation Scale 4). What is the step-by-step priority?",
+        isbar: {
+          i: "I am Ward RN calling MET Call / Code Blue.",
+          s: "Patient is experiencing severe opioid-induced respiratory depression.",
+          b: "Receiving Fentanyl PCA post-laparotomy.",
+          a: "RR 7 bpm, SpO2 84% on RA, GCS 7 (unarousable), pupils pinpoint.",
+          r: "I have stopped the PCA, applied bag-valve-mask oxygenation, and am preparing IV Naloxone 100-200 mcg titrated to restore ventilation."
+        },
+        rationale: "<strong>RN Interventions:</strong><br>• <strong>Immediate Response:</strong> Cease opioid administration immediately. Call MET.<br>• <strong>Airway & Ventilation:</strong> Support airway with jaw thrust and bag-valve-mask with 100% O2.<br>• <strong>Naloxone Titration:</strong> Administer small titrated doses of Naloxone (100-200 mcg IV every 2 mins) to restore adequate breathing without triggering acute withdrawal pain storm."
+      },
+
+      // TOPIC 9: Additional HITH / Sub-Acute Cards
+      {
+        id: 18,
+        topicKey: "HITH",
+        topicName: "HITH & Line Care",
+        category: "Community Wound Management",
+        title: "Negative Pressure Wound Therapy (VAC) Alarms",
+        scenario: "While visiting a home care patient with a surgical abdominal wound on a portable NPWT (VAC) pump, the pump continuously alarms 'Air Leak'. Wound exudate is drying in the tubing. How do you troubleshoot?",
+        isbar: {
+          i: "I am HITH RN documenting wound care troubleshooting.",
+          s: "NPWT canister vacuum leak detected in home environment.",
+          b: "Vacuum set at -125 mmHg continuous pressure.",
+          a: "Acoustic hiss heard around lower border of transparent drape; foam collapsed partially.",
+          r: "Apply Hydrocolloid/Drape patch strip over leak site to restore airtight seal."
+        },
+        rationale: "<strong>RN Interventions:</strong><br>• <strong>Locate Leak:</strong> Gently press around drape edges while listening for vacuum air hiss.<br>• <strong>Patching:</strong> Patch leaks using extra transparent film dressing or Stomahesive paste rather than replacing whole dressing.<br>• <strong>Dwell Time Limit:</strong> Never leave NPWT off for &gt;2 hours, as granulation tissue will grow into static foam, causing pain and bleeding upon removal."
+      },
+      {
+        id: 19,
+        topicKey: "HEART",
+        topicName: "Heart Failure",
+        category: "Telehealth Monitoring",
+        title: "Virtual Care Monitoring Triggers in Sub-Acute Care",
+        scenario: "You review morning biometric uploads from a home tele-monitoring heart failure patient: HR 48 bpm (sinus bradycardia), BP 88/52 mmHg, feeling dizzy upon standing. Current meds include Metoprolol 100mg BD and Ramipril 10mg daily. What is your action?",
+        isbar: {
+          i: "I am HITH Virtual Care RN calling the Patient at home.",
+          s: "Symptomatic bradycardia and hypotension detected on daily tele-monitoring.",
+          b: "Patient taking high-dose Metoprolol 100mg BD for heart failure.",
+          a: "HR 48, BP 88/52, reports lightheadedness on standing.",
+          r: "Instruct patient to remain seated, hold morning dose of Metoprolol/Ramipril, and schedule urgent HITH MO phone consultation."
+        },
+        rationale: "<strong>RN Interventions:</strong><br>• <strong>Virtual Nursing Scope:</strong> Review uploaded biometrics early in shift. Contact patient to perform subjective symptom assessment.<br>• <strong>Medication Hold:</strong> Advise patient to withhold antihypertensives/beta-blockers when SBP &lt; 90 or HR &lt; 50 bpm until MO review.<br>• <strong>Fall Prevention:</strong> Instruct on sit-to-stand slow transitions to prevent postural syncope."
+      },
+      {
+        id: 20,
+        topicKey: "RENAL",
+        topicName: "Renal & Electrolytes",
+        category: "Outpatient IV Magnesium Infusions",
+        title: "IV Magnesium Sulfate Safety Checks",
+        scenario: "A HITH patient with short bowel syndrome requires 20 mmol IV Magnesium Sulfate infusion over 4 hours at home. What baseline reflexes and safety checks must be performed?",
+        isbar: {
+          i: "I am HITH RN completing pre-infusion safety check.",
+          s: "Commencing IV Magnesium replacement therapy at home.",
+          b: "Patient has chronic malabsorption and serum Mg2+ of 0.45 mmol/L.",
+          a: "Patellar reflexes normal, RR 16, BP 115/72, baseline serum Mg2+ checked.",
+          r: "Proceed with IV infusion via volumetric pump over prescribed 4 hours; recheck patellar reflexes mid-infusion."
+        },
+        rationale: "<strong>RN Interventions:</strong><br>• <strong>Reflex Checks:</strong> Loss of deep tendon reflexes (patellar reflex) is the earliest sign of Magnesium toxicity (&gt;2.5 mmol/L).<br>• <strong>Infusion Speed:</strong> Always run IV Magnesium via volumetric infusion pump over 2-4 hours to prevent sudden vasodilation, hypotension, or cardiac conduction delays.<br>• <strong>Antidote:</strong> IV Calcium Gluconate must be accessible in case of severe toxicity/respiratory depression."
+      },
+      {
+        id: 21,
+        topicKey: "SAFETY",
+        topicName: "Medication Safety",
+        category: "Gentamicin Dosing & Trough Levels",
+        title: "Therapeutic Drug Monitoring for HITH IV Antibiotics",
+        scenario: "A HITH patient is receiving daily IV Gentamicin 350mg for pyelonephritis. The pre-dose trough level comes back from the laboratory as 1.8 mg/L (target trough &lt; 1.0 mg/L). What is the nursing step?",
+        isbar: {
+          i: "I am HITH RN calling the Infectious Diseases / Medical Registrar.",
+          s: "Patient Gentamicin trough level is elevated at 1.8 mg/L (toxic range).",
+          b: "Receiving daily IV Gentamicin; eGFR is 52 mL/min.",
+          a: "Pre-dose trough is 1.8 mg/L (normal &lt;1.0 mg/L). High risk of nephrotoxicity and ototoxicity.",
+          r: "I am withholding today's dose, requesting an urgent renal panel (EUC), and seeking an adjusted dosing interval (e.g., extend from 24h to 36h)."
+        },
+        rationale: "<strong>RN Interventions:</strong><br>• <strong>Trough Level Rule:</strong> Always obtain trough blood samples within 30 minutes prior to the next scheduled dose.<br>• <strong>Toxicity Risk:</strong> High trough levels indicate delayed clearance and lead to permanent vestibular/auditory nerve damage and acute tubular necrosis.<br>• <strong>Action:</strong> Withhold dose if trough &gt; 1.0 mg/L until MO recalculates dosage interval."
+      },
+      {
+        id: 22,
+        topicKey: "DIABETES",
+        topicName: "Diabetes Care",
+        category: "Enteral Feeding & Glycemia",
+        title: "Hyperglycemia Management during Continuous PEG Feeding",
+        scenario: "A sub-acute stroke rehabilitation patient receiving continuous enteral tube feeding via PEG has persistent BGL readings between 16.0 and 19.5 mmol/L. How is glycaemic control maintained without causing nocturnal hypoglycemia?",
+        isbar: {
+          i: "I am Sub-Acute Ward RN calling Endocrinologist / Dietitian.",
+          s: "Patient has persistent hyperglycemia on continuous PEG enteral nutrition.",
+          b: "Receiving continuous feeds at 70 mL/hr over 20 hours.",
+          a: "BGL range 16.0 - 19.5 mmol/L over 24 hours. No ketones.",
+          r: "I request initiation of intermediate-acting NPH insulin co-timed with feed hours or long-acting basal Glargine, rather than relying solely on reactive boluses."
+        },
+        rationale: "<strong>RN Interventions:</strong><br>• <strong>Enteral Dynamics:</strong> Tube feeds deliver continuous glucose; relying only on reactive short-acting insulin causes roller-coaster glycemic spikes.<br>• <strong>Feed Interruptions:</strong> If tube feed is held unexpectedly (e.g., dislodged tube or high gastric residuals), immediately start 10% Dextrose IV to prevent precipitous hypoglycemia if long-acting insulin is active."
+      },
+      {
+        id: 23,
+        topicKey: "SEPSIS",
+        topicName: "Sepsis Management",
+        category: "Cellulitis vs Sepsis Escalation",
+        title: "HITH Cellulitis Spreading Marking & Escalation",
+        scenario: "A HITH patient receiving outpatient IV Ancef (Cefazolin) for lower limb cellulitis shows a red pen line drawn around the infection 24 hours ago. Today, erythema has spread 4cm beyond the line, and the calf is indurated and painful. What is your plan?",
+        isbar: {
+          i: "I am HITH RN reporting to HITH Medical Team.",
+          s: "Patient's cellulitis is spreading despite 24 hours of IV Cefazolin.",
+          b: "Commenced on HITH IV Cefazolin 2g BD yesterday.",
+          a: "Erythema advanced 4cm past red border, severe calf tenderness, Temp 37.9°C, HR 92 bpm.",
+          r: "I recommend reviewing antibiotic coverage for resistant pathogens (e.g., adding oral Clindamycin/Doxycycline or swapping to IV Vancomycin/Flucloxacillin) and ordering leg ultrasound to rule out DVT/abscess."
+        },
+        rationale: "<strong>RN Interventions:</strong><br>• <strong>Wound Marking:</strong> Always outline cellulitis borders with a surgical marker upon admission to track progression.<br>• <strong>Initial Lag:</strong> Mild spreading can occur in first 24 hours due to bacterial die-off toxin release, but systemic signs (fever, severe pain) warrant escalation.<br>• <strong>Differential Diagnosis:</strong> Consider Deep Vein Thrombosis (DVT) or necrotizing fasciitis if pain is out of proportion to skin appearance."
+      },
+      {
+        id: 24,
+        topicKey: "STEREO",
+        topicName: "High-Dose Steroids",
+        category: "Infection Prevention in Immunosuppression",
+        title: "Pneumocystis Jirovecii (PJP) Prophylaxis in Steroid Therapy",
+        scenario: "A patient on high-dose dexamethasone therapy for brain metastases is prescribed co-trimoxazole (Bactrim) DS 3 times weekly. The student nurse asks why an antibiotic is given for steroid treatment. How do you explain?",
+        isbar: {
+          i: "I am Preceptor RN explaining medication rationale to nursing student.",
+          s: "Rationale for Bactrim prophylaxis during high-dose long-term steroid therapy.",
+          b: "Patient receiving Dexamethasone &gt;20mg daily for &gt;4 weeks.",
+          a: "High-dose glucocorticoids profoundly suppress T-cell cell-mediated immunity.",
+          r: "Bactrim DS is prescribed as mandatory prophylaxis to prevent opportunistic Pneumocystis jirovecii pneumonia (PJP)."
+        },
+        rationale: "<strong>RN Interventions:</strong><br>• <strong>Immunosuppression Scope:</strong> High-dose steroids (&gt;20mg Prednisone equivalent daily for &gt;4 weeks) significantly impair immunity.<br>• <strong>Opportunistic Infections:</strong> PJP is a life-threatening fungal pneumonia in immunocompromised patients.<br>• <strong>Bactrim Patient Education:</strong> Instruct patient to report any unexplained fever, dry cough, or skin rashes (risk of Stevens-Johnson Syndrome)."
+      },
+      {
+        id: 25,
+        topicKey: "STEREO",
+        topicName: "High-Dose Steroids",
+        category: "Electrolyte Depletion Dynamics",
+        title: "Hypokalemia & Hypomagnesemia under Pulse Steroids",
+        scenario: "Day 3 of Methylprednisolone 1g IV pulse therapy. Laboratory results show Serum K+ 3.1 mmol/L and Serum Mg2+ 0.58 mmol/L. Patient complains of muscle cramps and heart palpitations. What is the nursing priority?",
+        isbar: {
+          i: "I am Ward/HITH RN calling Medical Registrar.",
+          s: "Patient has symptomatic hypokalemia (3.1) and hypomagnesemia (0.58) following steroid pulse.",
+          b: "Day 3 IV Methylprednisolone 1000mg.",
+          a: "Palpitations, calf cramps, ECG shows flattened T-waves and U-waves, HR 98, BP 138/82.",
+          r: "I request urgent IV Magnesium Sulfate 10 mmol infusion over 1 hr followed by IV Potassium Chloride replacement, and holding further steroid doses until cardiac stability."
+        },
+        rationale: "<strong>RN Interventions:</strong><br>• <strong>Mineralocorticoid Effects:</strong> High-dose glucocorticoids bind to mineralocorticoid receptors in kidney tubules, causing rapid renal excretion of K+ and Mg2+.<br>• <strong>Magnesium Interdependence:</strong> Hypokalemia cannot be corrected without first correcting hypomagnesemic state (Mg2+ is required for Na+/K+ ATPase pump operation).<br>• <strong>ECG Monitoring:</strong> U-waves and ST depression are key indicators of hypokalemic cardiac strain."
+      }
+    ];
+
+    /* SCENARIO PRACTICE QUIZ DATABASE */
+    const scenariosData = [
+      {
+        id: 1,
+        title: "HITH PICC Line Dislodgement & Bleeding",
+        description: "You arrive at a home visit for a 52-year-old male receiving IV antibiotics for endocarditis via a left arm PICC line. The dressing is soaked in frank blood, and the PICC catheter external length measurement has increased from 4cm to 12cm outside the insertion site.",
+        options: [
+          { text: "Push the catheter back in 8cm to restore correct depth, apply pressure dressing, and resume infusion.", correct: false, feedback: "Incorrect! Never push a migrated or dislodged central/PICC catheter back into the vein due to extreme contamination and infection risks." },
+          { text: "Apply firm manual pressure with sterile gauze, secure the line in its current position, cease infusion, and arrange chest X-ray / vascular team review.", correct: true, feedback: "Correct! Never re-advance a dislodged line. Secure it as is, control bleeding, hold infusion, and verify tip location." },
+          { text: "Immediately pull out the entire PICC line and apply a Band-Aid.", correct: false, feedback: "Incorrect! Removing a PICC line requires medical order, coagulation status check, and sterile procedure with tip culture." }
+        ]
+      },
+      {
+        id: 2,
+        title: "Acute Steroid-Induced Hyperglycemia in Sub-Acute Ward",
+        scenario: "A non-diabetic patient receiving pulse IV Methylprednisolone for severe ulcerative colitis has a random BGL of 22.4 mmol/L and reports extreme thirst.",
+        options: [
+          { text: "Ignore the BGL because the patient has no documented history of Type 1 or Type 2 Diabetes.", correct: false, feedback: "Incorrect! High-dose steroids frequently trigger acute steroid-induced diabetes requiring immediate glycemic control." },
+          { text: "Check blood ketones, notify the medical officer for supplemental sliding scale insulin, and encourage oral hydration.", correct: true, feedback: "Correct! Check ketones to rule out acute crisis, administer supplemental insulin per protocol, and recheck BGL in 2 hours." },
+          { text: "Give 50 mL of 50% Dextrose IV to balance metabolic rate.", correct: false, feedback: "Incorrect! Giving 50% Dextrose will dangerously worsen severe hyperglycemia!" }
+        ]
+      }
+    ];
+
+    /* STATE VARIABLES */
+    let currentFilteredCards = [...cardData];
+    let currentIndex = 0;
+    let isFlipped = false;
+    let confidenceScores = {}; // Stores hard/medium/easy for card IDs
+
+    // Speech Synthesis
+    const synth = window.speechSynthesis;
+
+    /* INITIALIZATION */
+    window.onload = function() {
+      loadSavedConfidence();
+      renderCurrentCard();
+      renderScenarios();
+      updateStats();
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+    };
+
+    /* TAB SWITCHING */
+    function switchTab(tab) {
+      document.getElementById('view-cards').classList.add('hidden');
+      document.getElementById('view-scenarios').classList.add('hidden');
+      document.getElementById('view-ref').classList.add('hidden');
+
+      document.getElementById('nav-cards').className = "px-3 sm:px-4 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 text-slate-300 hover:text-white";
+      document.getElementById('nav-scenarios').className = "px-3 sm:px-4 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 text-slate-300 hover:text-white";
+      document.getElementById('nav-ref').className = "px-3 sm:px-4 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 text-slate-300 hover:text-white";
+
+      if (tab === 'cards') {
+        document.getElementById('view-cards').classList.remove('hidden');
+        document.getElementById('nav-cards').className = "px-3 sm:px-4 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 bg-amber-500 text-slate-950 shadow";
+      } else if (tab === 'scenarios') {
+        document.getElementById('view-scenarios').classList.remove('hidden');
+        document.getElementById('nav-scenarios').className = "px-3 sm:px-4 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 bg-amber-500 text-slate-950 shadow";
+      } else if (tab === 'ref') {
+        document.getElementById('view-ref').classList.remove('hidden');
+        document.getElementById('nav-ref').className = "px-3 sm:px-4 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 bg-amber-500 text-slate-950 shadow";
+      }
+    }
+
+    /* CARD FILTERING & NAVIGATION */
+    function filterTopic(topicKey) {
+      if (synth.speaking) synth.cancel();
+      if (topicKey === "ALL") {
+        currentFilteredCards = [...cardData];
+      } else {
+        currentFilteredCards = cardData.filter(c => c.topicKey === topicKey);
+      }
+      currentIndex = 0;
+      if (isFlipped) flipCard();
+      renderCurrentCard();
+    }
+
+    function flipCard() {
+      if (synth.speaking) synth.cancel();
+      const cardEl = document.getElementById('flashcard-inner');
+      isFlipped = !isFlipped;
+      if (isFlipped) {
+        cardEl.classList.add('rotate-y-180');
+      } else {
+        cardEl.classList.remove('rotate-y-180');
+      }
+    }
+
+    function prevCard() {
+      if (synth.speaking) synth.cancel();
+      if (isFlipped) flipCard();
+      setTimeout(() => {
+        currentIndex = (currentIndex - 1 + currentFilteredCards.length) % currentFilteredCards.length;
+        renderCurrentCard();
+      }, isFlipped ? 200 : 0);
+    }
+
+    function nextCard() {
+      if (synth.speaking) synth.cancel();
+      if (isFlipped) flipCard();
+      setTimeout(() => {
+        currentIndex = (currentIndex + 1) % currentFilteredCards.length;
+        renderCurrentCard();
+      }, isFlipped ? 200 : 0);
+    }
+
+    /* CARD RENDERING */
+    function renderCurrentCard() {
+      if (currentFilteredCards.length === 0) return;
+      const card = currentFilteredCards[currentIndex];
+
+      // Counter text
+      document.getElementById('card-counter').innerText = `Card ${currentIndex + 1} of ${currentFilteredCards.length}`;
+
+      // Front
+      document.getElementById('card-front-category').innerText = card.category;
+      document.getElementById('card-front-title').innerText = card.title;
+      document.getElementById('card-front-scenario').innerText = card.scenario;
+
+      // Confidence badge on front
+      const score = confidenceScores[card.id] || "unrated";
+      const badge = document.getElementById('card-confidence-badge');
+      badge.innerText = score.toUpperCase();
+      if (score === "easy") badge.className = "font-bold text-emerald-600 uppercase";
+      else if (score === "medium") badge.className = "font-bold text-amber-600 uppercase";
+      else if (score === "hard") badge.className = "font-bold text-rose-600 uppercase";
+      else badge.className = "font-bold text-slate-400 uppercase";
+
+      // Back
+      document.getElementById('card-back-topic').innerText = card.topicName;
+      
+      // ISBAR Script Formatting
+      const scriptBox = document.getElementById('card-isbar-script');
+      scriptBox.innerHTML = `
+        <p><strong class="text-amber-400">I (Identify):</strong> "${card.isbar.i}"</p>
+        <p><strong class="text-amber-400">S (Situation):</strong> "${card.isbar.s}"</p>
+        <p><strong class="text-amber-400">B (Background):</strong> "${card.isbar.b}"</p>
+        <p><strong class="text-amber-400">A (Assessment):</strong> "${card.isbar.a}"</p>
+        <p><strong class="text-amber-400">R (Recommendation):</strong> "${card.isbar.r}"</p>
+      `;
+
+      document.getElementById('card-rationale-text').innerHTML = card.rationale;
+
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+    }
+
+    /* CONFIDENCE TRACKING & LOCAL STORAGE */
+    function rateCard(rating) {
+      const card = currentFilteredCards[currentIndex];
+      confidenceScores[card.id] = rating;
+      try {
+        localStorage.setItem('ausrn_confidence', JSON.stringify(confidenceScores));
+      } catch (e) {}
+      updateStats();
+      nextCard();
+    }
+
+    function loadSavedConfidence() {
+      try {
+        const saved = localStorage.getItem('ausrn_confidence');
+        if (saved) {
+          confidenceScores = JSON.parse(saved);
+        }
+      } catch (e) {}
+    }
+
+    function updateStats() {
+      let easyCount = 0, medCount = 0, hardCount = 0;
+      Object.values(confidenceScores).forEach(val => {
+        if (val === 'easy') easyCount++;
+        if (val === 'medium') medCount++;
+        if (val === 'hard') hardCount++;
+      });
+      document.getElementById('stat-easy').innerText = easyCount;
+      document.getElementById('stat-medium').innerText = medCount;
+      document.getElementById('stat-hard').innerText = hardCount;
+    }
+
+    function resetProgress() {
+      confidenceScores = {};
+      try {
+        localStorage.removeItem('ausrn_confidence');
+      } catch (e) {}
+      updateStats();
+      renderCurrentCard();
+    }
+
+    /* TEXT TO SPEECH (AUDIO READ ALOUD) */
+    function toggleAudio() {
+      if (!('speechSynthesis' in window)) {
+        alert("Text-to-speech is not supported by your browser.");
+        return;
+      }
+
+      if (synth.speaking) {
+        synth.cancel();
+        return;
+      }
+
+      const card = currentFilteredCards[currentIndex];
+      let textToRead = "";
+
+      if (!isFlipped) {
+        textToRead = `Question: ${card.title}. Scenario: ${card.scenario}`;
+      } else {
+        textToRead = `ISBAR Escalation. Identify: ${card.isbar.i}. Situation: ${card.isbar.s}. Background: ${card.isbar.b}. Assessment: ${card.isbar.a}. Recommendation: ${card.isbar.r}`;
+      }
+
+      const utterance = new SpeechSynthesisUtterance(textToRead);
+      utterance.rate = 0.95;
+      utterance.pitch = 1.0;
+      synth.speak(utterance);
+    }
+
+    /* RENDER SCENARIO PRACTICE */
+    function renderScenarios() {
+      const container = document.getElementById('scenario-container');
+      container.innerHTML = "";
+
+      scenariosData.forEach((s, sIndex) => {
+        const item = document.createElement('div');
+        item.className = "border border-slate-800 bg-slate-950 p-5 rounded-xl space-y-3";
+        
+        let optionsHTML = "";
+        s.options.forEach((opt, oIndex) => {
+          optionsHTML += `
+            <button onclick="checkScenario(${sIndex}, ${oIndex})" class="w-full text-left p-3 rounded-lg border border-slate-800 bg-slate-900 hover:border-amber-500/50 hover:bg-slate-800/80 transition text-xs sm:text-sm text-slate-300 font-medium flex items-start gap-2">
+              <span class="bg-slate-800 text-amber-400 text-xs px-2 py-0.5 rounded font-bold">${String.fromCharCode(65 + oIndex)}</span>
+              <span>${opt.text}</span>
+            </button>
+          `;
+        });
+
+        item.innerHTML = `
+          <h3 class="text-base font-bold text-amber-400 flex items-center gap-2">
+            <i data-lucide="help-circle" class="w-4 h-4"></i> Scenario ${sIndex + 1}: ${s.title}
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">${s.description || s.scenario}</p>
+          <div class="space-y-2 mt-3">${optionsHTML}</div>
+          <div id="scenario-feedback-${sIndex}" class="hidden mt-3 p-3 rounded-lg text-xs font-semibold"></div>
+        `;
+        container.appendChild(item);
+      });
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function checkScenario(sIndex, oIndex) {
+      const scenario = scenariosData[sIndex];
+      const opt = scenario.options[oIndex];
+      const feedbackEl = document.getElementById(`scenario-feedback-${sIndex}`);
+      
+      feedbackEl.classList.remove('hidden', 'bg-emerald-950', 'text-emerald-300', 'border-emerald-800', 'bg-rose-950', 'text-rose-300', 'border-rose-800');
+      
+      if (opt.correct) {
+        feedbackEl.className = "mt-3 p-3 rounded-lg text-xs font-semibold border bg-emerald-950 text-emerald-300 border-emerald-800";
+        feedbackEl.innerHTML = `<i data-lucide="check-circle" class="w-4 h-4 inline mr-1"></i> ${opt.feedback}`;
+      } else {
+        feedbackEl.className = "mt-3 p-3 rounded-lg text-xs font-semibold border bg-rose-950 text-rose-300 border-rose-800";
+        feedbackEl.innerHTML = `<i data-lucide="x-circle" class="w-4 h-4 inline mr-1"></i> ${opt.feedback}`;
+      }
+      if (window.lucide) lucide.createIcons();
+    }
+  </script>
+</body>
+</html>
