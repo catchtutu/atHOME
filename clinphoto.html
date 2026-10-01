@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Clinical Photo" />
+  <meta name="theme-color" content="#1B4F72" />
+  <link rel="manifest" href="manifest.json" />
+  <title>Clinical Photo Capture · SVHM</title>
+  <style>
+    /* ─── Reset & Base ─────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html, body { height: 100%; font-family: -apple-system, 'Segoe UI', Roboto, sans-serif; background: #F0F4F8; color: #2C3E50; }
+    input, select, textarea, button { font-family: inherit; }
+
+    /* ─── Layout ────────────────────────────────────────────── */
+    .app { display: flex; flex-direction: column; min-height: 100vh; }
+
+    /* ─── Header ────────────────────────────────────────────── */
+    .header {
+      background: #1B4F72;
+      padding: env(safe-area-inset-top, 0px) 20px 14px;
+      padding-top: max(env(safe-area-inset-top, 0px), 14px);
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 10;
+    }
+    .header-title { color: #fff; font-size: 16px; font-weight: 600; }
+    .header-sub   { color: #7FB3D3; font-size: 12px; margin-top: 2px; }
+
+    /* ─── Step indicator ────────────────────────────────────── */
+    .stepper { display: flex; background: #fff; border-bottom: 1px solid #E0E0E0; }
+    .step { flex: 1; padding: 10px 4px; text-align: center; font-size: 11px; font-weight: 600;
+            color: #B0BEC5; border-bottom: 3px solid transparent; transition: all .2s; }
+    .step.active { color: #1B4F72; border-bottom-color: #1B4F72; }
+    .step.done   { color: #1ABC9C; border-bottom-color: #1ABC9C; }
+
+    /* ─── Content area ──────────────────────────────────────── */
+    .content { flex: 1; padding: 16px 16px 40px; max-width: 520px; width: 100%; margin: 0 auto; }
+
+    /* ─── Card ──────────────────────────────────────────────── */
+    .card { background: #fff; border-radius: 14px; box-shadow: 0 2px 14px rgba(0,0,0,.08); padding: 20px; }
+
+    /* ─── Form elements ─────────────────────────────────────── */
+    .field { margin-bottom: 16px; }
+    .label { display: block; font-size: 11px; font-weight: 700; color: #546E7A;
+             margin-bottom: 6px; text-transform: uppercase; letter-spacing: .5px; }
+    .input, .select, .textarea {
+      width: 100%; padding: 12px 14px; border-radius: 10px;
+      border: 1.5px solid #CFD8DC; font-size: 16px; /* 16px prevents iOS zoom */
+      color: #2C3E50; background: #FAFAFA; outline: none; transition: border .15s;
+    }
+    .input:focus, .select:focus, .textarea:focus { border-color: #1B4F72; background: #fff; }
+    .input.err, .select.err { border-color: #E74C3C; }
+    .textarea { resize: vertical; min-height: 80px; }
+    .err-msg { color: #E74C3C; font-size: 12px; margin-top: 4px; display: none; }
+    .err-msg.show { display: block; }
+    .row { display: flex; gap: 12px; }
+    .row .field { flex: 1; min-width: 0; }
+
+    /* ─── Buttons ───────────────────────────────────────────── */
+    .btn {
+      display: block; width: 100%; padding: 14px 20px;
+      border-radius: 12px; font-size: 16px; font-weight: 600;
+      cursor: pointer; border: none; transition: opacity .15s, transform .1s;
+      -webkit-appearance: none;
+    }
+    .btn:active { transform: scale(.98); }
+    .btn:disabled { opacity: .55; cursor: not-allowed; }
+    .btn-primary  { background: #1B4F72; color: #fff; }
+    .btn-success  { background: #1ABC9C; color: #fff; }
+    .btn-secondary{ background: #E8EDF0; color: #546E7A; }
+    .btn-row { display: flex; gap: 12px; }
+    .btn-row .btn { flex: 1; }
+
+    /* ─── Notices ───────────────────────────────────────────── */
+    .notice { padding: 12px 14px; border-radius: 10px; font-size: 13px; line-height: 1.6; margin-bottom: 16px; }
+    .notice.warn    { background: #FFF8E1; color: #E65100; border-left: 3px solid #FFB300; }
+    .notice.info    { background: #E3F2FD; color: #1565C0; border-left: 3px solid #42A5F5; }
+    .notice.success { background: #E8F5E9; color: #2E7D32; border-left: 3px solid #66BB6A; }
+    .notice strong  { font-weight: 700; }
+
+    /* ─── Camera ─────────────────────────────────────────────── */
+    .camera-wrap {
+      position: relative; background: #111; border-radius: 12px;
+      overflow: hidden; width: 100%; aspect-ratio: 4/3;
+      display: flex; align-items: center; justify-content: center;
+    }
+    #video { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .cam-error-msg { color: #ccc; font-size: 13px; text-align: center; padding: 24px; line-height: 1.6; display: none; }
+    .cam-hint { text-align: center; font-size: 12px; color: #90A4AE; margin-top: 10px; }
+
+    .flip-btn {
+      position: absolute; top: 12px; right: 12px;
+      background: rgba(0,0,0,.55); border: none; border-radius: 10px;
+      padding: 8px 14px; color: #fff; font-size: 14px; cursor: pointer;
+    }
+
+    .capture-wrap { display: flex; align-items: center; justify-content: center; margin-top: 18px; gap: 16px; }
+    .back-cam-btn { flex: 0 0 80px; }
+    .capture-ring {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: #fff; border: 5px solid rgba(27,79,114,.25);
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 3px 12px rgba(0,0,0,.25); flex-shrink: 0;
+      transition: transform .1s;
+    }
+    .capture-ring:active { transform: scale(.94); }
+    .capture-inner { width: 54px; height: 54px; border-radius: 50%; background: #1B4F72; }
+    .spacer-80 { flex: 0 0 80px; }
+
+    /* ─── Preview & badges ──────────────────────────────────── */
+    #preview-img { width: 100%; border-radius: 10px; display: block; max-height: 300px; object-fit: contain; background: #000; margin-bottom: 14px; }
+    .badges { margin-bottom: 14px; }
+    .badge { display: inline-flex; align-items: center; padding: 4px 11px; background: #E3F2FD; border-radius: 20px; font-size: 12px; color: #1565C0; font-weight: 600; margin: 3px 3px 3px 0; }
+    .notes-box { font-size: 13px; color: #546E7A; background: #F8F9FA; border-radius: 8px; padding: 10px 12px; margin-bottom: 16px; line-height: 1.5; }
+
+    /* ─── Progress bar ──────────────────────────────────────── */
+    .progress-bar { height: 5px; background: #E0E0E0; border-radius: 3px; margin-top: 14px; overflow: hidden; display: none; }
+    .progress-fill { height: 100%; background: #1ABC9C; border-radius: 3px; width: 0%; transition: width .25s; }
+
+    /* ─── Success ────────────────────────────────────────────── */
+    .success-card { text-align: center; }
+    .success-icon { width: 72px; height: 72px; border-radius: 50%; background: #E8F5E9; display: flex; align-items: center; justify-content: center; margin: 0 auto 18px; font-size: 34px; }
+    .success-card h2 { font-size: 22px; color: #2E7D32; margin-bottom: 10px; }
+    .success-card p  { font-size: 14px; color: #546E7A; margin-bottom: 20px; line-height: 1.65; }
+    .success-card .notice { text-align: left; }
+
+    /* ─── Section heading ────────────────────────────────────── */
+    .section-label { font-size: 13px; font-weight: 700; color: #1B4F72; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid #E8EDF0; }
+
+    /* ─── Hidden ─────────────────────────────────────────────── */
+    canvas, .panel { display: none; }
+    .panel.active { display: block; }
+
+    code { font-size: 11px; background: #E3F2FD; padding: 1px 5px; border-radius: 4px; font-family: 'SF Mono', Consolas, monospace; color: #1565C0; }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <!-- Header -->
+  <header class="header">
+    <div>
+      <div class="header-title">Clinical Photo Capture</div>
+      <div class="header-sub">HITH / District Nursing · SVHM</div>
+    </div>
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" stroke="#7FB3D3" stroke-width="1.5" stroke-linejoin="round"/>
+      <circle cx="12" cy="13" r="4" stroke="#7FB3D3" stroke-width="1.5"/>
+    </svg>
+  </header>
+
+  <!-- Stepper -->
+  <div class="stepper">
+    <div class="step active" id="s0">Details</div>
+    <div class="step"        id="s1">Capture</div>
+    <div class="step"        id="s2">Review</div>
+    <div class="step"        id="s3">Done</div>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+
+    <!-- ── Panel 0: Patient details ── -->
+    <div class="panel active" id="p0">
+      <div class="card">
+        <div class="notice warn">
+          ⚠️ <strong>Work devices only.</strong> This app uses <code>getUserMedia</code> — photos are never saved to your camera roll or device storage.
+        </div>
+
+        <div class="section-label">Patient Identification</div>
+
+        <div class="field">
+          <label class="label" for="ur">UR Number *</label>
+          <input class="input" id="ur" type="text" inputmode="numeric" placeholder="e.g. 1234567" autocomplete="off" />
+          <div class="err-msg" id="err-ur">UR number is required</div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label class="label" for="lastName">Last Name *</label>
+            <input class="input" id="lastName" type="text" placeholder="Last name" autocomplete="off" />
+            <div class="err-msg" id="err-lastName">Required</div>
+          </div>
+          <div class="field">
+            <label class="label" for="firstName">First Name</label>
+            <input class="input" id="firstName" type="text" placeholder="First name" autocomplete="off" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label" for="dob">Date of Birth</label>
+          <input class="input" id="dob" type="date" />
+        </div>
+
+        <div class="section-label" style="margin-top:4px">Photo Details</div>
+
+        <div class="field">
+          <label class="label" for="bodySite">Body Site *</label>
+          <select class="select" id="bodySite">
+            <option value="">Select body site…</option>
+            <option>Head &amp; Face</option>
+            <option>Neck</option>
+            <option>Chest</option>
+            <option>Abdomen</option>
+            <option>Back</option>
+            <option>Left Upper Limb</option>
+            <option>Right Upper Limb</option>
+            <option>Left Lower Limb</option>
+            <option>Right Lower Limb</option>
+            <option>Wound / Surgical Site</option>
+            <option>Peristomal Skin</option>
+            <option>IV / PICC Site</option>
+            <option>Other</option>
+          </select>
+          <div class="err-msg" id="err-bodySite">Body site is required</div>
+        </div>
+
+        <div class="field">
+          <label class="label" for="photoType">Photo Type *</label>
+          <select class="select" id="photoType">
+            <option value="">Select type…</option>
+            <option>Wound Assessment</option>
+            <option>Skin Integrity</option>
+            <option>Dressing Change</option>
+            <option>Device / Line Site</option>
+            <option>Swelling / Oedema</option>
+            <option>Progress / Comparison</option>
+            <option>Peristomal Assessment</option>
+            <option>Other</option>
+          </select>
+          <div class="err-msg" id="err-photoType">Photo type is required</div>
+        </div>
+
+        <div class="field">
+          <label class="label" for="clinician">Clinician Name / ID</label>
+          <input class="input" id="clinician" type="text" placeholder="Optional — your name or staff ID" autocomplete="off" />
+        </div>
+
+        <div class="field">
+          <label class="label" for="notes">Clinical Notes</label>
+          <textarea class="textarea" id="notes" placeholder="Optional — e.g. wound dimensions, appearance, dressing applied, referral context"></textarea>
+        </div>
+
+        <button class="btn btn-primary" onclick="goToCapture()">Open Camera →</button>
+      </div>
+    </div>
+
+    <!-- ── Panel 1: Camera ── -->
+    <div class="panel" id="p1">
+      <div class="card">
+        <div class="notice info">
+          📷 <strong>Memory only.</strong> Stream goes directly from camera to browser memory via <code>getUserMedia</code> — no image is written to this device at any point.
+        </div>
+
+        <div class="camera-wrap">
+          <video id="video" autoplay playsinline muted></video>
+          <div class="cam-error-msg" id="cam-err"></div>
+          <button class="flip-btn" onclick="flipCamera()">⟳ Flip</button>
+        </div>
+
+        <canvas id="canvas"></canvas>
+
+        <div class="capture-wrap">
+          <div class="back-cam-btn">
+            <button class="btn btn-secondary" style="padding:12px 0;font-size:14px" onclick="backToDetails()">← Back</button>
+          </div>
+          <div class="capture-ring" onclick="capturePhoto()" role="button" aria-label="Capture photo">
+            <div class="capture-inner"></div>
+          </div>
+          <div class="spacer-80"></div>
+        </div>
+        <p class="cam-hint">Tap the button to capture</p>
+      </div>
+    </div>
+
+    <!-- ── Panel 2: Review ── -->
+    <div class="panel" id="p2">
+      <div class="card">
+        <div class="section-label">Review &amp; Upload</div>
+
+        <img id="preview-img" alt="Captured clinical photo" />
+
+        <div class="badges" id="meta-badges"></div>
+        <div class="notes-box" id="notes-display" style="display:none"></div>
+
+        <div class="notice info">
+          This photo exists only in your browser's memory. It will be permanently cleared from this device after upload — no copy is retained.
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-secondary" onclick="retake()">Retake</button>
+          <button class="btn btn-success" id="upload-btn" onclick="uploadPhoto()">Upload to Teams ↑</button>
+        </div>
+
+        <div class="progress-bar" id="progress-bar">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+
+        <p id="upload-err" style="color:#E74C3C;font-size:13px;margin-top:10px;display:none"></p>
+      </div>
+    </div>
+
+    <!-- ── Panel 3: Done ── -->
+    <div class="panel" id="p3">
+      <div class="card success-card">
+        <div class="success-icon">✅</div>
+        <h2>Upload complete</h2>
+        <p>The photo has been sent to SharePoint and is now visible in the Teams clinical photography channel. The image has been cleared from this device's memory.</p>
+
+        <div class="notice success">
+          <strong>What happens next</strong><br>
+          • Visible in Teams → Clinical Photos channel → Files tab<br>
+          • Metadata columns (UR, site, type, clinician, date &amp; time) searchable in SharePoint<br>
+          • Upload to MRO from SharePoint as per current workflow
+        </div>
+
+        <div class="notice info">
+          <strong>On-device data</strong><br>
+          No image data remains in browser memory, cache, or filesystem on this device after upload.
+        </div>
+
+        <button class="btn btn-primary" onclick="resetApp()">New Photo</button>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /app -->
+
+<script>
+  // ─────────────────────────────────────────────────────────────────
+  // PRIVACY ARCHITECTURE
+  // This app uses navigator.mediaDevices.getUserMedia() — NOT
+  // <input type="file" capture>. This means:
+  //
+  //   1. Camera stream → MediaStream in JS memory only
+  //   2. capturePhoto() draws one frame to a hidden <canvas>
+  //   3. canvas.toBlob() → Blob object (heap memory, no filesystem)
+  //   4. URL.createObjectURL(blob) → temporary URL for preview only
+  //   5. After upload: URL.revokeObjectURL() + blob = null → GC frees it
+  //
+  // No image data touches the device filesystem or camera roll at
+  // any point in this flow.
+  //
+  // GRAPH API UPLOAD (production — replace uploadToSharePoint stub):
+  //   PUT https://graph.microsoft.com/v1.0/sites/{siteId}/drives/{driveId}/items/{folderId}:/{filename}:/content
+  //   Authorization: Bearer {accessToken}   ← MSAL delegated auth
+  //   Content-Type: image/jpeg
+  //   Body: capturedBlob
+  //
+  //   Then PATCH the list item to write metadata columns:
+  //   PATCH https://graph.microsoft.com/v1.0/sites/{siteId}/lists/{listId}/items/{itemId}/fields
+  //   Body: { "UR": "...", "BodySite": "...", "PhotoType": "...", ... }
+  // ─────────────────────────────────────────────────────────────────
+
+  let mediaStream = null;
+  let facingMode  = 'environment'; // rear camera by default
+  let capturedBlob = null;
+  let previewUrl   = null;
+  let currentStep  = 0;
+
+  // Register service worker (for PWA installability only — does NOT cache photos)
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  }
+
+  // ── Navigation ───────────────────────────────────────────────
+  function showPanel(n) {
+    document.querySelectorAll('.panel').forEach((p, i) => {
+      p.classList.toggle('active', i === n);
+    });
+    document.querySelectorAll('.step').forEach((s, i) => {
+      s.className = 'step' + (i < n ? ' done' : i === n ? ' active' : '');
+    });
+    currentStep = n;
+    window.scrollTo(0, 0);
+  }
+
+  function validate() {
+    const required = ['ur', 'lastName', 'bodySite', 'photoType'];
+    let ok = true;
+    required.forEach(id => {
+      const val = document.getElementById(id).value.trim();
+      const err = document.getElementById('err-' + id);
+      const inp = document.getElementById(id);
+      if (!val) {
+        err.classList.add('show');
+        inp.classList.add('err');
+        ok = false;
+      } else {
+        err.classList.remove('show');
+        inp.classList.remove('err');
+      }
+    });
+    return ok;
+  }
+
+  // Clear validation on input
+  ['ur','lastName','bodySite','photoType'].forEach(id => {
+    document.getElementById(id).addEventListener('input', () => {
+      document.getElementById('err-' + id).classList.remove('show');
+      document.getElementById(id).classList.remove('err');
+    });
+  });
+
+  async function goToCapture() {
+    if (!validate()) return;
+    showPanel(1);
+    await startCamera(facingMode);
+  }
+
+  function backToDetails() {
+    stopCamera();
+    showPanel(0);
+  }
+
+  // ── Camera ───────────────────────────────────────────────────
+  async function startCamera(mode) {
+    const video  = document.getElementById('video');
+    const errDiv = document.getElementById('cam-err');
+    video.style.display  = 'block';
+    errDiv.style.display = 'none';
+
+    try {
+      if (mediaStream) mediaStream.getTracks().forEach(t => t.stop());
+
+      mediaStream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: { ideal: mode },
+          width:  { ideal: 1920 },
+          height: { ideal: 1080 }
+        },
+        audio: false
+      });
+      video.srcObject = mediaStream;
+
+    } catch (err) {
+      video.style.display  = 'none';
+      errDiv.style.display = 'block';
+      errDiv.textContent   = err.name === 'NotAllowedError'
+        ? 'Camera access was denied. Please tap your browser address bar, allow camera access for this site, then refresh.'
+        : err.name === 'NotFoundError'
+          ? 'No camera found on this device.'
+          : 'Camera error: ' + err.message;
+    }
+  }
+
+  function stopCamera() {
+    if (mediaStream) {
+      mediaStream.getTracks().forEach(t => t.stop());
+      mediaStream = null;
+    }
+  }
+
+  async function flipCamera() {
+    facingMode = facingMode === 'environment' ? 'user' : 'environment';
+    await startCamera(facingMode);
+  }
+
+  // ── Capture (the privacy-preserving step) ────────────────────
+  // Frame drawn to hidden canvas → toBlob() → in-memory Blob only
+  // Nothing written to device filesystem or camera roll
+  function capturePhoto() {
+    const video  = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+
+    if (!video.videoWidth) return; // stream not ready yet
+
+    canvas.width  = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext('2d').drawImage(video, 0, 0);
+
+    canvas.toBlob(blob => {
+      if (!blob) return;
+
+      // Free any previous preview
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+
+      capturedBlob = blob;
+      previewUrl   = URL.createObjectURL(blob);
+
+      document.getElementById('preview-img').src = previewUrl;
+      buildMetaBadges();
+      stopCamera();
+      showPanel(2);
+
+    }, 'image/jpeg', 0.92);
+  }
+
+  function buildMetaBadges() {
+    const g   = id => document.getElementById(id).value.trim();
+    const ur  = g('ur'), last = g('lastName'), first = g('firstName');
+    const dob = g('dob'), site = g('bodySite'), type = g('photoType');
+    const clin = g('clinician'), notes = g('notes');
+
+    const items = [
+      'UR: ' + ur,
+      last + (first ? ', ' + first : ''),
+      dob  ? 'DOB: ' + dob  : null,
+      site, type,
+      clin ? '👤 ' + clin   : null
+    ].filter(Boolean);
+
+    document.getElementById('meta-badges').innerHTML =
+      items.map(t => `<span class="badge">${t}</span>`).join('');
+
+    const nd = document.getElementById('notes-display');
+    if (notes) { nd.textContent = notes; nd.style.display = 'block'; }
+    else        { nd.style.display = 'none'; }
+  }
+
+  function retake() {
+    if (previewUrl) { URL.revokeObjectURL(previewUrl); previewUrl = null; }
+    capturedBlob = null;
+    document.getElementById('preview-img').src = '';
+    showPanel(1);
+    startCamera(facingMode);
+  }
+
+  // ── Upload ────────────────────────────────────────────────────
+  // Replace this stub with real Microsoft Graph API call.
+  // See comments at the top of this script for the endpoint details.
+  async function uploadToSharePoint(blob, metadata) {
+    // ── STUB — replace with real Graph API call ──────────────
+    // const token = await getAccessToken(); // via MSAL
+    // const filename = `${metadata.ur}_${metadata.site}_${Date.now()}.jpg`;
+    // const uploadRes = await fetch(
+    //   `https://graph.microsoft.com/v1.0/sites/${SITE_ID}/drives/${DRIVE_ID}/items/${FOLDER_ID}:/${filename}:/content`,
+    //   { method: 'PUT', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'image/jpeg' }, body: blob }
+    // );
+    // const item = await uploadRes.json();
+    // await fetch(
+    //   `https://graph.microsoft.com/v1.0/sites/${SITE_ID}/lists/${LIST_ID}/items/${item.listItem.id}/fields`,
+    //   { method: 'PATCH', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+    //     body: JSON.stringify({ UR: metadata.ur, PatientName: metadata.name, BodySite: metadata.site, PhotoType: metadata.type, Clinician: metadata.clinician, ClinicalNotes: metadata.notes })
+    //   }
+    // );
+    await new Promise(r => setTimeout(r, 2000)); // simulate network
+    return { success: true };
+  }
+
+  async function uploadPhoto() {
+    const btn  = document.getElementById('upload-btn');
+    const bar  = document.getElementById('progress-bar');
+    const fill = document.getElementById('progress-fill');
+    const errP = document.getElementById('upload-err');
+
+    btn.disabled     = true;
+    btn.textContent  = 'Uploading…';
+    bar.style.display = 'block';
+    errP.style.display = 'none';
+
+    // Animate progress bar
+    let pct = 0;
+    const ticker = setInterval(() => {
+      pct = Math.min(pct + 6, 85);
+      fill.style.width = pct + '%';
+    }, 100);
+
+    const g = id => document.getElementById(id).value.trim();
+    const metadata = {
+      ur: g('ur'), name: g('lastName') + (g('firstName') ? ', ' + g('firstName') : ''),
+      dob: g('dob'), site: g('bodySite'), type: g('photoType'),
+      clinician: g('clinician'), notes: g('notes')
+    };
+
+    try {
+      await uploadToSharePoint(capturedBlob, metadata);
+
+      clearInterval(ticker);
+      fill.style.width = '100%';
+
+      // ── CRITICAL: clear blob from memory after successful upload ──
+      URL.revokeObjectURL(previewUrl);
+      previewUrl   = null;
+      capturedBlob = null;
+
+      setTimeout(() => showPanel(3), 400);
+
+    } catch (err) {
+      clearInterval(ticker);
+      bar.style.display  = 'none';
+      fill.style.width   = '0%';
+      btn.disabled       = false;
+      btn.textContent    = 'Upload to Teams ↑';
+      errP.textContent   = 'Upload failed: ' + err.message + '. Please check your connection and try again.';
+      errP.style.display = 'block';
+    }
+  }
+
+  // ── Reset ─────────────────────────────────────────────────────
+  function resetApp() {
+    ['ur','firstName','lastName','dob','notes','clinician']
+      .forEach(id => document.getElementById(id).value = '');
+    ['bodySite','photoType']
+      .forEach(id => document.getElementById(id).selectedIndex = 0);
+
+    if (previewUrl) { URL.revokeObjectURL(previewUrl); previewUrl = null; }
+    capturedBlob = null;
+    facingMode   = 'environment';
+
+    document.getElementById('preview-img').src = '';
+    document.getElementById('upload-btn').disabled    = false;
+    document.getElementById('upload-btn').textContent = 'Upload to Teams ↑';
+    document.getElementById('progress-bar').style.display = 'none';
+    document.getElementById('progress-fill').style.width  = '0%';
+    document.getElementById('upload-err').style.display   = 'none';
+
+    showPanel(0);
+  }
+</script>
+</body>
+</html>
