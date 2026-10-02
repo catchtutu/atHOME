@@ -1,5 +1,5 @@
 CLINICAL PHOTO CAPTURE — PWA TRIAL BUILD
-St Vincent's Hospital Melbourne · HITH / District Nursing
+HITH / District Nursing
 =========================================================
 
 WHAT THIS IS
