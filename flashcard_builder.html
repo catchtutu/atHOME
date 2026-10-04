@@ -1,0 +1,1588 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AusRN Clinical Mastery Hub | 3rd Year Grad Prep</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        navy: {
+                            50: '#f0f4f8',
+                            100: '#d9e2ec',
+                            700: '#1b3a57',
+                            800: '#102a43',
+                            900: '#0a2540',
+                        },
+                        clinical: {
+                            50: '#e6fffa',
+                            100: '#b2f5ea',
+                            400: '#00d4b2',
+                            500: '#00b89c',
+                            600: '#009a82',
+                            900: '#014d41',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
+        }
+
+        /* 3D Flip Card Animation Styles */
+        .perspective-1000 {
+            perspective: 1200px;
+        }
+        .transform-style-3d {
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .backface-hidden {
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+        }
+
+        /* Custom Scrollbar */
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 4px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .card-shadow {
+            box-shadow: 0 12px 35px -5px rgba(10, 37, 64, 0.12), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col bg-slate-50 text-slate-800 antialiased">
+
+    <!-- Navigation Header -->
+    <header class="bg-navy-900 text-white sticky top-0 z-50 shadow-md border-b border-navy-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                
+                <!-- Brand Badge -->
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('single-card')">
+                    <div class="bg-clinical-400 text-navy-900 p-2 rounded-xl font-black text-xl flex items-center justify-center w-10 h-10 shadow-lg">
+                        <i class="fa-solid fa-user-nurse"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="font-black text-lg tracking-tight text-white">AusRN StudyHub</span>
+                            <span class="bg-amber-400 text-slate-900 text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">3rd Year Grad Prep</span>
+                        </div>
+                        <p class="text-[11px] text-clinical-100/80 hidden sm:block">Australian Practice Standards • ACSQHC, ASCIA, eTG & CEC Protocols</p>
+                    </div>
+                </div>
+
+                <!-- Navigation Tabs -->
+                <nav class="flex space-x-1 sm:space-x-2 overflow-x-auto py-2 custom-scroll">
+                    <button id="nav-btn-single-card" onclick="switchTab('single-card')" class="px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all bg-clinical-400 text-navy-900 shadow whitespace-nowrap">
+                        <i class="fa-solid fa-square-envelope mr-1.5"></i>Single Card Focus
+                    </button>
+                    <button id="nav-btn-all-cards" onclick="switchTab('all-cards')" class="px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold text-slate-300 hover:bg-navy-800 hover:text-white transition-all whitespace-nowrap">
+                        <i class="fa-solid fa-table-cells mr-1.5"></i>All Cards Grid
+                    </button>
+                    <button id="nav-btn-reference" onclick="switchTab('reference')" class="px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold text-slate-300 hover:bg-navy-800 hover:text-white transition-all whitespace-nowrap">
+                        <i class="fa-solid fa-vial-virus mr-1.5"></i>AU Bloods & Reference
+                    </button>
+                    <button id="nav-btn-quiz" onclick="switchTab('quiz')" class="px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold text-slate-300 hover:bg-navy-800 hover:text-white transition-all whitespace-nowrap">
+                        <i class="fa-solid fa-vial-circle-check mr-1.5"></i>Scenario Quiz
+                    </button>
+                    <button id="nav-btn-dashboard" onclick="switchTab('dashboard')" class="px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold text-slate-300 hover:bg-navy-800 hover:text-white transition-all whitespace-nowrap">
+                        <i class="fa-solid fa-chart-pie mr-1.5"></i>Progress
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- Filter Controls Bar -->
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3 mb-6">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                
+                <!-- Search Box -->
+                <div class="relative flex-1">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                    <input type="text" id="searchInput" oninput="applyCardFilters()" placeholder="Search Methylprednisolone, Strongyloides, BGL, Lactate, ANTT, APINCH, eGFR..." 
+                        class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-clinical-400 focus:border-clinical-400 outline-none">
+                </div>
+
+                <!-- Category & Mastery Filter Dropdowns -->
+                <div class="flex flex-wrap items-center gap-2">
+                    <select id="categoryFilter" onchange="applyCardFilters()" class="border border-slate-300 rounded-lg px-3 py-2 text-xs sm:text-sm bg-white font-semibold text-slate-700 focus:ring-2 focus:ring-clinical-400 outline-none">
+                        <option value="ALL">All Clinical Topics (12)</option>
+                        <option value="steroids">💉 High-Dose Steroid Therapy</option>
+                        <option value="diabetes">🩸 Diabetes Care & DKA/HHS</option>
+                        <option value="wound">🩹 Wound Care & ANTT</option>
+                        <option value="sepsis">🚨 Sepsis Pathway</option>
+                        <option value="anaphylaxis">⚡ Anaphylaxis (ASCIA)</option>
+                        <option value="heart">🫀 Heart Failure</option>
+                        <option value="renal">🫘 Renal Function & AKI</option>
+                        <option value="medication">💊 Medication Safety (APINCH)</option>
+                    </select>
+
+                    <select id="difficultyFilter" onchange="applyCardFilters()" class="border border-slate-300 rounded-lg px-3 py-2 text-xs sm:text-sm bg-white font-semibold text-slate-700 focus:ring-2 focus:ring-clinical-400 outline-none">
+                        <option value="ALL">All Levels</option>
+                        <option value="hard">🔴 Needs Focus (Hard)</option>
+                        <option value="medium">🟡 Reviewing (Medium)</option>
+                        <option value="easy">🟢 Mastered (Easy)</option>
+                        <option value="bookmarked">🔖 Bookmarked Only</option>
+                    </select>
+
+                    <button onclick="shuffleCards()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg border border-slate-300 transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-shuffle"></i> Shuffle
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between text-xs text-slate-500 pt-2 border-t border-slate-100 gap-2">
+                <span id="cards-count-indicator" class="font-semibold text-slate-700">Showing 12 of 12 Flashcards</span>
+                <span class="flex items-center gap-1.5 text-clinical-600 font-medium">
+                    <i class="fa-solid fa-lightbulb"></i> Click card to flip • Keyboard: Left/Right arrows to navigate
+                </span>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- TAB 1: SINGLE CARD SCREEN VIEW (CAROUSEL)  -->
+        <!-- ========================================== -->
+        <section id="tab-single-card" class="space-y-6 max-w-3xl mx-auto">
+            
+            <!-- Navigation Header -->
+            <div class="flex items-center justify-between bg-white px-5 py-3 rounded-xl border border-slate-200 shadow-sm">
+                <button onclick="prevCard()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs sm:text-sm font-bold rounded-lg flex items-center gap-2 transition active:scale-95">
+                    <i class="fa-solid fa-chevron-left"></i> Previous
+                </button>
+                
+                <div class="text-center">
+                    <span id="single-card-progress" class="text-xs sm:text-sm font-black text-navy-900 bg-clinical-50 text-clinical-900 border border-clinical-200 px-4 py-1.5 rounded-full shadow-inner">
+                        Card 1 of 12
+                    </span>
+                </div>
+
+                <button onclick="nextCard()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs sm:text-sm font-bold rounded-lg flex items-center gap-2 transition active:scale-95">
+                    Next <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+
+            <!-- Single Card View Area -->
+            <div id="single-card-viewport" class="w-full">
+                <!-- Dynamically Rendered via JS -->
+            </div>
+
+            <!-- Keyboard & Gesture Controls Legend -->
+            <div class="flex items-center justify-center gap-4 text-xs text-slate-400 font-medium pt-2">
+                <span><kbd class="bg-white border border-slate-300 rounded px-1.5 py-0.5 text-slate-600">Space</kbd> Flip Card</span>
+                <span><kbd class="bg-white border border-slate-300 rounded px-1.5 py-0.5 text-slate-600">&larr;</kbd> Previous</span>
+                <span><kbd class="bg-white border border-slate-300 rounded px-1.5 py-0.5 text-slate-600">&rarr;</kbd> Next</span>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 2: ALL CARDS GRID OVERVIEW             -->
+        <!-- ========================================== -->
+        <section id="tab-all-cards" class="hidden space-y-6">
+            <div id="all-cards-grid-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Dynamically Rendered via JS -->
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 3: AU BLOOD TRACKING & REFERENCE       -->
+        <!-- ========================================== -->
+        <section id="tab-reference" class="hidden space-y-6">
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-6">
+                <div class="border-b border-slate-200 pb-4">
+                    <h2 class="text-xl font-black text-navy-900 flex items-center gap-2">
+                        <i class="fa-solid fa-vial-virus text-clinical-500"></i> Australian Clinical Pathology & High-Risk Blood Tracking Hub
+                    </h2>
+                    <p class="text-xs text-slate-500 mt-1">Normal Australian pathology ranges, mandatory lab monitoring checklists for high-dose steroids, MET call triggers, and APINCH medication safety framework.</p>
+                </div>
+
+                <!-- Sub Navigation Tabs -->
+                <div class="flex overflow-x-auto gap-2 pb-2 border-b border-slate-200" id="ref-sub-tabs">
+                    <button onclick="switchRefTab('steroid-bloods')" id="reftab-steroid-bloods" class="px-4 py-2 rounded-lg text-xs font-bold bg-navy-900 text-white shadow">
+                        💉 High-Dose Steroid Blood Protocol
+                    </button>
+                    <button onclick="switchRefTab('pathology')" id="reftab-pathology" class="px-4 py-2 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200">
+                        🩸 Standard AU Normal Pathology
+                    </button>
+                    <button onclick="switchRefTab('met')" id="reftab-met" class="px-4 py-2 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200">
+                        🚨 Adult MET / Escalation Limits
+                    </button>
+                    <button onclick="switchRefTab('apinch')" id="reftab-apinch" class="px-4 py-2 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200">
+                        💊 High-Risk APINCH Safeguards
+                    </button>
+                </div>
+
+                <!-- Sub Content Container -->
+                <div id="ref-content-display">
+                    <!-- Loaded via JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 4: SCENARIO QUIZ MODE                  -->
+        <!-- ========================================== -->
+        <section id="tab-quiz" class="hidden space-y-6 max-w-4xl mx-auto">
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-200 pb-4 gap-2">
+                    <div>
+                        <span class="text-[10px] font-black uppercase tracking-wider text-clinical-600 bg-clinical-50 px-2.5 py-0.5 rounded border border-clinical-200">
+                            Clinical Judgment Assessment
+                        </span>
+                        <h2 class="text-xl font-black text-navy-900 mt-1">3rd Year Graduate RN Scenario Quiz</h2>
+                    </div>
+                    <div class="bg-navy-900 text-white px-4 py-2 rounded-xl text-center shadow-sm">
+                        <div class="text-[10px] text-slate-400 font-semibold uppercase">Current Score</div>
+                        <div id="quiz-score-display" class="text-lg font-black text-clinical-400">0 / 10</div>
+                    </div>
+                </div>
+
+                <!-- Questions List -->
+                <div id="quiz-scenarios-container" class="space-y-6">
+                    <!-- Loaded via JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 5: STUDY PROGRESS DASHBOARD            -->
+        <!-- ========================================== -->
+        <section id="tab-dashboard" class="hidden space-y-6">
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-6">
+                <div class="flex items-center justify-between border-b border-slate-200 pb-4">
+                    <div>
+                        <h2 class="text-xl font-black text-navy-900">Clinical Mastery Dashboard</h2>
+                        <p class="text-xs text-slate-500">Track your confidence levels and mastery across all Australian nursing core clinical domains.</p>
+                    </div>
+                    <button onclick="resetAllProgress()" class="px-3.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-lg border border-rose-200 transition">
+                        <i class="fa-solid fa-rotate-right mr-1.5"></i> Reset All Progress
+                    </button>
+                </div>
+
+                <!-- Stat Boxes -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-slate-50 border border-slate-200 p-4 rounded-xl">
+                        <div class="text-xs font-bold text-slate-500 uppercase">Total Clinical Topics</div>
+                        <div class="text-2xl font-black text-navy-900 mt-1" id="dash-total-cards">12</div>
+                    </div>
+                    <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl">
+                        <div class="text-xs font-bold text-emerald-800 uppercase">Mastered (Easy)</div>
+                        <div class="text-2xl font-black text-emerald-700 mt-1" id="dash-easy-cards">0</div>
+                    </div>
+                    <div class="bg-amber-50 border border-amber-200 p-4 rounded-xl">
+                        <div class="text-xs font-bold text-amber-800 uppercase">Reviewing (Medium)</div>
+                        <div class="text-2xl font-black text-amber-700 mt-1" id="dash-medium-cards">0</div>
+                    </div>
+                    <div class="bg-rose-50 border border-rose-200 p-4 rounded-xl">
+                        <div class="text-xs font-bold text-rose-800 uppercase">Needs Focus (Hard)</div>
+                        <div class="text-2xl font-black text-rose-700 mt-1" id="dash-hard-cards">0</div>
+                    </div>
+                </div>
+
+                <!-- Topic Breakdown -->
+                <div class="space-y-4">
+                    <h3 class="text-sm font-black text-navy-900 uppercase tracking-wider">Topic Mastery Breakdown</h3>
+                    <div id="topic-breakdown-list" class="space-y-3">
+                        <!-- Loaded via JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        /* ==========================================================================
+           1. FULL CLINICAL FLASHCARDS DATASET (AU STANDARDS) - 12 CARDS
+           ========================================================================== */
+        const flashcards = [
+            {
+                id: "steroid-01",
+                category: "steroids",
+                categoryLabel: "High-Dose Steroid Therapy",
+                badgeColor: "bg-fuchsia-100 text-fuchsia-900 border-fuchsia-200",
+                title: "High-Dose IV Methylprednisolone Pulse Therapy & Blood Tracking",
+                auGuideline: "eTG Endocrinology & ACSQHC Medication Safety Standard",
+                prompt: "A patient with severe acute MS relapse or renal vasculitis is prescribed IV Methylprednisolone 1000mg daily pulse therapy x 3 days. What is the mandatory blood tracking, monitoring, and safety protocol?",
+                patho: "High-dose 'pulse' methylprednisolone (500mg - 1000mg/day) causes rapid non-genomic and genomic suppression of T-cell activation, inflammatory cytokines, and vascular permeability. It carries severe acute risks of fluid retention, hypokalemia, steroid psychosis, and acute hyperglycemia.",
+                assessment: [
+                    "Baseline Screening: FBC, EUC, LFT, CMP (Ca/Mg/Phos), fasting BGL, HbA1c.",
+                    "Latent Infection Screening: Strongyloides serology (high risk in rural AU/Aboriginal & Torres Strait Islander or endemic overseas origin to prevent fatal hyperinfection syndrome); QuantiFERON-TB Gold for high-risk patients.",
+                    "Ongoing Blood Tracking: Daily EUC (strict K+ monitoring - steroids cause severe renal potassium wasting), daily BGLs (or q1h-q4h POCT), CMP."
+                ],
+                management: [
+                    "INFUSION & CLINICAL MONITORING PROTOCOL:",
+                    "• Dosing & Route: 500mg - 1000mg IV diluted in 100mL - 250mL Sodium Chloride 0.9% or Dextrose 5%. Infuse over MINIMUM 30–60 minutes (Rapid IV push can cause fatal cardiac arrhythmias or sudden collapse!).",
+                    "• Cardiac Monitoring: Continuous ECG/telemetry during infusion due to risk of severe sinus bradycardia, ventricular arrhythmias, and acute hypertension.",
+                    "• Glycaemic Control: POCT BGL q1h to q4h during active treatment. Initiate subcutaneous insulin sliding scale or Actrapid infusion if BGL > 12.0 mmol/L.",
+                    "• Gastroprotection: Co-prescribe PPI (e.g. Pantoprazole 40mg IV/PO daily) to prevent acute peptic ulceration/GI bleeding."
+                ],
+                isbar: {
+                    identify: "RN Sarah, Neuro/Renal Ward, re: David Miller (48M).",
+                    situation: "David is on Day 2 IV Methylprednisolone 1000mg pulse therapy and has acute confusion and K+ of 2.9 mmol/L.",
+                    background: "Receiving pulse steroids for acute vasculitic flare. Baseline K+ was 4.1 mmol/L.",
+                    assessment: "BP 175/102, HR 52 bpm (sinus bradycardia on telemetry), BGL 18.4 mmol/L, K+ 2.9 mmol/L. Agitated with steroid-induced mood alteration.",
+                    recommendation: "Request urgent medical review, IV potassium replacement order, Actrapid sliding scale, and psychiatric/sedation assessment."
+                },
+                redFlags: "Steroid psychosis / acute mania, severe hypokalemia (K+ < 3.0 mmol/L with U-waves/arrhythmias), malignant hypertension, BGL > 20 mmol/L, anaphylaxis/bronchospasm during infusion."
+            },
+            {
+                id: "steroid-02",
+                category: "steroids",
+                categoryLabel: "High-Dose Steroid Therapy",
+                badgeColor: "bg-fuchsia-100 text-fuchsia-900 border-fuchsia-200",
+                title: "Steroid-Induced Hyperglycaemia & Acute Adrenal Insufficiency Risk",
+                auGuideline: "Australian Diabetes Society (ADS) / eTG Guidelines",
+                prompt: "Compare steroid-induced hyperglycaemia management with acute adrenal crisis prevention following systemic corticosteroid withdrawal.",
+                patho: "Glucocorticoids increase hepatic gluconeogenesis, inhibit peripheral glucose uptake, and induce severe insulin resistance. Abrupt cessation of prolonged high-dose steroids leads to acute adrenal crisis due to HPA-axis suppression.",
+                assessment: [
+                    "Hyperglycaemia Pattern: Typically causes prominent postprandial hyperglycaemia (afternoon/evening spikes following morning steroid doses).",
+                    "Adrenal Crisis Signs: Severe hypotension (refractory to fluids), hyponatremia (low Na+), hyperkalaemia (high K+), hypoglycemia, fever, confusion."
+                ],
+                management: [
+                    "STEROID HYPERGLYCAEMIA PROTOCOL:",
+                    "• Target BGL Range: 6.0 - 10.0 mmol/L in acute hospital settings.",
+                    "• Subcutaneous Isophane (NPH) or Actrapid insulin adjusted to match steroid peak absorption (midday/afternoon).",
+                    "ADRENAL CRISIS PREVENTION & WEANING:",
+                    "• Steroids given for >2 weeks MUST be gradually tapered; NEVER stop abruptly.",
+                    "• Hydrocortisone 100mg IV stat + rapid 0.9% NaCl fluid bolus if acute adrenal crisis is suspected."
+                ],
+                isbar: {
+                    identify: "RN James, Medical Ward, re: Helen Taylor (62F).",
+                    situation: "Helen has developed severe afternoon hyperglycemia (BGL 22.1 mmol/L) post high-dose dexamethasone.",
+                    background: "Receiving Dexamethasone 8mg BD for cerebral edema.",
+                    assessment: "Blood ketones 0.4 mmol/L, VBG pH 7.38 (no DKA). BGL elevated primarily post-lunch and dinner.",
+                    recommendation: "Request review for targeted NPH/isophane insulin order matched with morning steroid dosing."
+                },
+                redFlags: "Blood Ketones > 1.5 mmol/L (DKA risk), Addisonian Crisis (refractory shock + low Na+ / high K+), BGL > 25 mmol/L."
+            },
+            {
+                id: "diabetes-01",
+                category: "diabetes",
+                categoryLabel: "Diabetes Care",
+                badgeColor: "bg-blue-100 text-blue-900 border-blue-200",
+                title: "Acute Hypoglycaemia Management & Rule of 15",
+                auGuideline: "ADEA / ADS / ACSQHC Medication Safety Standard",
+                prompt: "A post-op patient with T1D presents with diaphoresis, tremors, and a POCT BSL of 3.2 mmol/L. Outline the Australian 'Rule of 15' management.",
+                patho: "BSL < 4.0 mmol/L in hospitalised patients. Autonomic (sweating, tremor, tachycardia) and neuroglycopenic symptoms (confusion, irritability). Target BSL range in acute care: 4.0 - 10.0 mmol/L.",
+                assessment: [
+                    "Target BSL Range in Acute Care: 4.0 – 10.0 mmol/L.",
+                    "Mild/Moderate Hypo: BSL < 4.0 mmol/L, conscious and able to swallow safely.",
+                    "Severe Hypo: BSL < 4.0 mmol/L with altered conscious state, seizures, or dysphagia."
+                ],
+                management: [
+                    "RULE OF 15 (Conscious Patient):",
+                    "1. Give 15g Quick-Acting Carbohydrate (e.g. 100mL Lucozade OR 3-4 jellybeans OR 150mL fruit juice).",
+                    "2. Wait 15 minutes and re-check POCT BSL.",
+                    "3. If BSL remains < 4.0 mmol/L: Repeat 15g quick-acting carbohydrate and re-test in 15 mins.",
+                    "4. When BSL > 4.0 mmol/L: Follow immediately with a long-acting carbohydrate (e.g., 1 slice of bread, glass of milk, or scheduled meal within 20 mins).",
+                    "SEVERE HYPO (Unconscious / NPO): Administer IV Glucose 10% 150mL over 15 mins OR IM Glucagon 1mg stat. MET call if unrousable."
+                ],
+                isbar: {
+                    identify: "RN Chloe, Ward 3B, re: John Doe (64M, T1D).",
+                    situation: "John experienced a symptomatic hypoglycaemic episode with BSL 3.2 mmol/L.",
+                    background: "Received 6 units Novorapid with breakfast at 0800.",
+                    assessment: "Administered 15g quick-acting carbohydrate (4 jellybeans). Recheck at 15 mins BSL is 4.3 mmol/L. Provided slice of toast.",
+                    recommendation: "Request medical review of pre-prandial short-acting insulin dosing prior to lunch."
+                },
+                redFlags: "BSL < 4.0 mmol/L, altered conscious state, seizures, refractory hypo requiring continuous IV dextrose infusion."
+            },
+            {
+                id: "diabetes-02",
+                category: "diabetes",
+                categoryLabel: "Diabetes Care",
+                badgeColor: "bg-blue-100 text-blue-900 border-blue-200",
+                title: "Diabetic Ketoacidosis (DKA) vs HHS Management",
+                auGuideline: "ADS / eTG Emergency Guidelines",
+                prompt: "Differentiate DKA from HHS based on pathology and outline the primary IV Actrapid insulin and fluid resuscitation goals.",
+                patho: "DKA (primarily T1D): Absolute insulin deficiency causes uninhibited lipolysis, generating acetoacetate/beta-hydroxybutyrate ketoacids (high anion gap metabolic acidosis). HHS (primarily T2D): Relative deficiency causes severe hyperosmolar hyperglycemia (>30 mmol/L) without significant ketoacidosis.",
+                assessment: [
+                    "DKA Diagnostics: BGL > 11.0 mmol/L (or lower in euglycaemic DKA from SGLT2i), Blood Ketones > 3.0 mmol/L, VBG pH < 7.30, HCO3- < 18 mmol/L.",
+                    "HHS Diagnostics: BGL > 30.0 mmol/L, Serum Osmolality > 320 mOsm/kg, Blood Ketones < 1.5 mmol/L, pH > 7.30."
+                ],
+                management: [
+                    "DKA RESUSCITATION PROTOCOL:",
+                    "1. Fluid Resuscitation: 0.9% Sodium Chloride IV (1L in 1st hour, then 1L over 2h, 4h, 8h).",
+                    "2. Fixed-Rate Actrapid Insulin Infusion: 0.1 units/kg/hr IV.",
+                    "3. Potassium Replacement: Add 20-30 mmol KCl per bag of 0.9% NaCl if serum K+ < 5.5 mmol/L (Insulin drives K+ into cells!).",
+                    "4. Add 5% or 10% Dextrose when BGL drops < 14.0 mmol/L while continuing insulin infusion until ketones clear (<0.6 mmol/L)."
+                ],
+                isbar: {
+                    identify: "RN Liam, ED, re: Sarah Jenkins (22F).",
+                    situation: "Sarah presents with severe DKA, lethargy, and Kussmaul breathing.",
+                    background: "Known T1D, missed insulin doses due to gastroenteritis.",
+                    assessment: "BSL 24.5 mmol/L, Blood Ketones 5.2 mmol/L, VBG pH 7.12, HCO3 9 mmol/L, K+ 4.8 mmol/L.",
+                    recommendation: "Immediate Actrapid infusion 0.1u/kg/hr order, 1L 0.9% NaCl fluid bolus, and ICU/HDU admission."
+                },
+                redFlags: "Blood Ketones > 6.0 mmol/L, VBG pH < 7.00, Serum K+ < 3.3 mmol/L (delay insulin until K+ replaced to avoid fatal cardiac arrest), cerebral edema signs."
+            },
+            {
+                id: "wound-01",
+                category: "wound",
+                categoryLabel: "Wound Care & ANTT",
+                badgeColor: "bg-emerald-100 text-emerald-900 border-emerald-200",
+                title: "Wound Bed Preparation (HEAL/TIME) & ANTT Principles",
+                auGuideline: "Wounds Australia Standards & National ANTT Framework",
+                prompt: "Explain the TIME framework, Pressure Injury Staging (Stages 1-4), and the clinical distinction between Standard vs Surgical ANTT.",
+                patho: "Wound healing requires an optimized environment free from tissue necrosis, bioburden, and excessive exudate. Pressure injuries result from localized pressure/shear forces causing cellular ischemia.",
+                assessment: [
+                    "TIME Framework: T = Tissue (slough, eschar), I = Infection/Inflammation, M = Moisture balance, E = Edge advancement.",
+                    "Pressure Injury Staging:",
+                    "• Stage 1: Non-blanchable erythema of intact skin.",
+                    "• Stage 2: Partial thickness skin loss with exposed dermis.",
+                    "• Stage 3: Full thickness skin loss (subcut fat visible).",
+                    "• Stage 4: Full thickness skin & tissue loss (exposed muscle/bone)."
+                ],
+                management: [
+                    "DRESSING SELECTION MATRIX:",
+                    "• Dry/Necrotic: Hydrogel (autolytic debridement).",
+                    "• Moderate/Heavy Exudate: Alginate or Hydrofiber.",
+                    "• Fragile Skin / Low Exudate: Silicone foam or hydrocolloid.",
+                    "ANTT CORE PRINCIPLES:",
+                    "• Standard ANTT: Simple, short duration (<20 mins), small Key Parts (e.g. simple wound dressing, PIVC insertion). Non-sterile gloves with Key Part protection.",
+                    "• Surgical ANTT: Complex, long duration (>20 mins), multiple/large Key Parts (e.g. CVAD dressing, complex surgical wound). Full sterile field, sterile gloves, gown, mask."
+                ],
+                isbar: {
+                    identify: "RN Sarah, Aged Care Unit, re: Mrs. Mary Smith (82F).",
+                    situation: "Identified a new Stage 3 pressure injury on sacrum.",
+                    background: "Immobile post-femoral neck fracture, Braden scale 11 (High Risk).",
+                    assessment: "3cm x 2cm full-thickness ulcer with moderate slough and serous exudate. No localized heat or malodour.",
+                    recommendation: "Request Wound CNC consult, order for Alginate + Silicone foam secondary dressing, and initiate 2-hourly repositioning chart."
+                },
+                redFlags: "Spreading cellulitis (>2cm from wound margin), systemically unwell/fever, suspected osteomyelitis (exposed bone), sudden purulent discharge."
+            },
+            {
+                id: "sepsis-01",
+                category: "sepsis",
+                categoryLabel: "Sepsis Pathway",
+                badgeColor: "bg-rose-100 text-rose-900 border-rose-200",
+                title: "Adult Sepsis Pathway & Golden Hour Protocols",
+                auGuideline: "CEC NSW Adult Sepsis Pathway / ACSQHC National Sepsis Standard",
+                prompt: "A 78-year-old post-op patient has RR 26, HR 118, BP 88/50, and VBG Lactate 3.2 mmol/L. What is the immediate 1-Hour Sepsis Bundle?",
+                patho: "Sepsis is life-threatening organ dysfunction caused by a dysregulated host response to infection. Uncontrolled cytokine release triggers systemic capillary leak, massive vasodilation, microvascular thrombosis, and tissue hypoperfusion.",
+                assessment: [
+                    "Sepsis Screening Criteria (qSOFA / Between the Flags):",
+                    "• Systolic BP ≤ 90 mmHg (or drop > 40 mmHg from baseline).",
+                    "• Respiratory Rate ≥ 22-25 breaths/min.",
+                    "• Altered Mental Status (GCS < 15 or acute confusion).",
+                    "Red Flags: Serum Lactate > 2.0 mmol/L, Urine Output < 0.5 mL/kg/hr, Purpuric/mottled rash."
+                ],
+                management: [
+                    "SEPSIS RESUSCITATION BUNDLE (WITHIN 1 HOUR):",
+                    "1. ESCALATE: Initiate MET Call / Senior Medical Officer escalation immediately.",
+                    "2. BLOOD CULTURES: Collect 2 sets (aerobic & anaerobic) BEFORE antibiotic administration.",
+                    "3. LACTATE: Draw blood gas (VBG/ABG) lactate level.",
+                    "4. ANTIBIOTICS: Administer empiric broad-spectrum IV antibiotics per eTG guidelines (e.g. Piperacillin-tazobactam or Ceftriaxone).",
+                    "5. FLUID RESUSCITATION: Rapid fluid bolus 30 mL/kg IV crystalloid (Sodium Chloride 0.9% or Hartmann's) for hypotension or Lactate ≥ 4 mmol/L.",
+                    "6. MONITOR: Strict fluid balance chart (IDC insertion targeting UO > 0.5 mL/kg/hr) and serial lactates."
+                ],
+                isbar: {
+                    identify: "RN Mark, Surgical Ward, calling MET Team re: David Vance (78M).",
+                    situation: "David has acute deterioration with red-flag sepsis criteria.",
+                    background: "Day 3 post-laparotomy. History of T2D.",
+                    assessment: "BP 88/50 mmHg, HR 118 bpm, RR 26/min, Temp 38.8°C, SpO2 91% on room air. VBG Lactate is 3.2 mmol/L. Urine output 10mL/hr.",
+                    recommendation: "Immediate medical review, approval for IV antibiotic administration, blood cultures x2, and 500mL fluid bolus stat."
+                },
+                redFlags: "Lactate > 4.0 mmol/L, persistent hypotension (MAP < 65 mmHg) requiring vasopressors (Septic Shock), purpuric rash, anuria."
+            },
+            {
+                id: "anaphylaxis-01",
+                category: "anaphylaxis",
+                categoryLabel: "Anaphylaxis (ASCIA)",
+                badgeColor: "bg-purple-100 text-purple-900 border-purple-200",
+                title: "ASCIA Emergency Anaphylaxis Protocol & Adrenaline Dosing",
+                auGuideline: "ASCIA Guidelines 2024 & Australian Resuscitation Council (ARC)",
+                prompt: "A patient develops facial urticaria, stridor, and dizziness 5 minutes after IV Ceftriaxone. Outline immediate emergency actions.",
+                patho: "Severe, rapidly progressive systemic IgE-mediated type I hypersensitivity reaction. Massive histamine and leukotriene release causes systemic vasodilation, airway mucosal edema, and severe bronchospasm.",
+                assessment: [
+                    "Airway: Swollen tongue/throat, stridor, hoarse voice, difficulty swallowing.",
+                    "Breathing: Wheeze, persistent cough, tachypnoea, intercostal retraction.",
+                    "Circulation: Hypotension, pallor, clammy, dizziness, collapse.",
+                    "Skin: Urticaria, erythema, angioedema (Skin signs absent in ~20% of severe cases!)."
+                ],
+                management: [
+                    "FIRST-LINE EMERGENCY ACTION:",
+                    "1. ADMINISTER IM ADRENALINE 1:1000 (1mg/mL):",
+                    "   • Adult Dose (>50kg): 0.5 mg (0.5 mL) IM into mid-outer thigh (vastus lateralis).",
+                    "   • Auto-injector: EpiPen 300mcg or Anapen 500mcg.",
+                    "2. POSITIONING IS CRITICAL: Lie patient FLAT. Do NOT allow them to stand or walk! (Sudden standing causes fatal cardiac arrest due to empty ventricle syndrome). If dyspnoeic, sit with legs extended.",
+                    "3. CALL CODE BLUE / MET CALL.",
+                    "4. High-Flow Oxygen: 10-15 L/min non-rebreather mask.",
+                    "5. Repeat IM Adrenaline every 5 minutes if no clinical improvement."
+                ],
+                isbar: {
+                    identify: "RN Amanda, Medical Ward 2, calling Code Blue Team re: Alex Wong (34M).",
+                    situation: "Alex is experiencing acute anaphylaxis following IV antibiotic administration.",
+                    background: "Commenced IV Ceftriaxone dose 5 minutes ago.",
+                    assessment: "Stridor, generalised hives, SBP 78/40, HR 140, SpO2 88%. Laid flat, IM Adrenaline 0.5mg administered into thigh at 1402.",
+                    recommendation: "Immediate medical attendance on scene, prepare second IM adrenaline dose and IV fluid bolus."
+                },
+                redFlags: "Stridor, airway obstruction, severe hypotension/collapse, patient standing up (high risk of cardiac arrest), biphasic recurrence."
+            },
+            {
+                id: "heart-01",
+                category: "heart",
+                categoryLabel: "Heart Failure",
+                badgeColor: "bg-amber-100 text-amber-900 border-amber-200",
+                title: "Acute Decompensated Heart Failure & 4-Pillar GDMT Framework",
+                auGuideline: "National Heart Foundation of Australia / CSANZ Guidelines",
+                prompt: "A patient with HFrEF presents with 3kg weight gain over 2 days, orthopnoea, and bilateral lung crackles. Detail acute escalation and the 4-Pillars of therapy.",
+                patho: "Inability of the heart to pump effectively to meet tissue metabolic demands. HFrEF (EF < 40%): Systolic contraction failure. Acute overload causes fluid shift into pulmonary alveoli leading to acute pulmonary edema.",
+                assessment: [
+                    "Fluid Overload Indicators: Bilateral basal lung crackles, JVP > 3cm above sternal angle, sacral/pedal edema, S3 gallop.",
+                    "Symptoms: Orthopnoea (number of pillows needed), Paroxysmal Nocturnal Dyspnoea (PND), sudden weight gain (>1.5-2kg in 48 hours).",
+                    "Diagnostic Markers: Elevated NT-proBNP (>300 pg/mL), cardiomegaly on CXR."
+                ],
+                management: [
+                    "ACUTE PULMONARY OEDEMA INTERVENTIONS (LMNOP):",
+                    "• L - Loop Diuretic: IV Furosemide bolus (e.g. 40-80mg IV stat).",
+                    "• M - Morphine: (Use cautiously) 1-2mg IV for extreme distress/anxiety.",
+                    "• N - Nitrates: Sublingual GTN spray or IV GTN infusion (if SBP > 110 mmHg) to decrease preload.",
+                    "• O - Oxygen & CPAP: Target SpO2 92-96% (NIV CPAP/BiPAP if dyspnoea persists).",
+                    "• P - Position: Sit upright high-Fowler's with legs dangling over side of bed.",
+                    "THE 4 PILLARS OF CHRONIC HFrEF MEDICAL THERAPY:",
+                    "1. ACEi / ARB / ARNI (Sacubitril/Valsartan)",
+                    "2. Beta-Blocker (Bisoprolol, Carvedilol, Metoprolol succinate)",
+                    "3. MRA (Spironolactone or Eplerenone)",
+                    "4. SGLT2 Inhibitor (Dapagliflozin or Empagliflozin)"
+                ],
+                isbar: {
+                    identify: "RN Grace, Cardiology Ward, re: Robert Miller (72M).",
+                    situation: "Robert has acute pulmonary edema with severe dyspnoea.",
+                    background: "Known HFrEF (EF 28%), history of ischemic heart disease.",
+                    assessment: "RR 34/min, SpO2 86% room air, bilateral crackles to mid-zones, SBP 170/98, weight increased 2.8kg in 48 hrs.",
+                    recommendation: "Request urgent medical review, IV Furosemide 80mg order, GTN sublingual spray approval, and CPAP setup."
+                },
+                redFlags: "Pink frothy sputum, SBP < 90 mmHg (Cardiogenic Shock), severe hypoxaemia refractory to oxygen, altered mentation."
+            },
+            {
+                id: "renal-01",
+                category: "renal",
+                categoryLabel: "Renal Function & AKI",
+                badgeColor: "bg-teal-100 text-teal-900 border-teal-200",
+                title: "Acute Kidney Injury (KDIGO) & Emergency Hyperkalaemia Management",
+                auGuideline: "CARI Guidelines (Caring for Australasians with Renal Impairment)",
+                prompt: "A patient's bloods reveal K+ 6.8 mmol/L with peaked T-waves on telemetry and urine output < 10mL/hr. Outline KDIGO criteria and hyperkalaemia protocols.",
+                patho: "AKI is a rapid reduction in eGFR resulting in urea/creatinine accumulation and electrolyte derangements. Pre-renal (hypoperfusion), Renal (intrinsic damage), Post-renal (obstruction). Hyperkalaemia disrupts cardiac membrane potential.",
+                assessment: [
+                    "KDIGO AKI Staging Criteria:",
+                    "• Stage 1: Serum Creatinine 1.5–1.9x baseline OR Urine Output < 0.5 mL/kg/hr for 6–12 hours.",
+                    "• Stage 2: Creatinine 2.0–2.9x baseline OR Urine Output < 0.5 mL/kg/hr for ≥ 12 hours.",
+                    "• Stage 3: Creatinine 3.0x baseline or ≥ 354 µmol/L OR Oliguria < 0.3 mL/kg/hr for 24h / Anuria for 12h."
+                ],
+                management: [
+                    "EMERGENCY HYPERKALAEMIA PROTOCOL (K+ > 6.5 mmol/L or ECG changes):",
+                    "1. MEMBRANE STABILISATION: Calcium Gluconate 10% 10mL IV over 5-10 mins (Protects myocardium against VF/asystole; does NOT lower K+ level!).",
+                    "2. SHIFT POTASSIUM INTO CELLS:",
+                    "   • Actrapid Insulin 10 Units in 50mL 50% Dextrose (or 100mL 20% Dextrose) IV over 15-30 mins.",
+                    "   • Salbutamol 10-20mg Nebulised.",
+                    "3. REMOVE POTASSIUM FROM BODY:",
+                    "   • Sodium Zirconium Cyclosilicate (Lokelma) or Calcium Resonium.",
+                    "   • IV Loop Diuretics (Furosemide). Haemodialysis if refractory."
+                ],
+                isbar: {
+                    identify: "RN Daniel, HDU, re: George Taylor (71M).",
+                    situation: "George has acute oliguric AKI and critical hyperkalaemia with ECG changes.",
+                    background: "Day 1 post vascular surgery.",
+                    assessment: "K+ 6.8 mmol/L, Creatinine 280 µmol/L (baseline 85), UO 15mL over last 3 hours. Peaked T waves on telemetry.",
+                    recommendation: "Activate immediate medical escalation for Calcium Gluconate and Insulin-Dextrose infusion orders."
+                },
+                redFlags: "Potassium > 6.5 mmol/L, peaked T waves / widened QRS / sine wave ECG, Anuria (<50mL/day), severe metabolic acidosis (pH < 7.1)."
+            },
+            {
+                id: "medication-01",
+                category: "medication",
+                categoryLabel: "Medication Safety",
+                badgeColor: "bg-indigo-100 text-indigo-900 border-indigo-200",
+                title: "High-Risk Medicines (APINCH) & ACSQHC Safety Standards",
+                auGuideline: "ACSQHC NSQHS Standard 4: Medication Safety & NIMC Standards",
+                prompt: "Detail the APINCH high-risk medication categories, independent double-check requirements, and opioid respiratory depression reversal protocols.",
+                patho: "High-risk medicines carry a high risk of causing significant patient harm or death when misadministered. Complex dosing calculations or route errors carry severe clinical consequences.",
+                assessment: [
+                    "APINCH High-Risk Categories:",
+                    "• A: Anti-infectives (Vancomycin, Gentamicin - TDM needed).",
+                    "• P: Potassium & Concentrated Electrolytes (IV KCl - NEVER IV PUSH!).",
+                    "• I: Insulin (Double independent check required).",
+                    "• N: Narcotics / Opioids (Respiratory depression, sedation scoring).",
+                    "• C: Chemotherapy / Cytotoxic agents.",
+                    "• H: Heparin & Anticoagulants (aPTT / INR monitoring)."
+                ],
+                management: [
+                    "INDEPENDENT DOUBLE-CHECK PROTOCOL:",
+                    "Two qualified clinicians separately verify: 1. Patient ID / NIMC chart, 2. Drug order & expiry, 3. Dose & concentration calculations, 4. Pump programming.",
+                    "OPIOID TOXICITY REVERSAL PROTOCOL:",
+                    "• Indications: Respiratory Rate < 8-10 breaths/min, Sedation Score 3 (difficult to rouse), pinpoint pupils.",
+                    "• Emergency Action: Stop opioid infusion / PCA pump immediately.",
+                    "• Reversal Agent: Naloxone (Narcan) 100 – 400 mcg IV/IM, repeat every 2–3 minutes until RR > 10/min and rousable."
+                ],
+                isbar: {
+                    identify: "RN Tom, Surgical Ward 2, re: Betty Davis (84F).",
+                    situation: "Betty is experiencing severe opioid-induced respiratory depression on PCA.",
+                    background: "Post total hip replacement, receiving Morphine PCA.",
+                    assessment: "RR 6/min, SpO2 86% room air, Sedation Score 3 (somnolent, unrousable), pinpoint pupils.",
+                    recommendation: "Stopped PCA pump, initiated MET call, applied 15L non-rebreather oxygen, requesting order for IV Naloxone 100mcg stat."
+                },
+                redFlags: "Concentrated KCl given IV push (causes fatal cardiac arrest), wrong insulin syringe used, opioid resedation post-naloxone."
+            },
+            {
+                id: "renal-02",
+                category: "renal",
+                categoryLabel: "Renal Function & AKI",
+                badgeColor: "bg-teal-100 text-teal-900 border-teal-200",
+                title: "Chronic Kidney Disease (CKD) Stages & Nephrotoxic Medication Holds",
+                auGuideline: "Kidney Health Australia (KHA) / CARI Guidelines",
+                prompt: "Classify CKD Stages based on eGFR and detail mandatory drug dosing adjustments for nephrotoxic medications.",
+                patho: "Progressive loss of functioning nephrons leading to uremia, fluid retention, metabolic acidosis, anemia (reduced EPO), and mineral bone disease. Reduced clearance leads to drug accumulation and toxicity.",
+                assessment: [
+                    "CKD eGFR Staging (mL/min/1.73m²):",
+                    "• Stage 1: eGFR ≥ 90 (with kidney damage)",
+                    "• Stage 2: eGFR 60–89",
+                    "• Stage 3a/3b: eGFR 30–59 (Moderate)",
+                    "• Stage 4: eGFR 15–29 (Severe)",
+                    "• Stage 5: eGFR < 15 (End-Stage Renal Disease / Dialysis)"
+                ],
+                management: [
+                    "NEPHROTOXIC MEDICATION 'DAMN' HOLD LIST IN AKI/CKD 4-5:",
+                    "• D: Diuretics (Furosemide - hold if hypovolaemic).",
+                    "• A: ACEi / ARBs (Perindopril, Ramipril, Irbesartan - hold to preserve glomerular filtration pressure).",
+                    "• M: Metformin (Hold if eGFR < 30 due to Lactic Acidosis risk).",
+                    "• N: NSAIDs (Ibuprofen, Celecoxib - strictly avoid, causes afferent arteriolar constriction).",
+                    "• Antibiotics: Dose-reduce Vancomycin, Gentamicin, and Cefazolin according to calculated creatinine clearance (Cockcroft-Gault)."
+                ],
+                isbar: {
+                    identify: "RN Ben, Nephrology, re: Arthur Pendelton (76M).",
+                    situation: "Arthur's eGFR dropped from 45 to 18 mL/min with rising urea.",
+                    background: "Admitted with gastroenteritis on chronic Ramipril & Metformin.",
+                    assessment: "Dehydrated, Creatinine 310 µmol/L, BP 102/60. Metformin and Ramipril are still administered on chart.",
+                    recommendation: "Request urgent medical review to hold Ramipril and Metformin, and order IV 0.9% NaCl rehydration."
+                },
+                redFlags: "eGFR < 15 without dialysis access, refractory hyperkalaemia > 6.5, uremic pericarditis, fluid overload refractory to diuretics."
+            },
+            {
+                id: "medication-02",
+                category: "medication",
+                categoryLabel: "Medication Safety",
+                badgeColor: "bg-indigo-100 text-indigo-900 border-indigo-200",
+                title: "Therapeutic Drug Monitoring (TDM): Vancomycin & Gentamicin",
+                auGuideline: "eTG Therapeutic Guidelines: Antibiotic",
+                prompt: "Outline Australian TDM principles for Vancomycin trough targets and Gentamicin once-daily dosing monitoring.",
+                patho: "Glycopeptide (Vancomycin) and Aminoglycoside (Gentamicin) antibiotics have narrow therapeutic indices. Trough levels prevent nephrotoxicity and ototoxicity while ensuring bacterial eradication.",
+                assessment: [
+                    "Vancomycin Trough Target: 15 – 20 mg/L (for severe infections like MRSA sepsis, endocarditis) or 10 – 15 mg/L (uncomplicated).",
+                    "Gentamicin Trough Target: < 1 mg/L (to avoid renal/vestibular accumulation)."
+                ],
+                management: [
+                    "SAMPLING & DOSING TIMING:",
+                    "• Vancomycin Trough: Collect blood sample within 30 minutes BEFORE the 4th dose (at steady state).",
+                    "• Gentamicin Nomogram: Draw 6–14 hour post-dose concentration level for Hartford once-daily dosing nomogram plot.",
+                    "• Action on High Trough Level: Withhold dose, notify prescriber, re-check EUC creatinine."
+                ],
+                isbar: {
+                    identify: "RN Jessica, Ortho Ward, re: Frank Thomas (69M).",
+                    situation: "Frank's pre-dose Vancomycin trough level returned at 28.5 mg/L (Toxic).",
+                    background: "Receiving Vancomycin 1.5g IV Q12H for septic arthritis.",
+                    assessment: "Creatinine increased from 75 to 160 µmol/L today. Dose due now at 1800.",
+                    recommendation: "Withhold 1800 Vancomycin dose, notify Registrar, and re-check EUC in morning."
+                },
+                redFlags: "Gentamicin trough > 2 mg/L, Vancomycin trough > 25 mg/L, acute oliguria or tinnitus/dizziness."
+            }
+        ];
+
+        /* ==========================================================================
+           2. SCENARIO QUIZ DATASET (10 QUESTIONS)
+           ========================================================================== */
+        const quizQuestions = [
+            {
+                id: 1,
+                topic: "High-Dose Steroid Therapy",
+                question: "You are administering High-Dose Methylprednisolone 1000mg IV pulse therapy to a patient with acute vasculitis. Which baseline screening blood test is specifically essential in Australian practice prior to starting therapy to prevent life-threatening hyperinfection?",
+                options: [
+                    "Strongyloides stercoralis serology (especially for patients from endemic rural/Aboriginal communities or tropical regions).",
+                    "Serum Erythrocyte Sedimentation Rate (ESR) only.",
+                    "Prothrombin Time (PT/INR).",
+                    "Serum Lipase."
+                ],
+                correct: 0,
+                rationale: "Per eTG and Australian infectious disease protocols, high-dose corticosteroid immunosuppression in patients harboring asymptomatic Strongyloides stercoralis parasite can trigger fatal Strongyloides hyperinfection syndrome. Baseline screening or empiric ivermectin treatment is required in high-risk groups."
+            },
+            {
+                id: 2,
+                topic: "Diabetes Care",
+                question: "You are caring for a conscious 68-year-old patient who presents with tremors and diaphoresis. You perform a POCT BSL and get a reading of 3.1 mmol/L. According to Australian 'Rule of 15' guidelines, what is your immediate action?",
+                options: [
+                    "Administer 10 units of Subcutaneous Actrapid Insulin immediately.",
+                    "Provide 15g of quick-acting carbohydrates (e.g. 3-4 jellybeans or 150mL fruit juice) and recheck BSL in 15 minutes.",
+                    "Give a heavy meal containing complex carbohydrates and recheck BSL at shift handover.",
+                    "Administer IM Glucagon 1mg immediately without offering oral fluids."
+                ],
+                correct: 1,
+                rationale: "For a conscious patient with BSL < 4.0 mmol/L, the Rule of 15 mandates giving 15g of quick-acting simple carbohydrate, waiting 15 minutes, and re-testing BSL. Glucagon or IV Dextrose is reserved for unconscious or uncooperative patients."
+            },
+            {
+                id: 3,
+                topic: "Anaphylaxis",
+                question: "A 24-year-old patient experiences sudden airway stridor, dyspnoea, and hypotension 2 minutes after receiving IV Ampicillin. What is the single most important FIRST-LINE emergency intervention according to ASCIA guidelines?",
+                options: [
+                    "Administer IV Hydrocortisone 100mg.",
+                    "Give Promethazine 25mg IV push over 5 minutes.",
+                    "Administer IM Adrenaline 1:1000 (0.5mg into mid-outer thigh) and keep patient flat.",
+                    "Place the patient in high-Fowler's position and encourage them to walk."
+                ],
+                correct: 2,
+                rationale: "Per ASCIA and ARC guidelines, IM Adrenaline 1:1000 (0.5mg for adults) into the outer mid-thigh is the first-line treatment. Laying the patient flat is essential to prevent sudden fatal hypotension ('empty ventricle syndrome')."
+            },
+            {
+                id: 4,
+                topic: "Sepsis Pathway",
+                question: "You are reviewing a day 2 post-op patient. Observations: SBP 84 mmHg, HR 124 bpm, RR 28/min, Temp 38.9°C, and VBG Lactate is 3.5 mmol/L. Which bundle of interventions must be executed within the Golden Hour?",
+                options: [
+                    "Administer paracetamol, order a routine CXR, and repeat bloods in 24 hours.",
+                    "Call MET, obtain 2 sets of blood cultures, administer empiric IV antibiotics, measure lactate, and start 30 mL/kg IV crystalloid fluid bolus.",
+                    "Restricting IV fluids to 50mL/hr and withholding all antibiotics until urine cultures return.",
+                    "Transfer patient to general ward lounge for mobility exercises."
+                ],
+                correct: 1,
+                rationale: "The CEC Adult Sepsis Pathway mandates the 1-Hour Sepsis Resuscitation Bundle: Immediate escalation, blood cultures prior to antibiotics, broad-spectrum IV antibiotics within 60 mins, serum lactate measurement, and 30mL/kg crystalloid fluid resuscitation."
+            },
+            {
+                id: 5,
+                topic: "Renal & Hyperkalaemia",
+                question: "A patient with oliguric AKI has a serum Potassium level of 6.9 mmol/L and telemetry shows peaked T-waves. Which medication is given FIRST to protect the myocardium against cardiac arrest?",
+                options: [
+                    "Calcium Gluconate 10% IV over 5-10 minutes.",
+                    "Oral Calcium Resonium 15g.",
+                    "Furosemide 80mg IV push.",
+                    "Actrapid Insulin 10 Units IV without dextrose."
+                ],
+                correct: 0,
+                rationale: "Calcium Gluconate 10% IV acts within 1-3 minutes to stabilize the cardiac myocardial membrane against fatal arrhythmias (VF/asystole). It does not lower serum potassium, so insulin/dextrose and resins are given subsequently."
+            },
+            {
+                id: 6,
+                topic: "Medication Safety",
+                question: "Which medication administration process strictly requires an Independent Double Check by two licensed nurses under ACSQHC Standards?",
+                options: [
+                    "Administering oral Paracetamol 1g.",
+                    "Administering a Subcutaneous Insulin Actrapid dose using a unit-scale insulin syringe.",
+                    "Applying a simple silicone foam dressing to a Stage 1 pressure injury.",
+                    "Giving oral Vitamin C 500mg."
+                ],
+                correct: 1,
+                rationale: "Insulin belongs to the APINCH high-risk medicine classification. ACSQHC standards mandate an independent double check (patient ID, chart order, dose calculation, vial, and syringe measurement) by two nurses."
+            },
+            {
+                id: 7,
+                topic: "Heart Failure",
+                question: "A patient with acute decompensated heart failure is extremely breathless with bilateral lung crackles and pink frothy sputum. What immediate positioning and pharmacological combination is indicated?",
+                options: [
+                    "Position flat on back; administer IV 0.9% Normal Saline 1000mL rapid bolus.",
+                    "Position sitting upright high-Fowler's with legs dangling; administer IV Furosemide and sublingual GTN spray (if SBP > 110).",
+                    "Trendelenburg position; give IV Beta-blocker bolus.",
+                    "Left lateral recovery position; hold all diuretics."
+                ],
+                correct: 1,
+                rationale: "Acute pulmonary edema requires sitting upright with legs dangling (reduces venous return/preload), high-flow oxygen/CPAP, IV Furosemide loop diuretic, and nitrates (GTN) if SBP is adequate."
+            },
+            {
+                id: 8,
+                topic: "Wound Care & ANTT",
+                question: "When performing a dressing change on a central venous access device (CVAD) insertion site expected to take 30 minutes, which ANTT approach is mandatory?",
+                options: [
+                    "Standard ANTT using non-sterile gloves and a clean field.",
+                    "Surgical ANTT using full sterile drape field, sterile gloves, mask, and strict Key Part protection.",
+                    "Clean Technique without gloves.",
+                    "No touch technique using domestic gloves."
+                ],
+                correct: 1,
+                rationale: "Surgical ANTT is required for procedures that are complex, long in duration (>20 mins), or involve large/multiple critical key parts (such as CVAD dressings or deep surgical wounds), requiring full sterile gowns/gloves and drapes."
+            },
+            {
+                id: 9,
+                topic: "Renal Function",
+                question: "According to KDIGO guidelines, what urine output threshold defines Stage 1 Acute Kidney Injury (AKI)?",
+                options: [
+                    "Urine output < 0.5 mL/kg/hr for 6 to 12 consecutive hours.",
+                    "Urine output > 2.5 L/day.",
+                    "Urine output < 2.0 mL/kg/hr for 1 hour only.",
+                    "Anuria (<50mL/day) for 30 consecutive days."
+                ],
+                correct: 0,
+                rationale: "KDIGO Stage 1 AKI is defined by a reduction in urine output < 0.5 mL/kg/hr for 6–12 hours, or a serum creatinine rise of ≥26.5 µmol/L within 48 hours."
+            },
+            {
+                id: 10,
+                topic: "Medication Safety / Opioids",
+                question: "A patient on a Patient-Controlled Analgesia (PCA) Morphine infusion has a Respiratory Rate of 6 breaths/min and a Sedation Score of 3 (unrousable). What is your immediate nursing response?",
+                options: [
+                    "Increase the PCA baseline infusion rate and re-check in 2 hours.",
+                    "Stop the PCA pump, call MET/Code Blue, apply high-flow oxygen, and prepare IV Naloxone (Narcan).",
+                    "Administer IV Morphine 5mg stat.",
+                    "Encourage the patient to take deep breaths while leaving the room."
+                ],
+                correct: 1,
+                rationale: "A RR < 8-10 and Sedation Score 3 indicates life-threatening opioid-induced respiratory depression. Immediate actions: Stop PCA, escalate (MET), oxygenate, and administer the opioid antagonist Naloxone."
+            }
+        ];
+
+        /* ==========================================================================
+           3. APP STATE & LOCAL STORAGE
+           ========================================================================== */
+        let activeTab = 'single-card';
+        let activeRefTab = 'steroid-bloods';
+        let cardConfidence = JSON.parse(localStorage.getItem('ausrn_confidence_map') || '{}');
+        let cardBookmarks = JSON.parse(localStorage.getItem('ausrn_bookmarks_map') || '{}');
+        let currentCardIndex = 0;
+        let flippedCardIds = new Set();
+        let currentQuizAnswers = {};
+
+        // Window Load Handler
+        window.addEventListener('load', function() {
+            flashcards.forEach(c => {
+                c.confidence = cardConfidence[c.id] || 'unrated';
+                c.bookmarked = !!cardBookmarks[c.id];
+            });
+
+            renderSingleCardView();
+            renderAllCardsGrid();
+            renderRefContent();
+            renderQuizScenarios();
+            updateDashboardStats();
+
+            // Keyboard Arrow Listener
+            window.addEventListener('keydown', function(e) {
+                if (activeTab === 'single-card') {
+                    if (e.key === 'ArrowRight') nextCard();
+                    if (e.key === 'ArrowLeft') prevCard();
+                    if (e.key === ' ' || e.key === 'Spacebar') {
+                        e.preventDefault();
+                        const filtered = getFilteredCards();
+                        if (filtered[currentCardIndex]) {
+                            toggleCardFlip(filtered[currentCardIndex].id);
+                        }
+                    }
+                }
+            });
+        });
+
+        /* ==========================================================================
+           4. TAB SWITCHING LOGIC
+           ========================================================================== */
+        function switchTab(tabName) {
+            activeTab = tabName;
+            const tabs = ['single-card', 'all-cards', 'reference', 'quiz', 'dashboard'];
+            
+            tabs.forEach(t => {
+                const sec = document.getElementById(`tab-${t}`);
+                const btn = document.getElementById(`nav-btn-${t}`);
+                if (t === tabName) {
+                    sec.classList.remove('hidden');
+                    btn.className = "px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all bg-clinical-400 text-navy-900 shadow whitespace-nowrap";
+                } else {
+                    sec.classList.add('hidden');
+                    btn.className = "px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold text-slate-300 hover:bg-navy-800 hover:text-white transition-all whitespace-nowrap";
+                }
+            });
+
+            if (tabName === 'dashboard') updateDashboardStats();
+            if (tabName === 'single-card') renderSingleCardView();
+            if (tabName === 'all-cards') renderAllCardsGrid();
+        }
+
+        /* ==========================================================================
+           5. FILTERING & CAROUSEL CARDS LOGIC
+           ========================================================================== */
+        function getFilteredCards() {
+            const cat = document.getElementById('categoryFilter').value;
+            const diff = document.getElementById('difficultyFilter').value;
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+
+            return flashcards.filter(card => {
+                const matchCat = cat === 'ALL' || card.category === cat;
+                
+                let matchDiff = true;
+                if (diff === 'bookmarked') {
+                    matchDiff = card.bookmarked;
+                } else if (diff !== 'ALL') {
+                    matchDiff = card.confidence === diff;
+                }
+
+                const matchQuery = query === '' || 
+                    card.title.toLowerCase().includes(query) ||
+                    card.prompt.toLowerCase().includes(query) ||
+                    card.patho.toLowerCase().includes(query) ||
+                    card.auGuideline.toLowerCase().includes(query) ||
+                    card.assessment.some(a => a.toLowerCase().includes(query)) ||
+                    card.management.some(m => m.toLowerCase().includes(query));
+
+                return matchCat && matchDiff && matchQuery;
+            });
+        }
+
+        function applyCardFilters() {
+            currentCardIndex = 0;
+            renderSingleCardView();
+            renderAllCardsGrid();
+        }
+
+        function shuffleCards() {
+            for (let i = flashcards.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [flashcards[i], flashcards[j]] = [flashcards[j], flashcards[i]];
+            }
+            applyCardFilters();
+        }
+
+        function prevCard() {
+            const list = getFilteredCards();
+            if (list.length === 0) return;
+            currentCardIndex = (currentCardIndex - 1 + list.length) % list.length;
+            renderSingleCardView();
+        }
+
+        function nextCard() {
+            const list = getFilteredCards();
+            if (list.length === 0) return;
+            currentCardIndex = (currentCardIndex + 1) % list.length;
+            renderSingleCardView();
+        }
+
+        function renderSingleCardView() {
+            const viewport = document.getElementById('single-card-viewport');
+            const filtered = getFilteredCards();
+
+            document.getElementById('cards-count-indicator').textContent = `Showing ${filtered.length} of ${flashcards.length} Flashcards`;
+
+            if (filtered.length === 0) {
+                document.getElementById('single-card-progress').textContent = '0 Cards';
+                viewport.innerHTML = `
+                    <div class="py-16 text-center bg-white rounded-xl border border-slate-200">
+                        <i class="fa-solid fa-file-circle-xmark text-4xl text-slate-300 mb-2"></i>
+                        <h3 class="text-base font-bold text-slate-700">No matching flashcards found</h3>
+                        <p class="text-xs text-slate-500 mt-1">Try adjusting your filters or search term.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            if (currentCardIndex >= filtered.length) currentCardIndex = 0;
+            const card = filtered[currentCardIndex];
+            document.getElementById('single-card-progress').textContent = `Card ${currentCardIndex + 1} of ${filtered.length}`;
+
+            const isFlipped = flippedCardIds.has(card.id);
+            
+            let confBadge = '<span class="bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-0.5 rounded border border-slate-200">Unrated</span>';
+            if (card.confidence === 'easy') {
+                confBadge = '<span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded border border-emerald-300"><i class="fa-solid fa-circle-check mr-1"></i>Mastered</span>';
+            } else if (card.confidence === 'medium') {
+                confBadge = '<span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded border border-amber-300"><i class="fa-solid fa-clock mr-1"></i>Reviewing</span>';
+            } else if (card.confidence === 'hard') {
+                confBadge = '<span class="bg-rose-100 text-rose-800 text-[10px] font-bold px-2 py-0.5 rounded border border-rose-300"><i class="fa-solid fa-triangle-exclamation mr-1"></i>Needs Focus</span>';
+            }
+
+            viewport.innerHTML = `
+                <div class="perspective-1000 h-[620px] w-full">
+                    <div id="card-inner-${card.id}" 
+                        class="relative w-full h-full transform-style-3d cursor-pointer ${isFlipped ? 'rotate-y-180' : ''}"
+                        onclick="toggleCardFlip('${card.id}')">
+                        
+                        <!-- FRONT OF CARD -->
+                        <div class="absolute inset-0 w-full h-full bg-white rounded-2xl border border-slate-200 card-shadow p-6 flex flex-col justify-between backface-hidden overflow-hidden">
+                            <div class="space-y-4">
+                                <!-- Top Bar -->
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-black uppercase tracking-wider px-3 py-1 rounded-full border ${card.badgeColor}">
+                                        ${card.categoryLabel}
+                                    </span>
+                                    <div class="flex items-center gap-2" onclick="event.stopPropagation()">
+                                        ${confBadge}
+                                        <button onclick="toggleBookmark('${card.id}')" class="text-slate-400 hover:text-amber-500 text-base p-1 transition" title="Bookmark Card">
+                                            <i class="${card.bookmarked ? 'fa-solid text-amber-500' : 'fa-regular'} fa-bookmark"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Title -->
+                                <div>
+                                    <div class="flex items-start justify-between gap-3">
+                                        <h3 class="text-lg sm:text-xl font-black text-navy-900 leading-snug">${card.title}</h3>
+                                        <button onclick="speakText(event, '${escapeQuotes(card.title + '. ' + card.prompt)}')" 
+                                            class="text-clinical-600 hover:text-clinical-800 text-base p-2 rounded-full bg-clinical-50 hover:bg-clinical-100 transition shrink-0" title="Listen Read-Aloud">
+                                            <i class="fa-solid fa-volume-high"></i>
+                                        </button>
+                                    </div>
+                                    <p class="text-xs font-semibold text-clinical-700 mt-1"><i class="fa-solid fa-award mr-1"></i>${card.auGuideline}</p>
+                                </div>
+
+                                <!-- Prompt Box -->
+                                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-800 italic leading-relaxed">
+                                    "${card.prompt}"
+                                </div>
+
+                                <!-- Patho -->
+                                <div>
+                                    <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Pathophysiology & Mechanism</div>
+                                    <p class="text-xs sm:text-sm text-slate-700 leading-relaxed">${card.patho}</p>
+                                </div>
+
+                                <!-- Assessment -->
+                                <div>
+                                    <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Blood & Clinical Monitoring</div>
+                                    <ul class="text-xs sm:text-sm text-slate-700 space-y-1.5">
+                                        ${card.assessment.map(a => `<li class="flex items-start gap-1.5"><i class="fa-solid fa-angle-right text-clinical-500 mt-1"></i><span>${a}</span></li>`).join('')}
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Footer -->
+                            <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400 font-bold">
+                                <span><i class="fa-solid fa-hand-pointer mr-1"></i>Click card or press Space to flip</span>
+                                <span class="text-clinical-600 font-bold">View AU Protocol & Red Flags &rarr;</span>
+                            </div>
+                        </div>
+
+                        <!-- BACK OF CARD -->
+                        <div class="absolute inset-0 w-full h-full bg-navy-900 text-white rounded-2xl shadow-xl p-6 flex flex-col justify-between backface-hidden rotate-y-180 overflow-hidden border border-navy-800">
+                            <div class="overflow-y-auto custom-scroll pr-1 space-y-4">
+                                <div class="flex items-center justify-between border-b border-navy-800 pb-2">
+                                    <span class="text-[10px] font-black uppercase bg-clinical-400 text-navy-900 px-2.5 py-0.5 rounded">AU Clinical Interventions & ISBAR</span>
+                                    <span class="text-xs text-slate-400"><i class="fa-solid fa-arrows-rotate mr-1"></i>Click to return</span>
+                                </div>
+
+                                <h4 class="text-base font-bold text-amber-400 leading-tight">${card.title}</h4>
+
+                                <!-- Management -->
+                                <div>
+                                    <div class="text-[10px] font-black text-slate-300 uppercase tracking-wider mb-1">Clinical Protocol & Dosing</div>
+                                    <ul class="text-xs space-y-1.5 text-slate-200">
+                                        ${card.management.map(m => `<li class="bg-navy-800/90 p-2.5 rounded-lg border border-navy-700 leading-relaxed">${m}</li>`).join('')}
+                                    </ul>
+                                </div>
+
+                                <!-- ISBAR -->
+                                <div class="bg-slate-800/90 p-3 rounded-xl border border-slate-700 text-xs space-y-1 text-slate-200">
+                                    <div class="font-bold text-clinical-400 uppercase text-[10px] mb-1"><i class="fa-solid fa-phone mr-1"></i>ISBAR Clinical Handover / Escalation Prompt</div>
+                                    <p><strong class="text-white">I:</strong> ${card.isbar.identify}</p>
+                                    <p><strong class="text-white">S:</strong> ${card.isbar.situation}</p>
+                                    <p><strong class="text-white">B:</strong> ${card.isbar.background}</p>
+                                    <p><strong class="text-white">A:</strong> ${card.isbar.assessment}</p>
+                                    <p><strong class="text-white">R:</strong> ${card.isbar.recommendation}</p>
+                                </div>
+
+                                <!-- Red Flags -->
+                                <div class="bg-rose-950/70 p-3 rounded-xl border border-rose-800 text-xs text-rose-200">
+                                    <strong class="text-rose-400"><i class="fa-solid fa-triangle-exclamation mr-1"></i>Red Flag Escalation Triggers:</strong> ${card.redFlags}
+                                </div>
+                            </div>
+
+                            <!-- Rating Bar -->
+                            <div class="pt-3 border-t border-navy-800 mt-2" onclick="event.stopPropagation()">
+                                <div class="text-[10px] text-center text-slate-400 mb-1.5 font-semibold">Rate Confidence Level:</div>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <button onclick="setCardConfidence('${card.id}', 'hard')" class="py-2 px-2 text-xs font-bold bg-rose-900/80 hover:bg-rose-800 text-rose-100 rounded-lg border border-rose-700 transition flex items-center justify-center gap-1">
+                                        <i class="fa-solid fa-triangle-exclamation text-[10px]"></i> Hard
+                                    </button>
+                                    <button onclick="setCardConfidence('${card.id}', 'medium')" class="py-2 px-2 text-xs font-bold bg-amber-900/80 hover:bg-amber-800 text-amber-100 rounded-lg border border-amber-700 transition flex items-center justify-center gap-1">
+                                        <i class="fa-solid fa-clock text-[10px]"></i> Medium
+                                    </button>
+                                    <button onclick="setCardConfidence('${card.id}', 'easy')" class="py-2 px-2 text-xs font-bold bg-emerald-900/80 hover:bg-emerald-800 text-emerald-100 rounded-lg border border-emerald-700 transition flex items-center justify-center gap-1">
+                                        <i class="fa-solid fa-circle-check text-[10px]"></i> Mastered
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderAllCardsGrid() {
+            const container = document.getElementById('all-cards-grid-container');
+            const filtered = getFilteredCards();
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full py-16 text-center bg-white rounded-xl border border-slate-200">
+                        <i class="fa-solid fa-file-circle-xmark text-4xl text-slate-300 mb-2"></i>
+                        <h3 class="text-base font-bold text-slate-700">No matching flashcards found</h3>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filtered.map((card) => {
+                const isFlipped = flippedCardIds.has(card.id);
+                
+                let confBadge = '<span class="bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-0.5 rounded border border-slate-200">Unrated</span>';
+                if (card.confidence === 'easy') {
+                    confBadge = '<span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded border border-emerald-300"><i class="fa-solid fa-circle-check mr-1"></i>Mastered</span>';
+                } else if (card.confidence === 'medium') {
+                    confBadge = '<span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded border border-amber-300"><i class="fa-solid fa-clock mr-1"></i>Reviewing</span>';
+                } else if (card.confidence === 'hard') {
+                    confBadge = '<span class="bg-rose-100 text-rose-800 text-[10px] font-bold px-2 py-0.5 rounded border border-rose-300"><i class="fa-solid fa-triangle-exclamation mr-1"></i>Needs Focus</span>';
+                }
+
+                return `
+                    <div class="perspective-1000 h-[580px] w-full">
+                        <div id="grid-card-inner-${card.id}" 
+                            class="relative w-full h-full transform-style-3d cursor-pointer ${isFlipped ? 'rotate-y-180' : ''}"
+                            onclick="toggleCardFlip('${card.id}')">
+                            
+                            <!-- FRONT -->
+                            <div class="absolute inset-0 w-full h-full bg-white rounded-xl border border-slate-200 card-shadow p-5 flex flex-col justify-between backface-hidden overflow-hidden">
+                                <div class="space-y-3">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-[11px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full border ${card.badgeColor}">
+                                            ${card.categoryLabel}
+                                        </span>
+                                        <div class="flex items-center gap-1.5" onclick="event.stopPropagation()">
+                                            ${confBadge}
+                                            <button onclick="toggleBookmark('${card.id}')" class="text-slate-400 hover:text-amber-500 text-sm p-1 transition">
+                                                <i class="${card.bookmarked ? 'fa-solid text-amber-500' : 'fa-regular'} fa-bookmark"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <h3 class="text-base font-bold text-navy-900 leading-snug">${card.title}</h3>
+                                    <p class="text-[11px] font-semibold text-clinical-700"><i class="fa-solid fa-award mr-1"></i>${card.auGuideline}</p>
+
+                                    <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 text-xs text-slate-800 italic leading-relaxed line-clamp-3">
+                                        "${card.prompt}"
+                                    </div>
+
+                                    <div>
+                                        <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Pathophysiology</div>
+                                        <p class="text-xs text-slate-700 leading-relaxed line-clamp-3">${card.patho}</p>
+                                    </div>
+                                </div>
+
+                                <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400 font-semibold">
+                                    <span><i class="fa-solid fa-arrows-rotate mr-1"></i>Click to flip</span>
+                                    <span class="text-clinical-600 font-bold">Details &rarr;</span>
+                                </div>
+                            </div>
+
+                            <!-- BACK -->
+                            <div class="absolute inset-0 w-full h-full bg-navy-900 text-white rounded-xl shadow-xl p-5 flex flex-col justify-between backface-hidden rotate-y-180 overflow-hidden border border-navy-800">
+                                <div class="overflow-y-auto custom-scroll pr-1 space-y-3">
+                                    <div class="flex items-center justify-between border-b border-navy-800 pb-2">
+                                        <span class="text-[10px] font-black uppercase bg-clinical-400 text-navy-900 px-2 py-0.5 rounded">Management Protocol</span>
+                                    </div>
+                                    <h4 class="text-xs font-bold text-amber-400">${card.title}</h4>
+                                    <ul class="text-xs space-y-1 text-slate-200">
+                                        ${card.management.map(m => `<li class="bg-navy-800/90 p-2 rounded border border-navy-700 leading-relaxed">${m}</li>`).join('')}
+                                    </ul>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        /* Card Flip & Audio Utils */
+        function toggleCardFlip(cardId) {
+            if (flippedCardIds.has(cardId)) {
+                flippedCardIds.delete(cardId);
+            } else {
+                flippedCardIds.add(cardId);
+            }
+            renderSingleCardView();
+            renderAllCardsGrid();
+        }
+
+        function speakText(event, text) {
+            event.stopPropagation();
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 0.9;
+                utterance.lang = 'en-AU';
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        function escapeQuotes(str) {
+            return str.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        }
+
+        function setCardConfidence(cardId, level) {
+            const card = flashcards.find(c => c.id === cardId);
+            if (card) {
+                card.confidence = level;
+                cardConfidence[cardId] = level;
+                localStorage.setItem('ausrn_confidence_map', JSON.stringify(cardConfidence));
+                renderSingleCardView();
+                renderAllCardsGrid();
+                updateDashboardStats();
+            }
+        }
+
+        function toggleBookmark(cardId) {
+            const card = flashcards.find(c => c.id === cardId);
+            if (card) {
+                card.bookmarked = !card.bookmarked;
+                cardBookmarks[cardId] = card.bookmarked;
+                localStorage.setItem('ausrn_bookmarks_map', JSON.stringify(cardBookmarks));
+                renderSingleCardView();
+                renderAllCardsGrid();
+            }
+        }
+
+        /* ==========================================================================
+           6. REFERENCE SECTION SUB-TABS
+           ========================================================================== */
+        function switchRefTab(subTab) {
+            activeRefTab = subTab;
+            const subTabs = ['steroid-bloods', 'pathology', 'met', 'apinch'];
+            subTabs.forEach(t => {
+                const btn = document.getElementById(`reftab-${t}`);
+                if (t === subTab) {
+                    btn.className = "px-4 py-2 rounded-lg text-xs font-bold bg-navy-900 text-white shadow";
+                } else {
+                    btn.className = "px-4 py-2 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200";
+                }
+            });
+            renderRefContent();
+        }
+
+        function renderRefContent() {
+            const display = document.getElementById('ref-content-display');
+
+            if (activeRefTab === 'steroid-bloods') {
+                display.innerHTML = `
+                    <div class="space-y-4">
+                        <div class="bg-fuchsia-50 border border-fuchsia-200 p-4 rounded-xl">
+                            <h3 class="font-black text-fuchsia-950 text-sm flex items-center gap-2">
+                                <i class="fa-solid fa-syringe text-fuchsia-600"></i> High-Dose Methylprednisolone IV Therapy Blood Tracking Protocol
+                            </h3>
+                            <p class="text-xs text-fuchsia-900 mt-1">Mandatory baseline, daily, and safety blood tracking protocols aligned with Australian clinical consensus.</p>
+                        </div>
+
+                        <div class="overflow-x-auto rounded-lg border border-slate-200">
+                            <table class="w-full text-left text-xs border-collapse">
+                                <thead>
+                                    <tr class="bg-navy-900 text-white font-bold">
+                                        <th class="p-3">Lab Marker</th>
+                                        <th class="p-3">Frequency</th>
+                                        <th class="p-3">Target Range & Action Triggers</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-200 text-slate-700">
+                                    <tr>
+                                        <td class="p-3 font-bold text-navy-900">POCT Blood Glucose (BGL)</td>
+                                        <td class="p-3 font-semibold text-fuchsia-700">q1h - q4h active therapy</td>
+                                        <td class="p-3">Target 4.0 - 10.0 mmol/L.<br>If > 12.0 mmol/L: Initiate Subcut Insulin sliding scale or Actrapid infusion.</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-3 font-bold text-navy-900">Serum Potassium (K+)</td>
+                                        <td class="p-3 font-semibold text-fuchsia-700">Daily EUC</td>
+                                        <td class="p-3">Target 4.0 - 5.0 mmol/L.<br>If < 3.5 mmol/L: Steroid-induced renal K+ wasting. Replace K+ orally/IV immediately.</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-3 font-bold text-navy-900">Strongyloides Serology</td>
+                                        <td class="p-3 font-semibold text-fuchsia-700">Baseline Screening</td>
+                                        <td class="p-3">Mandatory in endemic rural/Aboriginal communities or overseas born.<br>If positive: Give Ivermectin before high-dose pulse.</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-3 font-bold text-navy-900">QuantiFERON-TB Gold</td>
+                                        <td class="p-3 font-semibold text-fuchsia-700">Baseline Screening</td>
+                                        <td class="p-3">Rule out latent tuberculosis reactivation prior to heavy immunosuppression.</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-3 font-bold text-navy-900">Calcium & Magnesium (CMP)</td>
+                                        <td class="p-3 font-semibold text-fuchsia-700">Daily</td>
+                                        <td class="p-3">Steroids cause urinary Ca2+ wasting and hypomagnesemia; monitor for muscle cramps/arrhythmias.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            } else if (activeRefTab === 'pathology') {
+                display.innerHTML = `
+                    <div class="overflow-x-auto rounded-lg border border-slate-200">
+                        <table class="w-full text-left text-xs border-collapse">
+                            <thead>
+                                <tr class="bg-navy-900 text-white font-bold">
+                                    <th class="p-3">Pathology Marker</th>
+                                    <th class="p-3">Australian Normal Reference Range</th>
+                                    <th class="p-3">Clinical Significance & Red Flags</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200 text-slate-700">
+                                <tr>
+                                    <td class="p-3 font-bold text-navy-900">Blood Glucose Level (BSL)</td>
+                                    <td class="p-3 font-semibold">4.0 – 7.8 mmol/L (Fasting)<br>< 10.0 mmol/L (Random acute)</td>
+                                    <td class="p-3">< 4.0 mmol/L = Hypo Protocol.<br>> 15.0 mmol/L = DKA/HHS risk. Check ketones.</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-bold text-navy-900">Potassium (K+)</td>
+                                    <td class="p-3 font-semibold">3.5 – 5.2 mmol/L</td>
+                                    <td class="p-3">< 3.5 = Hypokalaemia.<br>> 5.5 = Hyperkalaemia (>6.5 = ECG peaked T waves emergency).</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-bold text-navy-900">Serum Lactate</td>
+                                    <td class="p-3 font-semibold">0.5 – 2.0 mmol/L</td>
+                                    <td class="p-3">> 2.0 mmol/L = Tissue hypoperfusion / Sepsis.<br>> 4.0 mmol/L = Severe septic shock.</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-bold text-navy-900">eGFR</td>
+                                    <td class="p-3 font-semibold">> 90 mL/min/1.73m²</td>
+                                    <td class="p-3">< 60 = CKD Stage 3.<br>< 15 = End-Stage Renal Disease (Stage 5).</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            } else if (activeRefTab === 'met') {
+                display.innerHTML = `
+                    <div class="bg-rose-50 border border-rose-200 p-4 rounded-xl space-y-4">
+                        <div class="flex items-center justify-between border-b border-rose-200 pb-2">
+                            <h3 class="font-black text-rose-900 text-sm flex items-center gap-2">
+                                <i class="fa-solid fa-bell text-rose-600"></i> Adult MET Call / Emergency Escalation Criteria (Between the Flags)
+                            </h3>
+                            <span class="bg-rose-600 text-white text-[10px] font-black px-2 py-0.5 rounded">MANDATORY ESCALATION</span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                            <div class="bg-white p-3 rounded-lg border border-rose-100 shadow-sm">
+                                <div class="font-bold text-rose-800 mb-1">Airway & Breathing</div>
+                                <p class="text-slate-700">• Airway threat / Stridor</p>
+                                <p class="text-slate-700">• RR < 8 OR > 30 breaths/min</p>
+                                <p class="text-slate-700">• SpO2 < 90% despite oxygen</p>
+                            </div>
+                            <div class="bg-white p-3 rounded-lg border border-rose-100 shadow-sm">
+                                <div class="font-bold text-rose-800 mb-1">Circulation</div>
+                                <p class="text-slate-700">• Systolic BP < 90 mmHg</p>
+                                <p class="text-slate-700">• Heart Rate < 40 OR > 130 bpm</p>
+                                <p class="text-slate-700">• Acute ischemic chest pain</p>
+                            </div>
+                            <div class="bg-white p-3 rounded-lg border border-rose-100 shadow-sm">
+                                <div class="font-bold text-rose-800 mb-1">Neurology & General</div>
+                                <p class="text-slate-700">• Acute drop in GCS ≥ 2 points</p>
+                                <p class="text-slate-700">• Prolonged seizure</p>
+                                <p class="text-slate-700">• Serious nurse concern</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (activeRefTab === 'apinch') {
+                display.innerHTML = `
+                    <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                        <table class="w-full text-left text-xs border-collapse">
+                            <thead>
+                                <tr class="bg-navy-900 text-white font-bold">
+                                    <th class="p-3">APINCH Class</th>
+                                    <th class="p-3">High Risk Medication Examples</th>
+                                    <th class="p-3">Mandatory Clinical Safeguards</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200 text-slate-700">
+                                <tr>
+                                    <td class="p-3 font-bold text-rose-600 bg-rose-50">A - Anti-infectives</td>
+                                    <td class="p-3 font-semibold">Vancomycin, Gentamicin</td>
+                                    <td class="p-3">TDM trough levels, monitor creatinine.</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-bold text-blue-600 bg-blue-50">P - Potassium / Electrolytes</td>
+                                    <td class="p-3 font-semibold">Concentrated KCl IV, Hypertonic NaCl</td>
+                                    <td class="p-3 font-bold text-rose-700">NEVER IV PUSH! Premixed bags only.</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-bold text-amber-600 bg-amber-50">I - Insulin</td>
+                                    <td class="p-3 font-semibold">Actrapid, Novorapid, Lantus</td>
+                                    <td class="p-3">Double independent check, unit-scale syringes.</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-bold text-purple-600 bg-purple-50">N - Narcotics / Opioids</td>
+                                    <td class="p-3 font-semibold">Morphine, Fentanyl, Oxycodone</td>
+                                    <td class="p-3">Sedation score + RR monitoring, Naloxone ready.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            }
+        }
+
+        /* ==========================================================================
+           7. QUIZ LOGIC
+           ========================================================================== */
+        function renderQuizScenarios() {
+            const container = document.getElementById('quiz-scenarios-container');
+            
+            container.innerHTML = quizQuestions.map((q, qIdx) => {
+                const userSelected = currentQuizAnswers[qIdx];
+                const isAnswered = userSelected !== undefined;
+
+                return `
+                    <div class="bg-slate-50 border border-slate-200 p-5 rounded-xl space-y-3 shadow-sm">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[11px] font-black uppercase tracking-wider text-navy-900 bg-white border border-slate-200 px-2.5 py-0.5 rounded">
+                                Scenario ${qIdx + 1} • ${q.topic}
+                            </span>
+                            ${isAnswered ? 
+                                (userSelected === q.correct ? 
+                                    '<span class="text-xs font-bold text-emerald-600"><i class="fa-solid fa-circle-check"></i> Correct</span>' : 
+                                    '<span class="text-xs font-bold text-rose-600"><i class="fa-solid fa-circle-xmark"></i> Incorrect</span>') 
+                                : '<span class="text-xs text-slate-400 font-semibold">Unanswered</span>'}
+                        </div>
+
+                        <p class="text-xs sm:text-sm font-semibold text-slate-800 leading-relaxed">${q.question}</p>
+
+                        <div class="space-y-2 pt-1">
+                            ${q.options.map((opt, optIdx) => {
+                                let btnStyle = "bg-white border-slate-200 text-slate-700 hover:bg-slate-100";
+                                if (isAnswered) {
+                                    if (optIdx === q.correct) {
+                                        btnStyle = "bg-emerald-100 border-emerald-400 text-emerald-950 font-semibold";
+                                    } else if (userSelected === optIdx) {
+                                        btnStyle = "bg-rose-100 border-rose-400 text-rose-950 font-semibold";
+                                    } else {
+                                        btnStyle = "bg-white border-slate-200 text-slate-400 opacity-60";
+                                    }
+                                }
+
+                                return `
+                                    <button onclick="handleQuizSelect(${qIdx}, ${optIdx})" 
+                                        ${isAnswered ? 'disabled' : ''}
+                                        class="w-full text-left p-3 rounded-lg border text-xs transition-all flex items-start gap-2.5 ${btnStyle}">
+                                        <span class="font-bold text-slate-400 mt-0.5">${String.fromCharCode(65 + optIdx)}.</span>
+                                        <span class="flex-1 leading-relaxed">${opt}</span>
+                                    </button>
+                                `;
+                            }).join('')}
+                        </div>
+
+                        ${isAnswered ? `
+                            <div class="bg-blue-50 border border-blue-200 p-3 rounded-lg text-xs text-blue-950 space-y-1 mt-3">
+                                <div class="font-bold flex items-center gap-1.5 text-blue-900">
+                                    <i class="fa-solid fa-circle-info text-blue-600"></i> Clinical Rationale (AU Standards):
+                                </div>
+                                <p class="leading-relaxed text-blue-900/90">${q.rationale}</p>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+
+            updateQuizScoreDisplay();
+        }
+
+        function handleQuizSelect(qIdx, optIdx) {
+            currentQuizAnswers[qIdx] = optIdx;
+            renderQuizScenarios();
+        }
+
+        function updateQuizScoreDisplay() {
+            let score = 0;
+            Object.keys(currentQuizAnswers).forEach(qIdx => {
+                if (currentQuizAnswers[qIdx] === quizQuestions[qIdx].correct) {
+                    score++;
+                }
+            });
+            document.getElementById('quiz-score-display').textContent = `${score} / ${quizQuestions.length}`;
+        }
+
+        /* ==========================================================================
+           8. DASHBOARD LOGIC
+           ========================================================================== */
+        function updateDashboardStats() {
+            const total = flashcards.length;
+            const easy = flashcards.filter(c => c.confidence === 'easy').length;
+            const medium = flashcards.filter(c => c.confidence === 'medium').length;
+            const hard = flashcards.filter(c => c.confidence === 'hard').length;
+
+            document.getElementById('dash-total-cards').textContent = total;
+            document.getElementById('dash-easy-cards').textContent = easy;
+            document.getElementById('dash-medium-cards').textContent = medium;
+            document.getElementById('dash-hard-cards').textContent = hard;
+
+            const categories = [
+                { id: 'steroids', label: 'High-Dose Steroid Therapy' },
+                { id: 'diabetes', label: 'Diabetes Care & DKA/HHS' },
+                { id: 'wound', label: 'Wound Care & ANTT' },
+                { id: 'sepsis', label: 'Sepsis Pathway' },
+                { id: 'anaphylaxis', label: 'Anaphylaxis (ASCIA)' },
+                { id: 'heart', label: 'Heart Failure' },
+                { id: 'renal', label: 'Renal Function & AKI' },
+                { id: 'medication', label: 'Medication Safety' }
+            ];
+
+            const breakdownContainer = document.getElementById('topic-breakdown-list');
+            breakdownContainer.innerHTML = categories.map(cat => {
+                const topicCards = flashcards.filter(c => c.category === cat.id);
+                const masteredCount = topicCards.filter(c => c.confidence === 'easy').length;
+                const pct = topicCards.length > 0 ? Math.round((masteredCount / topicCards.length) * 100) : 0;
+
+                return `
+                    <div class="bg-slate-50 border border-slate-200 p-3.5 rounded-lg space-y-2">
+                        <div class="flex items-center justify-between text-xs font-bold text-slate-800">
+                            <span>${cat.label}</span>
+                            <span>${masteredCount} / ${topicCards.length} Mastered (${pct}%)</span>
+                        </div>
+                        <div class="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
+                            <div class="bg-clinical-500 h-2.5 rounded-full transition-all duration-500" style="width: ${pct}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function resetAllProgress() {
+            cardConfidence = {};
+            cardBookmarks = {};
+            localStorage.removeItem('ausrn_confidence_map');
+            localStorage.removeItem('ausrn_bookmarks_map');
+            flashcards.forEach(c => {
+                c.confidence = 'unrated';
+                c.bookmarked = false;
+            });
+            currentQuizAnswers = {};
+            renderSingleCardView();
+            renderAllCardsGrid();
+            renderQuizScenarios();
+            updateDashboardStats();
+        }
+    </script>
+</body>
+</html>
